@@ -11,8 +11,8 @@ android {
         applicationId = "com.bushop.sg"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "0.5.2"
+        versionCode = 5
+        versionName = "0.6.0"
 
         val ltaKey = project.findProperty("lta.api.key") as? String ?: ""
         buildConfigField("String", "LTA_API_KEY", "\"$ltaKey\"")
