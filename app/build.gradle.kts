@@ -14,6 +14,9 @@ android {
         versionCode = 4
         versionName = "0.5.2"
 
+        val ltaKey = project.findProperty("lta.api.key") as? String ?: ""
+        buildConfigField("String", "LTA_API_KEY", "\"$ltaKey\"")
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -38,8 +41,9 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures {
+    buildFeatures { 
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
