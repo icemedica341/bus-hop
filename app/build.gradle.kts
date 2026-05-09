@@ -11,8 +11,9 @@ android {
         applicationId = "com.bushop.sg"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "0.5.2"
+        versionCode = 6
+        versionName = "0.6.1"
+
 
         vectorDrawables {
             useSupportLibrary = true
