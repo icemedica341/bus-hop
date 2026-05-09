@@ -42,7 +42,7 @@
 
 ## Download
 
-> **Latest release:** [v0.6.5](https://github.com/icemedica341/icemedica341/releases/latest) — `app-debug-bus-hop.apk` (17 MB)
+> **Latest release:** [v0.6.6](https://github.com/icemedica341/icemedica341/releases/latest) — `app-debug-bus-hop.apk` (17 MB)
 
 Or build from source (see below).
 
