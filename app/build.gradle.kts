@@ -11,8 +11,8 @@ android {
         applicationId = "com.bushop.sg"
         minSdk = 24
         targetSdk = 34
-        versionCode = 15
-        versionName = "0.7.0"
+        versionCode = 16
+        versionName = "0.7.1"
 
 
         vectorDrawables {
@@ -55,15 +55,37 @@ android {
     }
 }
 
-tasks.matching { it.name == "assembleDebug" }.configureEach {
+/** Locate the debug APK, verify it has an AndroidManifest, then rename predictably. */
+tasks.register("checkAndRenameDebugApk") {
+    dependsOn("assembleDebug")
     doLast {
-        val apk = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk").get().asFile
-        if (apk.exists()) {
-            val renamed = File(apk.parentFile, "app-debug-bus-hop.apk")
-            if (!apk.renameTo(renamed)) {
-                throw GradleException("Failed to rename APK to $renamed")
-            }
-            logger.lifecycle("APK renamed to app-debug-bus-hop.apk")
+        val apkDir = layout.buildDirectory.dir("outputs/apk/debug").get().asFile
+        val apk = apkDir.listFiles { f -> f.name.endsWith(".apk") }
+            ?.filterNot { n -> n.name.contains("unsigned", ignoreCase = true) }
+            ?.maxByOrNull { n -> n.lastModified() }
+            ?: throw GradleException("No debug APK found in $apkDir")
+
+        val totalBytes = apk.length()
+
+        // Verify APK has an AndroidManifest.xml using Gradle's zipTree
+        val apkTree = project.zipTree(apk)
+        val hasManifest = apkTree.matching { include("AndroidManifest.xml") }.files.isNotEmpty()
+        val fileCount = apkTree.files.size
+
+        if (!hasManifest) {
+            throw GradleException(
+                "APK $apk CORRUPTED: no AndroidManifest.xml (${totalBytes / 1024} KB, $fileCount files). " +
+                "Run \"./gradlew clean assembleDebug\" first."
+            )
+        }
+
+        val targetName = "app-debug-bus-hop.apk"
+        if (apk.name != targetName) {
+            val renamed = File(apkDir, targetName)
+            apk.renameTo(renamed)
+            logger.lifecycle("APK renamed: ${renamed.name} (${renamed.length() / 1024} KB, $fileCount entries ✓)")
+        } else {
+            logger.lifecycle("APK verified: ${apk.name} (${totalBytes / 1024} KB, $fileCount entries ✓)")
         }
     }
 }
