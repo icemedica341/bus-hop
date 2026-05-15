@@ -11,8 +11,8 @@ android {
         applicationId = "com.bushop.sg"
         minSdk = 24
         targetSdk = 34
-        versionCode = 16
-        versionName = "0.7.1"
+        versionCode = 17
+        versionName = "0.7.2"
 
 
         vectorDrawables {
@@ -31,6 +31,7 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -62,8 +63,9 @@ tasks.register("checkAndRenameDebugApk") {
         val apkDir = layout.buildDirectory.dir("outputs/apk/debug").get().asFile
         val apk = apkDir.listFiles { f -> f.name.endsWith(".apk") }
             ?.filterNot { n -> n.name.contains("unsigned", ignoreCase = true) }
+            ?.filter { n -> n.length() > 1_000_000 }          // ignore stale artifacts < 1 MB
             ?.maxByOrNull { n -> n.lastModified() }
-            ?: throw GradleException("No debug APK found in $apkDir")
+            ?: throw GradleException("No valid debug APK found in $apkDir (all candidates < 1 MB — run clean)")
 
         val totalBytes = apk.length()
 
@@ -79,7 +81,7 @@ tasks.register("checkAndRenameDebugApk") {
             )
         }
 
-        val targetName = "app-debug-bus-hop.apk"
+        val targetName = "bus-hop.apk"
         if (apk.name != targetName) {
             val renamed = File(apkDir, targetName)
             apk.renameTo(renamed)
@@ -113,7 +115,14 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockk)
+}
+
+// ── Auto-run APK verification after every assembleDebug ──
+afterEvaluate {
+    tasks.named("assembleDebug") { finalizedBy("checkAndRenameDebugApk") }
 }
