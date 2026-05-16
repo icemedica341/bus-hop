@@ -2,7 +2,7 @@
   <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" alt="icemedica341" width="96" height="96">
   <h1>icemedica341</h1>
   <p><strong>Lightweight Singapore bus timing app</strong></p>
-  <p>No geolocation. No clutter. Just bus arrival times.</p>
+  <p>Material 3 Compose UI with real-time arrivals, pinning, and smart search.</p>
   <!-- Badges -->
   <p>
     <img src="https://img.shields.io/badge/Kotlin-2.0+-7F52FF?logo=kotlin&logoColor=white">
@@ -10,6 +10,7 @@
     <img src="https://img.shields.io/badge/minSdk-24-34A853">
     <img src="https://img.shields.io/badge/targetSdk-34-34A853">
     <img src="https://img.shields.io/badge/license-MIT-yellow">
+    <img src="https://img.shields.io/badge/build-115%20tasks%20%F0%9F%94%8A-34A853">
   </p>
 </div>
 
@@ -24,25 +25,19 @@
 | 🚍 | **Bus type icons** | Single Decker, Double Decker, Bendy |
 | 💺 | **Load indicator** | Seats Available / Standing Available / Limited Standing |
 | ♿ | **Wheelchair info** | Wheelchair Accessible Bus (WAB) indicator |
-| 📌 | **Pin stops & services** | Pin favourite stops to the top, pin specific services within a stop |
-| 🔍 | **Smart search** | Find bus stops by code or name — scored relevance, digit fast-path |
-| 🌙 | **Theme support** | Light, Dark, and System-following — persisted across restarts |
+| 📌 | **Pin stops & services** | Pin stops to the top; pin specific bus services within a stop |
+| 🔍 | **Smart search** | Type-tolerant tokenized search with Levenshtein fuzzy matching |
+| 📍 | **Nearby stops** | Optional location-based nearby stop finder (opt-in via Settings) |
+| 🌙 | **Theme support** | Light, Dark, System-following — persisted across restarts |
 | 🔄 | **Auto-refresh** | Configurable interval (30s / 1m / 2m / 5m / Off) — pauses in background |
 | ↘️ | **Pull to refresh** | Swipe down to refresh all stops |
-| 🔒 | **Privacy first** | No geolocation, no account, no analytics — all data stored locally |
+| 🖱️ | **Drag to reorder** | Long-press and drag bus stops to reorder them |
+| 🔒 | **Privacy first** | Location is opt-in only. No accounts, no analytics, no telemetry |
 | 📱 | **Material 3** | Modern Compose UI with animations, pull-to-refresh, edge-to-edge |
-
-## Screenshots
-
-<!-- Add screenshots here once available -->
-
-| Light | Dark | Search | Settings |
-|-------|------|--------|----------|
-| *TODO* | *TODO* | *TODO* | *TODO* |
 
 ## Download
 
-> **Latest release:** [v0.6.7](https://github.com/icemedica341/icemedica341/releases/latest) — `app-debug-bus-hop.apk` (17 MB)
+> **Latest release:** [v0.7.9](https://github.com/icemedica341/icemedica341/releases/latest) — `bus-hop.apk` (17 MB)
 
 Or build from source (see below).
 
@@ -70,9 +65,9 @@ Or build from source (see below).
 └─────────────────────────────────────────────┘
 ```
 
-- **domain/** — Pure Kotlin module. No Android dependencies. Contains models, use cases, repository interface.
-- **data/** — Android module. API calls (Retrofit), local persistence (DataStore), repository implementation.
-- **app/** — Android module. Jetpack Compose UI, ViewModels, theme, dialogs and components.
+- **domain/** — Pure Kotlin (zero framework deps). Models, use cases, repository interface.
+- **data/** — Android module. Retrofit API calls, DataStore persistence, repository implementation.
+- **app/** — Android module. Jetpack Compose UI, ViewModels, theme, components.
 
 ## Tech Stack
 
@@ -82,10 +77,10 @@ Or build from source (see below).
 | UI | Jetpack Compose + Material 3 |
 | Architecture | MVVM + Clean Architecture (3 modules) |
 | Networking | Retrofit 2 + OkHttp |
-| Serialization | Gson |
+| Serialization | Gson (data layer only) |
 | Persistence | DataStore Preferences |
 | Async | Kotlin Coroutines + Flow |
-| DI | Manual constructor injection (no DI framework) |
+| DI | Manual constructor injection |
 | Testing | JUnit 4, MockK, Coroutines Test |
 | Minification | R8 + ProGuard (release builds) |
 | Target | Android 14 (SDK 34), min SDK 24 |
@@ -101,26 +96,23 @@ Or build from source (see below).
 ### Commands
 
 ```bash
-# Clone
-git clone https://github.com/icemedica341/icemedica341.git
-cd icemedica341/bus-hop-content
-
-# Debug build + tests
-./gradlew assembleDebug testDebugUnitTest
+# Debug build + tests + APK verification
+./gradlew clean test checkAndRenameDebugApk
 
 # Release build
 ./gradlew assembleRelease
 
 # APK output at:
-# app/build/outputs/apk/debug/app-debug-bus-hop.apk
+# app/build/outputs/apk/debug/bus-hop.apk
 ```
 
-### Environment
+## Automated Checks
 
-```bash
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-export ANDROID_HOME=$HOME/Android/Sdk
-```
+| Check | When | Where |
+|-------|------|-------|
+| APK integrity | Every `./gradlew assembleDebug` | `app/build.gradle.kts` — `checkAndRenameDebugApk` |
+| Lint + Tests + APK | Every `git push` | `.github/workflows/ci.yml` |
+| Full local check | `bash scripts/check.sh` | Runs lint → tests → APK verify |
 
 ## API
 
@@ -130,11 +122,9 @@ The app also includes a data source for the official LTA DataMall API (API key r
 
 ## Privacy
 
-BusHop does not collect any data:
-
 | Data | Collected? |
 |------|-----------|
-| Location | ❌ — never requested |
+| Location | 🔘 — opt-in via Settings, never sent off-device |
 | Personal info | ❌ — no accounts, no sign-in |
 | Analytics | ❌ — no tracking SDKs |
 | Crash reports | ❌ — not integrated |
@@ -143,44 +133,4 @@ BusHop does not collect any data:
 
 ## License
 
-MIT License
-
-Copyright (c) 2024 icemedica341
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-...
-
----
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Before submitting
-
-```bash
-./gradlew assembleDebug testDebugUnitTest
-```
-
-Ensure all 36+ tests pass and the build is green.
-
----
-
-<div align="center">
-  <sub>Built with ❤️ for Singapore commuters</sub>
-</div>
+MIT License — see [LICENSE](LICENSE).
