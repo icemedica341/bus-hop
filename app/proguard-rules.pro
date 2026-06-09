@@ -8,6 +8,9 @@
 # ArrivelahResponse, LtaBusArrivalResponse and nested DTOs use Gson @SerializedName
 -keep class com.bushop.sg.data.api.** { *; }
 
+# BusStopEntry and other local model classes used in Gson operations
+-keep class com.bushop.sg.data.local.** { *; }
+
 # ── Retrofit interfaces ──
 # All Retrofit API interfaces must be kept for dynamic proxy to work
 -keep,allowobfuscation interface com.bushop.sg.data.api.ArrivelahApi
