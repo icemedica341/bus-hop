@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="icon.svg" alt="icemedica341" width="96" height="96">
-  <h1>icemedica341</h1>
+  <img src="icon.svg" alt="BusHop" width="96" height="96">
+  <h1>BusHop</h1>
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search.</p>
   <p>
@@ -44,12 +44,9 @@
 
 ## Download
 
-> **Latest release:** [v1.0.0](https://github.com/icemedica341/icemedica341/releases/latest)
->
-> - `bus-hop.apk` — **1.9 MB** (R8-minified release build, signed, recommended)
-> - `bus-hop-debug.apk` — 17.7 MB (debug build, unminified, alternative)
+> **Latest release:** [v1.0.0](https://github.com/icemedica341/icemedica341/releases/latest) — `bus-hop.apk` (**2 MB**, R8-minified, signed)
 
-Or [build from source](#build-from-source).
+Or build from source for a debug APK.
 
 ## Architecture
 

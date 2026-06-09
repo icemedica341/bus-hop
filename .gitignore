@@ -80,4 +80,6 @@ docs/
 build.bat
 
 # Project subdir (synced to root, keep root as source of truth)
-bus-hop-content/
+bus-hop-content/.git-hooks/
+
+.git-hooks/
