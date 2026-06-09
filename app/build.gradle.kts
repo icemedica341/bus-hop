@@ -12,9 +12,8 @@ android {
         applicationId = "com.bushop.sg"
         minSdk = 24
         targetSdk = 34
-        versionCode = 43
-        versionName = "0.9.7"
-
+        versionCode = 44
+        versionName = "1.0.0"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -26,7 +25,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -57,12 +56,18 @@ android {
 tasks.register("checkAndRenameDebugApk") {
     dependsOn("assembleDebug")
     doLast {
-        val apkDir = layout.buildDirectory.dir("outputs/apk/debug").get().asFile
-        val apk = apkDir.listFiles { f -> f.name.endsWith(".apk") }
-            ?.filterNot { n -> n.name.contains("unsigned", ignoreCase = true) }
-            ?.filter { n -> n.length() > 1_000_000 }          // ignore stale artifacts < 1 MB
-            ?.maxByOrNull { n -> n.lastModified() }
-            ?: throw GradleException("No valid debug APK found in $apkDir (all candidates < 1 MB — run clean)")
+        val apkDir =
+            layout.buildDirectory
+                .dir("outputs/apk/debug")
+                .get()
+                .asFile
+        val apk =
+            apkDir
+                .listFiles { f -> f.name.endsWith(".apk") }
+                ?.filterNot { n -> n.name.contains("unsigned", ignoreCase = true) }
+                ?.filter { n -> n.length() > 1_000_000 } // ignore stale artifacts < 1 MB
+                ?.maxByOrNull { n -> n.lastModified() }
+                ?: throw GradleException("No valid debug APK found in $apkDir (all candidates < 1 MB — run clean)")
 
         val totalBytes = apk.length()
 
@@ -74,7 +79,7 @@ tasks.register("checkAndRenameDebugApk") {
         if (!hasManifest) {
             throw GradleException(
                 "APK $apk CORRUPTED: no AndroidManifest.xml (${totalBytes / 1024} KB, $fileCount files). " +
-                "Run \"./gradlew clean assembleDebug\" first."
+                    "Run \"./gradlew clean assembleDebug\" first.",
             )
         }
 
@@ -95,6 +100,7 @@ dependencies {
 
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
+    androidTestImplementation(composeBom)
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
