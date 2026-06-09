@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" alt="icemedica341" width="96" height="96">
-  <h1>icemedica341</h1>
+  <h1>🚌 icemedica341</h1>
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search.</p>
   <p>
