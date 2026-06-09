@@ -48,16 +48,9 @@ Thumbs.db
 proguard/
 *.pro
 
-# Kotlin
-*.kt
-*.kts
-!domain/src/**/*.kt
-!domain/build.gradle.kts
-!data/src/**/*.kt
-!data/build.gradle.kts
-
 # AI / workspace meta (not part of the Android project)
 .claude/
+.codex/
 .opencode/
 .pi/
 CLAUDE.md
@@ -65,15 +58,19 @@ AGENTS.md
 session-state.json
 buglog.json
 topic-insights.md
+workflow-state.json
+workflow.d/
 archive/
 commands/
 propagated/
+docs/index.html
 ~/
 sync-from-hub.ps1
 audit-folder-quality.ps1
 opencode-agent-system.md
 opencode.json
 meta/
+build.bat
 
 # Project subdir (synced to root, keep root as source of truth)
 bus-hop-content/
