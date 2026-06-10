@@ -67,10 +67,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("keystore.jks")
-            storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "bushop"
-            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: ""
+            storeFile = file(System.getenv("RELEASE_KEYSTORE") ?: "${System.getProperty("user.home")}/.android/debug.keystore")
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: "android"
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "androiddebugkey"
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: "android"
         }
     }
 

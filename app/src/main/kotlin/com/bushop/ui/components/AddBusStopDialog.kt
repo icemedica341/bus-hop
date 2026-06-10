@@ -131,6 +131,7 @@ fun AddBusStopDialog(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        minLines = 1,
                         isError = displayError != null,
                         enabled = !isLoading,
                         leadingIcon = {

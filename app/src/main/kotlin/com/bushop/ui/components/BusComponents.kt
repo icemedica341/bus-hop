@@ -128,7 +128,7 @@ fun BusStopCard(
     LaunchedEffect(isNewlyAdded) {
         if (isNewlyAdded) {
             isPulsing = true
-            kotlinx.coroutines.delay(1500)
+            kotlinx.coroutines.delay(500)
             isPulsing = false
         }
     }
