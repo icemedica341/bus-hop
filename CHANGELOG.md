@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Fix download link from icemedica341 to icemedica341 org
+
+### Infrastructure
+- Refresh contributor widget cache
+- Trigger stat regeneration after visibility toggle
+
 ## [1.0.3] — 2026-06-18
 
 ### Added
