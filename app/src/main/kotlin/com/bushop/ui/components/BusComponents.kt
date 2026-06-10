@@ -232,17 +232,6 @@ fun BusStopCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     if (busStopName.isNotBlank()) {
-                        val nameTextStyle = MaterialTheme.typography.titleLarge
-                        val dynamicFontSize =
-                            remember(busStopName) {
-                                when {
-                                    busStopName.length > 45 -> nameTextStyle.fontSize * 0.55f
-                                    busStopName.length > 35 -> nameTextStyle.fontSize * 0.65f
-                                    busStopName.length > 25 -> nameTextStyle.fontSize * 0.80f
-                                    busStopName.length > 18 -> nameTextStyle.fontSize * 0.90f
-                                    else -> nameTextStyle.fontSize
-                                }
-                            }
                         val namePillBg =
                             if (isPinned) {
                                 MaterialTheme.colorScheme.primary
@@ -257,14 +246,9 @@ fun BusStopCard(
                                     .background(namePillBg)
                                     .padding(horizontal = 12.dp, vertical = 8.dp),
                         ) {
-                            val nameStyle =
-                                remember(busStopName, dynamicFontSize) {
-                                    nameTextStyle.copy(fontSize = dynamicFontSize)
-                                }
                             Text(
                                 text = busStopName,
-                                fontSize = dynamicFontSize,
-                                style = nameStyle,
+                                style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color =
                                     if (isPinned) {
@@ -272,7 +256,8 @@ fun BusStopCard(
                                     } else {
                                         MaterialTheme.colorScheme.onPrimaryContainer
                                     },
-                                maxLines = 3,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     } else {

@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
@@ -50,7 +51,6 @@ class MainViewModel(
     companion object {
         private const val DEFAULT_AUTO_REFRESH_INTERVAL = 30
         private const val COLLAPSE_DEBOUNCE_MS = 500L
-        private const val PREFS_NAME = "bushop_prefs"
         private const val DEGRADED_THRESHOLD = 3
         private const val DOWN_THRESHOLD = 10
     }
@@ -66,6 +66,9 @@ class MainViewModel(
     val savedStops: StateFlow<List<BusStopWithArrivals>> = _savedStops.asStateFlow()
 
     var addStopDialogVisible by mutableStateOf(false)
+        private set
+
+    var randomHint by mutableStateOf("")
         private set
 
     var addStopError by mutableStateOf<String?>(null)
@@ -193,20 +196,11 @@ class MainViewModel(
     var hasSeenDragHint by mutableStateOf(false)
         private set
 
-    private fun loadHintPref() {
-        val prefs =
-            getApplication<android.app.Application>()
-                .getSharedPreferences(PREFS_NAME, 0)
-        hasSeenDragHint = prefs.getBoolean("has_seen_hint", false)
-    }
-
     fun dismissHint() {
         hasSeenDragHint = true
-        getApplication<android.app.Application>()
-            .getSharedPreferences(PREFS_NAME, 0)
-            .edit()
-            .putBoolean("has_seen_hint", true)
-            .apply()
+        viewModelScope.launch {
+            repository.saveHintSeen(true)
+        }
     }
 
     private val updateChecker = UpdateChecker()
@@ -266,7 +260,6 @@ class MainViewModel(
     }
 
     init {
-        loadHintPref()
         // Restore persisted preferences
         viewModelScope.launch {
             repository.themeModeFlow.collect { mode ->
@@ -292,6 +285,11 @@ class MainViewModel(
         viewModelScope.launch {
             repository.sortByEarliestFlow.collect { enabled ->
                 _sortByEarliest.value = enabled
+            }
+        }
+        viewModelScope.launch {
+            repository.hasSeenHintFlow.collect { seen ->
+                hasSeenDragHint = seen
             }
         }
 
@@ -349,6 +347,13 @@ class MainViewModel(
     fun showAddStopDialog() {
         addStopError = null
         addStopDialogVisible = true
+        // Pick a random stop from the index once it's loaded (no copy, O(1))
+        viewModelScope.launch {
+            busStopIndex.isReady.first { it }
+            busStopIndex.randomEntry()?.let {
+                randomHint = "${it.code} (${it.name})"
+            }
+        }
     }
 
     fun searchBusStops(query: String) {

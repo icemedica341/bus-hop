@@ -3,6 +3,7 @@ package com.bushop.data.local
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -28,6 +29,7 @@ class BusStopStorage(
 ) {
     companion object {
         private const val CACHE_TTL_MS = 24 * 60 * 60 * 1000L // 24 hours
+        private const val MAX_SAVED_STOPS = 25
 
         // Use getParameterized() instead of anonymous TypeToken subclasses —
         // R8 cannot strip generic signatures from direct API calls.
@@ -69,6 +71,8 @@ class BusStopStorage(
 
             if (stops.any { it.code == stop.code }) {
                 result = Result.failure(DuplicateStopException("Bus stop already exists"))
+            } else if (stops.size >= MAX_SAVED_STOPS) {
+                result = Result.failure(IllegalStateException("Maximum $MAX_SAVED_STOPS bus stops reached"))
             } else {
                 stops.add(stop)
                 prefs[busStopsKey] = gson.toJson(stops)
@@ -284,4 +288,17 @@ class BusStopStorage(
             prefs[stringPreferencesKey("pinned_services")] = gson.toJson(pinned.toList())
         }
     }
+
+    // ── Drag hint seen state ──
+
+    suspend fun saveHintSeen(seen: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[booleanPreferencesKey("has_seen_hint")] = seen
+        }
+    }
+
+    val hasSeenHint: Flow<Boolean> =
+        context.dataStore.data
+            .map { prefs -> prefs[booleanPreferencesKey("has_seen_hint")] ?: false }
+            .distinctUntilChanged()
 }
