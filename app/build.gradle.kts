@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+import java.util.zip.ZipFile
+
 android {
     namespace = "com.bushop"
     compileSdk = 35
@@ -82,10 +84,11 @@ tasks.register("checkAndRenameDebugApk") {
 
         val totalBytes = apk.length()
 
-        // Verify APK has an AndroidManifest.xml using Gradle's zipTree
-        val apkTree = project.zipTree(apk)
-        val hasManifest = apkTree.matching { include("AndroidManifest.xml") }.files.isNotEmpty()
-        val fileCount = apkTree.files.size
+        // Verify APK has an AndroidManifest.xml using standard ZipFile (config-cache compatible)
+        val zipFile = ZipFile(apk)
+        val hasManifest = zipFile.getEntry("AndroidManifest.xml") != null
+        val fileCount = zipFile.size()
+        zipFile.close()
 
         if (!hasManifest) {
             throw GradleException(
