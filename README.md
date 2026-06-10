@@ -44,7 +44,7 @@
 
 ## Download
 
-> **Latest release:** [v1.0.0](https://github.com/icemedica341/icemedica341/releases/latest) — `bus-hop.apk` (**2 MB**, R8-minified, signed)
+> **Latest release:** [v1.0.0](https://github.com/icemedica341/BusHop/releases/latest) — `bus-hop.apk` (**2 MB**, R8-minified, signed)
 
 Or build from source for a debug APK.
 
