@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
 
 /** Tracks the health of the external bus arrival API. */
 enum class ApiStatus { Healthy, Degraded, Down }
@@ -61,6 +62,9 @@ class MainViewModel(
 
     private val _pinnedServices = MutableStateFlow<Set<String>>(emptySet())
     val pinnedServices: StateFlow<Set<String>> = _pinnedServices.asStateFlow()
+
+    private val _pinnedStops = MutableStateFlow<Set<String>>(emptySet())
+    val pinnedStops: StateFlow<Set<String>> = _pinnedStops.asStateFlow()
 
     private val _savedStops = MutableStateFlow<List<BusStopWithArrivals>>(emptyList())
     val savedStops: StateFlow<List<BusStopWithArrivals>> = _savedStops.asStateFlow()
@@ -98,8 +102,7 @@ class MainViewModel(
     private val _apiStatus = MutableStateFlow(ApiStatus.Healthy)
     val apiStatus: StateFlow<ApiStatus> = _apiStatus.asStateFlow()
 
-    private var consecutiveFailures = 0
-        private set
+    private val consecutiveFailures = AtomicInteger(0)
 
     fun dismissApiBanner() {
         _apiStatus.value = ApiStatus.Healthy
@@ -186,7 +189,7 @@ class MainViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                nearbyError = "Error: ${e.message}"
+                nearbyError = "Could not find nearby stops. Please try again."
             } finally {
                 isLoadingNearby = false
             }
@@ -259,7 +262,7 @@ class MainViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _snackbarMessage.tryEmit("Install failed: ${e.message}")
+                _snackbarMessage.tryEmit("Install failed. Check storage space and try again.")
             } finally {
                 isDownloadingUpdate = false
             }
@@ -290,8 +293,8 @@ class MainViewModel(
             }
         }
         viewModelScope.launch {
-            repository.sortByEarliestFlow.collect { enabled ->
-                _sortByEarliest.value = enabled
+            repository.pinnedStopsFlow.collect { pinned ->
+                _pinnedStops.value = pinned
             }
         }
         viewModelScope.launch {
@@ -322,7 +325,7 @@ class MainViewModel(
                                 lastUpdated = existing?.lastUpdated ?: 0L,
                                 cachedAt = timestamps[stop.code] ?: 0L,
                                 isCollapsed = existing?.isCollapsed ?: false,
-                                isPinned = existing?.isPinned ?: false,
+                                isPinned = existing?.isPinned ?: (stop.code in _pinnedStops.value),
                             )
                         }
                     useCase.applyPersistedCollapsedState(mergedStops, collapsedStops) to sortByEarliest
@@ -400,7 +403,7 @@ class MainViewModel(
                     }
 
                     is NetworkResult.Success -> {
-                        consecutiveFailures = 0
+                        consecutiveFailures.set(0)
                         _apiStatus.value = ApiStatus.Healthy
                         if (arrivalResult.data.isEmpty()) {
                             addStopError = "No bus services found at this stop."
@@ -416,7 +419,7 @@ class MainViewModel(
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
-                        addStopError = "Failed to save bus stop (${e.message ?: "unknown error"})."
+                        addStopError = "Failed to save bus stop. Please try again."
                         addStopIsLoading = false
                         return@launch
                     }
@@ -498,11 +501,11 @@ class MainViewModel(
         when (result) {
             is NetworkResult.Error -> {
                 val isOffline = result.exception is IOException
-                consecutiveFailures++
+                val failures = consecutiveFailures.incrementAndGet()
                 _apiStatus.value =
                     when {
-                        consecutiveFailures >= DOWN_THRESHOLD -> ApiStatus.Down
-                        consecutiveFailures >= DEGRADED_THRESHOLD -> ApiStatus.Degraded
+                        failures >= DOWN_THRESHOLD -> ApiStatus.Down
+                        failures >= DEGRADED_THRESHOLD -> ApiStatus.Degraded
                         else -> _apiStatus.value
                     }
                 if (!isAutoRefresh) {
@@ -524,7 +527,7 @@ class MainViewModel(
             }
 
             is NetworkResult.Success -> {
-                consecutiveFailures = 0
+                consecutiveFailures.set(0)
                 _apiStatus.value = ApiStatus.Healthy
                 val pinnedForStop = pinnedServiceNosForStop(code)
                 val sortedServices = useCase.sortServicesWithPins(result.data, pinnedForStop, _sortByEarliest.value)
@@ -680,14 +683,23 @@ class MainViewModel(
         val index = _savedStops.value.indexOfFirst { it.busStop.code == code }
         if (index != -1) {
             val wasPinned = _savedStops.value[index].isPinned
+            val nowPinned = !wasPinned
             _savedStops.value =
                 _savedStops.value
                     .toMutableList()
                     .apply {
-                        this[index] = this[index].copy(isPinned = !this[index].isPinned)
+                        this[index] = this[index].copy(isPinned = nowPinned)
                     }.let { list ->
                         useCase.applyPinning(list, wasPinned, additionOrder)
                     }
+            // Persist pinned state
+            val updatedPinned =
+                _pinnedStops.value.toMutableSet().apply {
+                    if (nowPinned) add(code) else remove(code)
+                }
+            _pinnedStops.value = updatedPinned
+            viewModelScope.launch { repository.savePinnedStops(updatedPinned) }
+
             val stopName =
                 _savedStops.value
                     .find { it.busStop.code == code }

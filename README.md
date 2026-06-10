@@ -17,10 +17,10 @@
 
 ## Screenshots
 
-| Stops list                                          | Expanded stop                                              | Search dialog                                            |
-| --------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| _Pinned stops at top, arrivals, pull-to-refresh_    | _All services with operator badges and timings_            | _TokenTrie O(k) search — instant, no network_            |
-| ![Stops list](docs/screenshots/screenshot_main.png) | ![Expanded stop](docs/screenshots/screenshot_expanded.png) | ![Search dialog](docs/screenshots/screenshot_search.png) |
+| Stops list                                          | Search dialog                                            |
+| --------------------------------------------------- | -------------------------------------------------------- |
+| _Pinned stops at top, arrivals, pull-to-refresh_    | _TokenTrie O(k) search — instant, no network_            |
+| ![Stops list](docs/screenshots/screenshot_main.jpg) | ![Search dialog](docs/screenshots/screenshot_search.png) |
 
 ## Features
 
@@ -31,8 +31,9 @@
 | 🚍  | **Bus type icons**       | Single Decker, Double Decker, Bendy                                                              |
 | 💺  | **Load indicator**       | Seats Available / Standing Available / Limited Standing                                          |
 | ♿  | **Wheelchair info**      | Wheelchair Accessible Bus (WAB) indicator                                                        |
-| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop                                  |
+| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop. Survives restarts now.          |
 | 🔍  | **Smart search**         | TokenTrie O(k) prefix search + Levenshtein fuzzy matching over 5,201 stops — instant, no network |
+| ✨  | **New stop pulse**       | List auto-scrolls to newly added stop with a brief blue pulse highlight                          |
 | 📍  | **Nearby stops**         | Location-based nearby stop finder (opt-in)                                                       |
 | 💡  | **Random hints**         | Truly random bus stop hint shown every time you open the search dialog (from all 5,201 stops)    |
 | 🌙  | **Theme support**        | Light, Dark, System-following, with Blue and Contrast Blue colour schemes — all persisted        |
@@ -51,7 +52,7 @@ Or [build from source](#build-from-source) for a debug APK.
 
 ## Architecture
 
-<img src="docs/architecture.svg" alt="Architecture diagram" width="600">
+<img src="docs/architecture.svg" alt="Architecture diagram" width="800">
 
 - **domain/** — Pure Kotlin (zero framework deps). Models, use cases, repository interfaces.
 - **data/** — Android library. Retrofit API calls, DataStore persistence, BusStopIndex with TokenTrie for search.
@@ -115,18 +116,17 @@ Or [build from source](#build-from-source) for a debug APK.
 
 ## Testing
 
-**154 tests** across 8 test files:
+**154 tests** (151 unit + 3 instrumentation) across 9 test files:
 
 | Module                        | Tests | What's covered                                                              |
 | ----------------------------- | ----- | --------------------------------------------------------------------------- |
-| Domain: UseCase               | 22    | sortServices, sortServicesWithPins, applyPinning, toggleCollapsed           |
-| Domain: Model                 | 10    | toDisplayArrival eta/load/busType mapping                                   |
+| Domain: BusStopUseCase        | 28    | sortServices, sortServicesWithPins, applyPinning, toggleCollapsed           |
+| Domain: Model                 | 8     | toDisplayArrival eta/load/busType mapping                                   |
 | Domain: RefreshCoordinator    | 6     | Cooldown, independent cooldowns, concurrent batching                        |
 | Domain: AutoRefreshController | 7     | Start/stop/restart/onCleared lifecycle                                      |
-| Domain: BusStopUseCase        | 4     | addFavoriteStop, removeFavoriteStop, getSavedStops, refresh                 |
 | Data: BusStopIndex            | 45    | TokenTrie search (exact, prefix, fuzzy, abbreviations, sorting, findNearby) |
 | Data: RetryUtil               | 6     | Retry with backoff, CancellationException propagation                       |
-| App: MainViewModel            | 50+   | add/remove/move/pin/collapse/refresh/sort/errors                            |
+| App: MainViewModel            | 47    | add/remove/move/pin/collapse/refresh/sort/errors                            |
 | App: Architecture             | 4     | Layer separation, minification, dependency rules, ProGuard                  |
 
 ## API

@@ -114,6 +114,13 @@ class BusStopStorage(
                     .toSet()
             prefs[pinnedServicesKey] = gson.toJson(updatedPinnedServices.toList())
 
+            val pinnedStopsKey = stringPreferencesKey("pinned_stops")
+            val updatedPinnedStops =
+                parseStringSet(prefs[pinnedStopsKey])
+                    .toMutableSet()
+                    .apply { remove(code) }
+            prefs[pinnedStopsKey] = gson.toJson(updatedPinnedStops.toList())
+
             prefs.remove(stringPreferencesKey("services_$code"))
             prefs.remove(stringPreferencesKey("services_${code}_ts"))
         }
@@ -286,6 +293,20 @@ class BusStopStorage(
     suspend fun savePinnedServices(pinned: Set<String>) {
         context.dataStore.edit { prefs ->
             prefs[stringPreferencesKey("pinned_services")] = gson.toJson(pinned.toList())
+        }
+    }
+
+    // ── Pinned stops (top-level stop pin) ──
+
+    val pinnedStops: Flow<Set<String>> =
+        context.dataStore.data
+            .map { prefs -> prefs[stringPreferencesKey("pinned_stops")] }
+            .distinctUntilChanged()
+            .map { raw -> parseStringSet(raw) }
+
+    suspend fun savePinnedStops(pinned: Set<String>) {
+        context.dataStore.edit { prefs ->
+            prefs[stringPreferencesKey("pinned_stops")] = gson.toJson(pinned.toList())
         }
     }
 

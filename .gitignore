@@ -52,7 +52,7 @@ Thumbs.db
 
 # Proguard
 proguard/
-*.pro
+proguard/*.pro
 
 # AI / workspace meta (not part of the Android project)
 .claude/
@@ -76,10 +76,10 @@ audit-folder-quality.ps1
 opencode-agent-system.md
 opencode.json
 meta/
-docs/
 build.bat
 
 # Project subdir (synced to root, keep root as source of truth)
 bus-hop-content/.git-hooks/
 
 .git-hooks/
+keystore.jks

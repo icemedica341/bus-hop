@@ -1,0 +1,18 @@
+flowchart TB
+    subgraph CI["Continuous Integration (GitHub Actions — on push / PR)"]
+        direction LR
+        SOURCE["Source Code"] --> BUILD["Gradle Build"]
+        BUILD --> LINT["Lint, 154 Tests, Architecture Check"]
+        BUILD --> DEBUG["Debug APK"]
+    end
+
+    subgraph RELEASE["Release (manual — scripts/release.sh)"]
+        direction LR
+        MAIN["main branch"] --> R8["R8 Minification + shrinkResources"]
+        R8 --> APK["Release APK (1.75 MB)"]
+        APK --> SIGN["APK Signing (Keystore)"]
+        SIGN --> GH["GitHub Release"]
+    end
+
+    GH --> OBT["Obtainium"]
+    OBT --> USER["User Device"]
