@@ -7,6 +7,18 @@
     </base-config>
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">arrivelah2.busrouter.sg</domain>
+        <pin-set expiration="2027-06-10">
+            <pin digest="SHA-256">ZKeY4syPZBMYqOtl2hpBoyYjPAm9ZrIxFnaOpKlBHsE=</pin>
+            <pin digest="SHA-256">nWN7PSep5XDQdge5zK24CnCRXHr3KvzhKEGxsdqCX9E=</pin>
+            <pin digest="SHA-256">fk6IOKit1ild5647BH06ujSIq5XbCgqlbYl6ANhhi88=</pin>
+        </pin-set>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">api.github.com</domain>
+        <pin-set expiration="2027-06-10">
+            <pin digest="SHA-256">QVnLDkTvhX8bfBbaP6XeqWLCOja893s79lYfjQc/hWI=</pin>
+            <pin digest="SHA-256">ZSagvDzjltLkewXEBuDxIzpW/dpVw1Juvvmd0hhkzdY=</pin>
+            <pin digest="SHA-256">sLVjNUaFYfW7n6EtgBeEpjOlcnBdNPMrZDRF36iwBdE=</pin>
+        </pin-set>
     </domain-config>
 </network-security-config>

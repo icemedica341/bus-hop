@@ -255,6 +255,7 @@ class MainViewModel(
                                 android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
                         }
                     getApplication<android.app.Application>().startActivity(intent)
+                    targetFile.delete()
                     _snackbarMessage.tryEmit("Installing v${info.latestVersion}…")
                 } else {
                     _snackbarMessage.tryEmit("Download failed")
@@ -367,6 +368,7 @@ class MainViewModel(
     }
 
     fun searchBusStops(query: String) {
+        addStopError = null
         viewModelScope.launch(Dispatchers.Default) {
             val results = busStopIndex.search(query)
             _searchResults.value = results
@@ -405,11 +407,6 @@ class MainViewModel(
                     is NetworkResult.Success -> {
                         consecutiveFailures.set(0)
                         _apiStatus.value = ApiStatus.Healthy
-                        if (arrivalResult.data.isEmpty()) {
-                            addStopError = "No bus services found at this stop."
-                            addStopIsLoading = false
-                            return@launch
-                        }
                     }
                 }
 

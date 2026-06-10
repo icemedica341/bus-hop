@@ -20,28 +20,23 @@
 -keep interface com.bushop.data.api.ArrivelahApi { *; }
 
 # ── ViewModel ──
--keep class * extends androidx.lifecycle.ViewModel { *; }
--keep class * extends androidx.lifecycle.AndroidViewModel { *; }
--keep class com.bushop.ui.screens.MainViewModel { *; }
+-keep class * extends androidx.lifecycle.ViewModel { <init>(...); }
+-keep class * extends androidx.lifecycle.AndroidViewModel { <init>(android.app.Application); }
 -keep class com.bushop.ui.screens.MainViewModel$Factory { *; }
--keepclassmembers class * extends androidx.lifecycle.ViewModel {
-    <init>(...);
-}
--keepclassmembers class * extends androidx.lifecycle.AndroidViewModel {
-    <init>(android.app.Application);
+# Keep ViewModel field accessors used by Compose state reflection
+-keepclassmembers class com.bushop.ui.screens.MainViewModel {
+    public *** get*();
+    public void set*(***);
+    <fields>;
 }
 
 # ── Enum classes (ApiStatus, ThemeMode, ColorSchemeOption) ──
 -keepclassmembers enum * { *; }
 
-# ── Gson (complete) ──
+# ── Gson (minimal — TypeToken + annotations only) ──
 # Preserve all generic type signatures (critical for Gson's TypeToken reflection)
 -keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses
-# Keep ALL Gson classes — R8 must not strip, obfuscate, or optimize any of them
--keep class com.google.gson.** { *; }
--keepclassmembers class com.google.gson.** { *; }
--keep enum com.google.gson.** { *; }
-# Specifically TypeToken and all subclasses (anonymous or otherwise)
+# TypeToken and all subclasses (anonymous or otherwise)
 -keep class com.google.gson.reflect.TypeToken { *; }
 -keep class * extends com.google.gson.reflect.TypeToken { *; }
 # Keep @SerializedName on all fields (used by Gson reflection)
