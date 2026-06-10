@@ -46,7 +46,7 @@
 
 > **Latest release:** [v1.0.0](https://github.com/icemedica341/BusHop/releases/latest) — `bus-hop.apk` (**2 MB**, R8-minified, signed)
 
-Or build from source for a debug APK.
+Or [build from source](#build-from-source) for a debug APK.
 
 ## Architecture
 
@@ -78,6 +78,16 @@ graph TD
 - **domain/** — Pure Kotlin (zero framework deps). Models, use cases, repository interfaces.
 - **data/** — Android library. Retrofit API calls, DataStore persistence, BusStopIndex with TokenTrie for search.
 - **app/** — Android app. Jetpack Compose UI, ViewModels, theme, components.
+
+## Pipeline
+
+<img src="pipeline.svg" alt="Development pipeline" width="800">
+
+1. **Development** — Code written iteratively by AI agent + human review. Source, tests, and config live in `main`.
+2. **CI** — Every push triggers linting, 154 unit tests, and architecture boundary checks via GitHub Actions.
+3. **Build** — Gradle compiles Kotlin, R8 minifies + optimizes the release APK down to ~2 MB (vs 18 MB debug).
+4. **Release** — APK is SSH-signed, published as a GitHub Release, and distributed via Obtainium for automatic updates.
+5. **History** — `git filter-repo` periodically cleans agent tooling artifacts (workflows, session state) from git history, keeping only app-relevant commits.
 
 ## Tech Stack
 
