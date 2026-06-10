@@ -211,7 +211,6 @@ class BusStopIndex(
                         .bufferedReader()
                         .use { it.readText() }
                 } catch (e: Exception) {
-                    Log.w("BusStopIndex", "Failed to load bus_stops.json", e)
                     "{}"
                 }
             val raw: Map<String, List<Any>> =
