@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bushop.data.local.BusStopEntry
+import kotlinx.coroutines.delay
 
 @Composable
 fun AddBusStopDialog(
@@ -61,9 +63,11 @@ fun AddBusStopDialog(
     var confirmNearby by remember { mutableStateOf<BusStopEntry?>(null) }
     val displayError = error ?: nearbyError
 
-    // Search fires on every keystroke — TokenTrie is O(k), no network call, no lag
+    // Search fires 100ms after the user stops typing (prevents CPU spikes on slow devices
+    // while staying imperceptible — human visual reaction is ~200ms)
     LaunchedEffect(searchQuery) {
         if (searchQuery.length >= 1) {
+            delay(100)
             onSearchQueryChanged(searchQuery.trim())
         }
     }
@@ -71,6 +75,14 @@ fun AddBusStopDialog(
     // Show nearby results when available
     val activeResults = if (nearbyStops.isNotEmpty() && searchQuery.length < 1) nearbyStops else searchResults
     val showNearbyHeader = nearbyStops.isNotEmpty() && searchQuery.length < 1
+    val resultsListState = rememberLazyListState()
+
+    // Scroll to top when results change (new search query)
+    LaunchedEffect(activeResults) {
+        if (activeResults.isNotEmpty()) {
+            resultsListState.animateScrollToItem(0)
+        }
+    }
 
     Dialog(
         onDismissRequest = {
@@ -173,7 +185,11 @@ fun AddBusStopDialog(
                             )
                             Spacer(Modifier.height(4.dp))
                         }
-                        LazyColumn(modifier = Modifier.fillMaxWidth().height(260.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        LazyColumn(
+                            state = resultsListState,
+                            modifier = Modifier.fillMaxWidth().height(260.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                        ) {
                             items(activeResults, key = { it.code }) { entry ->
                                 Row(
                                     modifier =
