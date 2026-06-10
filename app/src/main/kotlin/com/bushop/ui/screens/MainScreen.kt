@@ -87,7 +87,9 @@ import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.ThemeMode
 import com.bushop.ui.components.AddBusStopDialog
 import com.bushop.ui.components.BusStopCard
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private val timeFormatter =
     java.time.format.DateTimeFormatter
@@ -209,9 +211,16 @@ fun MainScreen(viewModel: MainViewModel) {
         prevPinnedCount = currentPinnedCount
     }
 
+    // Cancel previous snackbar when a new message arrives — prevents stale
+    // queued notifications on rapid pin/unpin.
+    var snackbarJob by remember { mutableStateOf<Job?>(null) }
     LaunchedEffect(Unit) {
         viewModel.snackbarMessage.collect { message ->
-            snackbarHostState.showSnackbar(message)
+            snackbarJob?.cancel()
+            snackbarJob =
+                launch {
+                    snackbarHostState.showSnackbar(message)
+                }
         }
     }
 
@@ -388,7 +397,7 @@ fun MainScreen(viewModel: MainViewModel) {
                                                     if (draggedCode == stopWithArrivals.busStop.code) {
                                                         tween(durationMillis = 0)
                                                     } else {
-                                                        tween(durationMillis = 150)
+                                                        tween(durationMillis = 0)
                                                     },
                                             ),
                                         stop = stopWithArrivals,
