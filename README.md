@@ -17,10 +17,10 @@
 
 ## Screenshots
 
-| Main Screen                                          | Expanded Stop Cards                                        | Search & Add                                             |
-| ---------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| _Bus stop list with arrivals, pinned stops at top_   | _Expanded stop with all services and timings_              | _Type-stop search with instant TokenTrie O(k) matching_  |
-| ![Main screen](docs/screenshots/screenshot_main.png) | ![Expanded stop](docs/screenshots/screenshot_expanded.png) | ![Search dialog](docs/screenshots/screenshot_search.png) |
+| Stops list                                          | Expanded stop                                              | Search dialog                                            |
+| --------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
+| _Pinned stops at top, arrivals, pull-to-refresh_    | _All services with operator badges and timings_            | _TokenTrie O(k) search — instant, no network_            |
+| ![Stops list](docs/screenshots/screenshot_main.png) | ![Expanded stop](docs/screenshots/screenshot_expanded.png) | ![Search dialog](docs/screenshots/screenshot_search.png) |
 
 ## Features
 
