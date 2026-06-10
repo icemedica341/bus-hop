@@ -17,10 +17,10 @@
 
 ## Screenshots
 
-| Stops list                                          | Expanded stop                                              | Search dialog                                            |
-| --------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- |
-| _Pinned stops at top, arrivals, pull-to-refresh_    | _All services with operator badges and timings_            | _TokenTrie O(k) search — instant, no network_            |
-| ![Stops list](docs/screenshots/screenshot_main.png) | ![Expanded stop](docs/screenshots/screenshot_expanded.png) | ![Search dialog](docs/screenshots/screenshot_search.png) |
+| Stops list                                          | Search dialog                                            |
+| --------------------------------------------------- | -------------------------------------------------------- |
+| _Pinned stops at top, arrivals, pull-to-refresh_    | _TokenTrie O(k) search — instant, no network_            |
+| ![Stops list](docs/screenshots/screenshot_main.jpg) | ![Search dialog](docs/screenshots/screenshot_search.png) |
 
 ## Features
 
@@ -31,8 +31,9 @@
 | 🚍  | **Bus type icons**       | Single Decker, Double Decker, Bendy                                                              |
 | 💺  | **Load indicator**       | Seats Available / Standing Available / Limited Standing                                          |
 | ♿  | **Wheelchair info**      | Wheelchair Accessible Bus (WAB) indicator                                                        |
-| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop                                  |
+| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop. Survives restarts now.          |
 | 🔍  | **Smart search**         | TokenTrie O(k) prefix search + Levenshtein fuzzy matching over 5,201 stops — instant, no network |
+| ✨  | **New stop pulse**       | List auto-scrolls to newly added stop with a brief blue pulse highlight                          |
 | 📍  | **Nearby stops**         | Location-based nearby stop finder (opt-in)                                                       |
 | 💡  | **Random hints**         | Truly random bus stop hint shown every time you open the search dialog (from all 5,201 stops)    |
 | 🌙  | **Theme support**        | Light, Dark, System-following, with Blue and Contrast Blue colour schemes — all persisted        |
