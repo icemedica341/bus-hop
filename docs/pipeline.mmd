@@ -6,11 +6,11 @@ flowchart TB
         BUILD --> DEBUG["Debug APK"]
     end
 
-    subgraph RELEASE["Release (manual — scripts/release.sh)"]
+    subgraph RELEASE["Release (manual — gh release)"]
         direction LR
         MAIN["main branch"] --> R8["R8 Minification + shrinkResources"]
         R8 --> APK["Release APK (1.8 MB)"]
-        APK --> SIGN["APK Signing (Keystore)"]
+        APK --> SIGN["APK Signing (debug keystore)"]
         SIGN --> GH["GitHub Release"]
     end
 
