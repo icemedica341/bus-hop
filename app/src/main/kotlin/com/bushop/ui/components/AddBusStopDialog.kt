@@ -48,6 +48,7 @@ fun AddBusStopDialog(
     isLoadingNearby: Boolean = false,
     nearbyError: String? = null,
     onFindNearby: () -> Unit = {},
+    randomHint: String = "83139 (Jurong East Int)",
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedEntry by remember { mutableStateOf<BusStopEntry?>(null) }
@@ -55,15 +56,15 @@ fun AddBusStopDialog(
     val displayError = error ?: nearbyError
 
     LaunchedEffect(searchQuery) {
-        if (searchQuery.length >= 2) {
+        if (searchQuery.length >= 1) {
             delay(300L) // Debounce keystrokes
             onSearchQueryChanged(searchQuery.trim())
         }
     }
 
     // Show nearby results when available
-    val activeResults = if (nearbyStops.isNotEmpty() && searchQuery.length < 2) nearbyStops else searchResults
-    val showNearbyHeader = nearbyStops.isNotEmpty() && searchQuery.length < 2
+    val activeResults = if (nearbyStops.isNotEmpty() && searchQuery.length < 1) nearbyStops else searchResults
+    val showNearbyHeader = nearbyStops.isNotEmpty() && searchQuery.length < 1
 
     AlertDialog(
         onDismissRequest = {
@@ -109,22 +110,6 @@ fun AddBusStopDialog(
                     },
                     label = { Text("Bus stop code or name") },
                     placeholder = {
-                        val hints =
-                            remember {
-                                listOf(
-                                    "83139 (Jurong East Int)",
-                                    "99012 (Blk 789)",
-                                    "22345 (Bt Batok Int)",
-                                    "44444 (Boon Lay Int)",
-                                    "55678 (Tampines Int)",
-                                    "33333 (Choa Chu Kang Int)",
-                                    "11111 (Orchard Stn)",
-                                    "66666 (Sengkang Int)",
-                                    "22222 (HarbourFront Int)",
-                                    "55555 (Punggol Temp Int)",
-                                )
-                            }
-                        val randomHint = remember { hints.random() }
                         Text("e.g. $randomHint")
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -137,7 +122,7 @@ fun AddBusStopDialog(
                 )
 
                 // Nearby button
-                if (!showNearbyHeader && searchQuery.length < 2) {
+                if (!showNearbyHeader && searchQuery.length < 1) {
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = onFindNearby, enabled = !isLoadingNearby) {
                         Icon(Icons.Default.MyLocation, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -200,7 +185,7 @@ fun AddBusStopDialog(
                             }
                         }
                     }
-                } else if (searchQuery.length >= 2 && searchResults.isEmpty() && !isLoading) {
+                } else if (searchQuery.length >= 1 && searchResults.isEmpty() && !isLoading) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         "No bus stops found. You can type a 5-digit code and press Add.",

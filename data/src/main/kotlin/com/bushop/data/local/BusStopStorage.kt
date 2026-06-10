@@ -3,6 +3,7 @@ package com.bushop.data.local
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -287,4 +288,17 @@ class BusStopStorage(
             prefs[stringPreferencesKey("pinned_services")] = gson.toJson(pinned.toList())
         }
     }
+
+    // ── Drag hint seen state ──
+
+    suspend fun saveHintSeen(seen: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[booleanPreferencesKey("has_seen_hint")] = seen
+        }
+    }
+
+    val hasSeenHint: Flow<Boolean> =
+        context.dataStore.data
+            .map { prefs -> prefs[booleanPreferencesKey("has_seen_hint")] ?: false }
+            .distinctUntilChanged()
 }

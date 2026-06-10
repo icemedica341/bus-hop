@@ -65,6 +65,12 @@ class BusRepositoryImpl(
         storage.savePinnedServices(pinned)
     }
 
+    override val hasSeenHintFlow: Flow<Boolean> = storage.hasSeenHint
+
+    override suspend fun saveHintSeen(seen: Boolean) {
+        storage.saveHintSeen(seen)
+    }
+
     override suspend fun addBusStop(stop: BusStop): Result<Unit> = storage.addBusStop(stop)
 
     override suspend fun removeBusStop(code: String) {
