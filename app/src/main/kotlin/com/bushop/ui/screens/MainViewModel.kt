@@ -62,6 +62,9 @@ class MainViewModel(
     private val _pinnedServices = MutableStateFlow<Set<String>>(emptySet())
     val pinnedServices: StateFlow<Set<String>> = _pinnedServices.asStateFlow()
 
+    private val _pinnedStops = MutableStateFlow<Set<String>>(emptySet())
+    val pinnedStops: StateFlow<Set<String>> = _pinnedStops.asStateFlow()
+
     private val _savedStops = MutableStateFlow<List<BusStopWithArrivals>>(emptyList())
     val savedStops: StateFlow<List<BusStopWithArrivals>> = _savedStops.asStateFlow()
 
@@ -290,8 +293,13 @@ class MainViewModel(
             }
         }
         viewModelScope.launch {
-            repository.sortByEarliestFlow.collect { enabled ->
-                _sortByEarliest.value = enabled
+            repository.pinnedServicesFlow.collect { pinned ->
+                _pinnedServices.value = pinned
+            }
+        }
+        viewModelScope.launch {
+            repository.pinnedStopsFlow.collect { pinned ->
+                _pinnedStops.value = pinned
             }
         }
         viewModelScope.launch {
@@ -322,7 +330,7 @@ class MainViewModel(
                                 lastUpdated = existing?.lastUpdated ?: 0L,
                                 cachedAt = timestamps[stop.code] ?: 0L,
                                 isCollapsed = existing?.isCollapsed ?: false,
-                                isPinned = existing?.isPinned ?: false,
+                                isPinned = existing?.isPinned ?: (stop.code in _pinnedStops.value),
                             )
                         }
                     useCase.applyPersistedCollapsedState(mergedStops, collapsedStops) to sortByEarliest
@@ -680,14 +688,23 @@ class MainViewModel(
         val index = _savedStops.value.indexOfFirst { it.busStop.code == code }
         if (index != -1) {
             val wasPinned = _savedStops.value[index].isPinned
+            val nowPinned = !wasPinned
             _savedStops.value =
                 _savedStops.value
                     .toMutableList()
                     .apply {
-                        this[index] = this[index].copy(isPinned = !this[index].isPinned)
+                        this[index] = this[index].copy(isPinned = nowPinned)
                     }.let { list ->
                         useCase.applyPinning(list, wasPinned, additionOrder)
                     }
+            // Persist pinned state
+            val updatedPinned =
+                _pinnedStops.value.toMutableSet().apply {
+                    if (nowPinned) add(code) else remove(code)
+                }
+            _pinnedStops.value = updatedPinned
+            viewModelScope.launch { repository.savePinnedStops(updatedPinned) }
+
             val stopName =
                 _savedStops.value
                     .find { it.busStop.code == code }

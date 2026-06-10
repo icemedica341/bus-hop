@@ -39,6 +39,12 @@ class BusRepositoryImpl(
 
     override val pinnedServicesFlow: Flow<Set<String>> = storage.pinnedServices
 
+    override val pinnedStopsFlow: Flow<Set<String>> = storage.pinnedStops
+
+    override suspend fun savePinnedStops(pinned: Set<String>) {
+        storage.savePinnedStops(pinned)
+    }
+
     override val isIndexReady: StateFlow<Boolean> = busStopIndex.isReady
 
     override val autoRefreshInterval: Flow<Int> = storage.autoRefreshInterval

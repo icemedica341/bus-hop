@@ -37,6 +37,10 @@ interface BusRepository {
 
     suspend fun savePinnedServices(pinned: Set<String>)
 
+    val pinnedStopsFlow: Flow<Set<String>>
+
+    suspend fun savePinnedStops(pinned: Set<String>)
+
     val hasSeenHintFlow: Flow<Boolean>
 
     suspend fun saveHintSeen(seen: Boolean)
