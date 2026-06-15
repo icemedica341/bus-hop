@@ -1,60 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 590" font-family="Arial,sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 595" font-family="Arial,sans-serif" font-size="13">
 <defs><marker id="a" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10Z" fill="#666"/></marker><style>
 rect.bx{fill:#e8f4f8;stroke:#4a90d9;stroke-width:1.5;rx:5}rect.i{fill:#d4e8f0;stroke:#4a90d9;stroke-width:1;rx:3}rect.gr{fill:#d4edda;stroke:#5cb85c;stroke-width:1.5;rx:5}rect.or{fill:#fdf0d5;stroke:#f0ad4e;stroke-width:1;rx:3}rect.dc{fill:#f0f0f0;stroke:#999;stroke-width:1;rx:3}text.t{fill:#2c6fa0;font-weight:bold;font-size:14px;text-anchor:middle}text.l{fill:#333;text-anchor:middle;font-size:12px}text.s{fill:#666;text-anchor:middle;font-size:11px}path.e{stroke:#666;stroke-width:1.5;fill:none;marker-end:url(#a)}
 </style></defs>
 
-<rect x="65" y="30" width="200" height="225" class="bx"/><text x="165" y="50" class="t">app/ — Android App</text>
+<!-- app/ module (4 items, all 22px arrows) -->
+<rect x="65" y="30" width="200" height="258" class="bx"/><text x="165" y="50" class="t">app/ — Android App</text>
 <rect x="75" y="65" width="180" height="28" class="gr"/><text x="165" y="83" class="l">Compose UI (MainScreen)</text>
-<path d="M165,93 L165,117" class="e"/>
-<rect x="75" y="117" width="180" height="28" class="gr"/><text x="165" y="135" class="l">ViewModel</text>
-<path d="M165,145 L165,169" class="e"/>
-<rect x="75" y="169" width="180" height="28" class="i"/><text x="165" y="187" class="l">Components + Theme</text>
-<path d="M165,197 L165,219" class="e"/>
-<rect x="75" y="219" width="180" height="20" class="dc"/><text x="165" y="232" class="s">Manual DI + edge-to-edge</text>
+<path d="M165,93 L165,115" class="e"/>
+<rect x="75" y="115" width="180" height="28" class="gr"/><text x="165" y="133" class="l">MainViewModel</text>
+<path d="M165,143 L165,165" class="e"/>
+<rect x="75" y="165" width="180" height="28" class="i"/><text x="165" y="183" class="l">ThemeManager</text>
+<path d="M165,193 L165,215" class="e"/>
+<rect x="75" y="215" width="180" height="28" class="i"/><text x="165" y="233" class="l">UpdateManager</text>
+<path d="M165,243 L165,265" class="e"/>
+<rect x="75" y="265" width="180" height="16" class="dc"/><text x="165" y="276" class="s">Factory DI</text>
 
-<rect x="300" y="30" width="200" height="225" class="bx"/><text x="400" y="50" class="t">domain/ — Pure Kotlin</text>
-<rect x="310" y="65" width="180" height="28" class="gr"/><text x="400" y="83" class="l">UseCases</text>
-<path d="M400,93 L400,117" class="e"/>
-<rect x="310" y="117" width="180" height="28" class="i"/><text x="400" y="135" class="l">BusRepository (interface)</text>
-<path d="M400,145 L400,169" class="e"/>
-<rect x="310" y="169" width="180" height="28" class="gr"/><text x="400" y="187" class="l">Models (no deps)</text>
-<path d="M400,197 L400,219" class="e"/>
-<rect x="310" y="219" width="180" height="20" class="dc"/><text x="400" y="232" class="s">No Android imports allowed</text>
+<!-- domain/ module (3 items + DC, centered vertically, all 22px arrows) -->
+<rect x="300" y="30" width="200" height="258" class="bx"/><text x="400" y="50" class="t">domain/ — Pure Kotlin</text>
+<rect x="310" y="86" width="180" height="28" class="gr"/><text x="400" y="104" class="l">BusStopUseCase</text>
+<path d="M400,114 L400,136" class="e"/>
+<rect x="310" y="136" width="180" height="28" class="i"/><text x="400" y="154" class="l">BusRepository (interface)</text>
+<path d="M400,164 L400,186" class="e"/>
+<rect x="310" y="186" width="180" height="28" class="i"/><text x="400" y="204" class="l">UpdateChecker (interface)</text>
+<path d="M400,214 L400,236" class="e"/>
+<rect x="310" y="236" width="180" height="16" class="dc"/><text x="400" y="247" class="s">Zero Android deps</text>
 
-<rect x="535" y="30" width="200" height="225" class="bx"/><text x="635" y="50" class="t">data/ — Data Access</text>
+<!-- data/ module (4 items, all 22px arrows) -->
+<rect x="535" y="30" width="200" height="258" class="bx"/><text x="635" y="50" class="t">data/ — Data Access</text>
 <rect x="545" y="65" width="180" height="28" class="i"/><text x="635" y="83" class="l">RetrofitBusArrivalDataSource</text>
-<path d="M635,93 L635,117" class="e"/>
-<rect x="545" y="117" width="180" height="28" class="i"/><text x="635" y="135" class="l">BusStopStorage (DataStore)</text>
-<path d="M635,145 L635,169" class="e"/>
-<rect x="545" y="169" width="180" height="28" class="i"/><text x="635" y="187" class="l">BusStopIndex (TokenTrie)</text>
-<path d="M635,197 L635,219" class="e"/>
-<rect x="545" y="219" width="180" height="20" class="dc"/><text x="635" y="232" class="s">BusRepositoryImpl ties it</text>
+<path d="M635,93 L635,115" class="e"/>
+<rect x="545" y="115" width="180" height="28" class="i"/><text x="635" y="133" class="l">BusStopStorage (DataStore)</text>
+<path d="M635,143 L635,165" class="e"/>
+<rect x="545" y="165" width="180" height="28" class="i"/><text x="635" y="183" class="l">BusStopIndex (TokenTrie)</text>
+<path d="M635,193 L635,215" class="e"/>
+<rect x="545" y="215" width="180" height="28" class="i"/><text x="635" y="233" class="l">UpdateCheckerImpl</text>
+<path d="M635,243 L635,265" class="e"/>
+<rect x="545" y="265" width="180" height="16" class="dc"/><text x="635" y="276" class="s">BusRepositoryImpl</text>
 
-<path d="M265,142 L300,142" class="e"/><path d="M500,142 L535,142" class="e"/>
+<!-- Horizontal arrows between modules (interface layer, centered at y=160) -->
+<path d="M265,160 L300,160" class="e"/>
+<path d="M500,160 L535,160" class="e"/>
 
-<rect x="65" y="270" width="220" height="175" class="bx"/><text x="175" y="290" class="t">Data Flow — Request Path</text>
-<rect x="75" y="305" width="200" height="26" class="gr"/><text x="175" y="322" class="l">MainActivity</text>
-<path d="M175,331 L175,355" class="e"/>
-<rect x="75" y="355" width="200" height="26" class="i"/><text x="175" y="372" class="l">ViewModel</text>
-<path d="M175,381 L175,405" class="e"/>
-<rect x="75" y="405" width="200" height="26" class="i"/><text x="175" y="422" class="l">UseCase → Repository</text>
+<!-- Data Flow section (pushed down to accommodate taller boxes) -->
+<rect x="65" y="308" width="220" height="175" class="bx"/><text x="175" y="328" class="t">Data Flow — Request Path</text>
+<rect x="75" y="343" width="200" height="26" class="gr"/><text x="175" y="360" class="l">MainActivity</text>
+<path d="M175,369 L175,393" class="e"/>
+<rect x="75" y="393" width="200" height="26" class="i"/><text x="175" y="410" class="l">ViewModel + ThemeManager</text>
+<path d="M175,419 L175,443" class="e"/>
+<rect x="75" y="443" width="200" height="26" class="i"/><text x="175" y="460" class="l">UseCase → Repository</text>
 
-<rect x="310" y="270" width="200" height="175" class="bx"/><text x="410" y="290" class="t">Network</text>
-<rect x="320" y="322" width="180" height="26" class="i"/><text x="410" y="339" class="l">Arrivelah API</text>
-<path d="M410,348 L410,366" class="e"/>
-<rect x="320" y="366" width="180" height="26" class="or"/><text x="410" y="383" class="l">Retrofit GET</text>
+<rect x="310" y="308" width="200" height="175" class="bx"/><text x="410" y="328" class="t">Network</text>
+<rect x="320" y="360" width="180" height="26" class="i"/><text x="410" y="377" class="l">Arrivelah API</text>
+<path d="M410,386 L410,404" class="e"/>
+<rect x="320" y="404" width="180" height="26" class="or"/><text x="410" y="421" class="l">Retrofit GET</text>
 
-<rect x="535" y="270" width="200" height="175" class="bx"/><text x="635" y="290" class="t">Local Storage</text>
-<rect x="545" y="322" width="180" height="26" class="i"/><text x="635" y="339" class="l">DataStore (prefs)</text>
-<path d="M635,348 L635,366" class="e"/>
-<rect x="545" y="366" width="180" height="26" class="gr"/><text x="635" y="383" class="l">TokenTrie Search</text>
+<rect x="535" y="308" width="200" height="175" class="bx"/><text x="635" y="328" class="t">Local Storage</text>
+<rect x="545" y="360" width="180" height="26" class="i"/><text x="635" y="377" class="l">DataStore (prefs)</text>
+<path d="M635,386 L635,404" class="e"/>
+<rect x="545" y="404" width="180" height="26" class="gr"/><text x="635" y="421" class="l">TokenTrie Search</text>
 
-<path d="M285,357 L310,357" class="e"/>
-<path d="M510,357 L535,357" class="e"/>
+<path d="M285,395 L310,395" class="e"/>
+<path d="M510,395 L535,395" class="e"/>
 
-<rect x="200" y="470" width="400" height="90" class="bx"/><text x="400" y="490" class="t">Architecture Rule</text>
-<text x="400" y="510" class="l">data/ → domain/   app/ → domain/</text>
-<text x="400" y="530" class="l">domain/ → ❌ nothing (pure Kotlin)</text>
-<text x="400" y="550" class="s">Enforced by ArchitectureTest checks</text>
+<!-- Architecture Rules footer -->
+<rect x="200" y="503" width="400" height="70" class="bx"/><text x="400" y="523" class="t">Architecture Rules (8 checks)</text>
+<text x="400" y="543" class="l">domain/ ❌ no Android deps  |  app/ → domain/ via interface</text>
+<text x="400" y="561" class="s">No unused version catalog entries  |  ProGuard matches packages</text>
 
 </svg>

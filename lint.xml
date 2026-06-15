@@ -7,7 +7,7 @@
     <!-- Ignore Kotlin-specific warnings that are intentional -->
     <issue id="SyntheticAccessor" severity="ignore" />
 
-    <!-- AGP version check: not upgrading yet (requires Kotlin/Compose bumps) -->
+    <!-- AGP version check is up to date (9.2.1) — keep warning for awareness -->
     <issue id="AndroidGradlePluginVersion" severity="warning" />
 
     <!-- Enforce common quality rules -->
