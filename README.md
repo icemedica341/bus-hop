@@ -66,7 +66,6 @@ Or [build from source](#build-from-source) for a debug APK.
 2. **CI** — Every push triggers linting, 154+ unit tests, and architecture boundary checks via GitHub Actions. Build cache + config cache (Gradle work: ~25s).
 3. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.8 MB (vs 18 MB debug).
 4. **Release** — APK signed with debug keystore, published as a GitHub Release (gh release), distributed via Obtainium.
-5. **History** — `git filter-repo` removed agent tooling artifacts from git history post-launch. TokenTrie O(k) search replaced Google Places autocomplete (no network, no API key).
 
 ## Tech Stack
 
