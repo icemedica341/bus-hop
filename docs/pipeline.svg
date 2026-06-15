@@ -3,33 +3,33 @@
 rect.bx{fill:#e8f4f8;stroke:#4a90d9;stroke-width:1.5;rx:5}rect.i{fill:#d4e8f0;stroke:#4a90d9;stroke-width:1;rx:3}rect.gr{fill:#d4edda;stroke:#5cb85c;stroke-width:1.5;rx:5}rect.or{fill:#fdf0d5;stroke:#f0ad4e;stroke-width:1;rx:3}text.t{fill:#2c6fa0;font-weight:bold;font-size:14px;text-anchor:middle}text.l{fill:#333;text-anchor:middle;font-size:12px}path.e{stroke:#666;stroke-width:1.5;fill:none;marker-end:url(#a)}
 </style></defs>
 
-<rect x="24" y="30" width="170" height="185" class="bx"/><text x="109" y="50" class="t">Development</text>
-<rect x="34" y="65" width="150" height="28" class="gr"/><text x="109" y="83" class="l">Kotlin 2.1 + Compose</text>
-<path d="M109,93 L109,117" class="e"/>
-<rect x="34" y="117" width="150" height="28" class="gr"/><text x="109" y="135" class="l">Unit Tests (154)</text>
-<path d="M109,145 L109,169" class="e"/>
-<rect x="34" y="169" width="150" height="28" class="gr"/><text x="109" y="187" class="l">Lint + Detekt</text>
+<rect x="24" y="30" width="230" height="185" class="bx"/><text x="139" y="50" class="t">Development</text>
+<rect x="34" y="65" width="210" height="28" class="gr"/><text x="139" y="83" class="l">Kotlin 2.4 + Compose BOM 2026.05</text>
+<path d="M139,93 L139,117" class="e"/>
+<rect x="34" y="117" width="210" height="28" class="gr"/><text x="139" y="135" class="l">Unit Tests (161) + Arch Checks (8)</text>
+<path d="M139,145 L139,169" class="e"/>
+<rect x="34" y="169" width="210" height="28" class="gr"/><text x="139" y="187" class="l">ThemeManager + UpdateManager</text>
 
-<rect x="218" y="30" width="170" height="185" class="bx"/><text x="303" y="50" class="t">CI (GitHub Actions)</text>
-<rect x="228" y="65" width="150" height="28" class="i"/><text x="303" y="83" class="l">git push to main</text>
-<path d="M303,93 L303,117" class="e"/>
-<rect x="228" y="117" width="150" height="28" class="i"/><text x="303" y="135" class="l">Build + Tests ✓</text>
-<path d="M303,145 L303,169" class="e"/>
-<rect x="228" y="169" width="150" height="28" class="i"/><text x="303" y="187" class="l">APK Integrity Check</text>
+<rect x="278" y="30" width="170" height="185" class="bx"/><text x="363" y="50" class="t">Build</text>
+<rect x="288" y="65" width="150" height="28" class="i"/><text x="363" y="83" class="l">Gradle 9.5.1 + AGP 9.2.1</text>
+<path d="M363,93 L363,117" class="e"/>
+<rect x="288" y="117" width="150" height="28" class="i"/><text x="363" y="135" class="l">R8 + shrinkResources</text>
+<path d="M363,145 L363,169" class="e"/>
+<rect x="288" y="169" width="150" height="28" class="i"/><text x="363" y="187" class="l">APK Integrity Check</text>
 
-<rect x="412" y="30" width="170" height="185" class="bx"/><text x="497" y="50" class="t">Release</text>
-<rect x="422" y="65" width="150" height="28" class="or"/><text x="497" y="83" class="l">R8 Optimize</text>
-<path d="M497,93 L497,117" class="e"/>
-<rect x="422" y="117" width="150" height="28" class="or"/><text x="497" y="135" class="l">APK Signing</text>
-<path d="M497,145 L497,169" class="e"/>
-<rect x="422" y="169" width="150" height="28" class="or"/><text x="497" y="187" class="l">GitHub Release</text>
+<rect x="472" y="30" width="170" height="185" class="bx"/><text x="557" y="50" class="t">Release</text>
+<rect x="482" y="65" width="150" height="28" class="or"/><text x="557" y="83" class="l">R8 Optimize</text>
+<path d="M557,93 L557,117" class="e"/>
+<rect x="482" y="117" width="150" height="28" class="or"/><text x="557" y="135" class="l">APK Signing</text>
+<path d="M557,145 L557,169" class="e"/>
+<rect x="482" y="169" width="150" height="28" class="or"/><text x="557" y="187" class="l">gh release create</text>
 
-<rect x="606" y="30" width="170" height="185" class="gr"/><text x="691" y="50" class="t">Distribution</text>
-<rect x="616" y="82" width="150" height="28" class="i"/><text x="691" y="100" class="l">GitHub Releases</text>
-<path d="M691,110 L691,134" class="e"/>
-<rect x="616" y="134" width="150" height="28" class="i"/><text x="691" y="152" class="l">APK (1.8 MB)</text>
+<rect x="666" y="30" width="110" height="185" class="gr"/><text x="721" y="50" class="t">Ship</text>
+<rect x="676" y="82" width="90" height="28" class="i"/><text x="721" y="100" class="l">v1.0.1</text>
+<path d="M721,110 L721,134" class="e"/>
+<rect x="676" y="134" width="90" height="28" class="i"/><text x="721" y="152" class="l">APK (1.7 MB)</text>
 
-<path d="M194,122 L218,122" class="e"/>
-<path d="M388,122 L412,122" class="e"/>
-<path d="M582,122 L606,122" class="e"/>
+<path d="M254,122 L278,122" class="e"/>
+<path d="M448,122 L472,122" class="e"/>
+<path d="M642,122 L666,122" class="e"/>
 </svg>

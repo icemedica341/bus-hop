@@ -4,12 +4,12 @@
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search. No ads, no accounts, no tracking.</p>
   <p>
-    <img src="https://img.shields.io/badge/Kotlin-2.1-7F52FF?logo=kotlin&logoColor=white">
-    <img src="https://img.shields.io/badge/Compose-BOM%202025-4285F4?logo=jetpackcompose&logoColor=white">
-    <img src="https://img.shields.io/badge/minSdk-24-34A853">
-    <img src="https://img.shields.io/badge/targetSdk-35-34A853">
+    <img src="https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white">
+    <img src="https://img.shields.io/badge/Compose-BOM%202026.05-4285F4?logo=jetpackcompose&logoColor=white">
+    <img src="https://img.shields.io/badge/minSdk-26-34A853">
+    <img src="https://img.shields.io/badge/targetSdk-37-34A853">
     <img src="https://img.shields.io/badge/license-MIT-yellow">
-    <img src="https://img.shields.io/badge/tests-154%20passing-34A853">
+    <img src="https://img.shields.io/badge/tests-161%20passing-34A853">
   </p>
 </div>
 
@@ -31,11 +31,11 @@
 | 🚍  | **Bus type icons**       | Single Decker, Double Decker, Bendy                                                              |
 | 💺  | **Load indicator**       | Seats Available / Standing Available / Limited Standing                                          |
 | ♿  | **Wheelchair info**      | Wheelchair Accessible Bus (WAB) indicator                                                        |
-| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop. Survives restarts now.          |
+| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop. Survives restarts.              |
 | 🔍  | **Smart search**         | TokenTrie O(k) prefix search + Levenshtein fuzzy matching over 5,201 stops — instant, no network |
 | ✨  | **New stop pulse**       | List auto-scrolls to newly added stop with a brief blue pulse highlight                          |
 | 📍  | **Nearby stops**         | Location-based nearby stop finder (opt-in)                                                       |
-| 💡  | **Random hints**         | Truly random bus stop hint shown every time you open the search dialog (from all 5,201 stops)    |
+| 💡  | **Random hints**         | Random bus stop hint shown every time you open the search dialog (from all 5,201 stops)          |
 | 🌙  | **Theme support**        | Light, Dark, System-following, with Blue and Contrast Blue colour schemes — all persisted        |
 | 🔄  | **Auto-refresh**         | Configurable interval (30s / 1m / 2m / 5m / Off) — pauses in background                          |
 | ↘️  | **Pull to refresh**      | Swipe down to refresh all stops                                                                  |
@@ -43,10 +43,11 @@
 | 🗑️  | **Drag to delete**       | Drag a stop into the bottom delete zone — card-center-in-zone threshold                          |
 | 🔒  | **Privacy first**        | Location is opt-in only. No accounts, no analytics, no telemetry                                 |
 | 📱  | **Material 3**           | Modern Compose UI with animations, pull-to-refresh, edge-to-edge                                 |
+| 🎨  | **Splash screen**        | Branded cold-start splash using core-splashscreen library                                        |
 
 ## Download
 
-> **Latest release:** [v1.0.0](https://github.com/icemedica341/BusHop/releases/latest) — `bus-hop.apk` (**1.8 MB**, R8-minified, shrinkResources, signed)
+> **Latest release:** [v1.0.1](https://github.com/icemedica341/BusHop/releases/latest) — `app-release.apk` (**1.7 MB**, R8-minified, shrinkResources, signed)
 
 Or [build from source](#build-from-source) for a debug APK.
 
@@ -55,41 +56,42 @@ Or [build from source](#build-from-source) for a debug APK.
 <img src="docs/architecture.svg" alt="Architecture diagram" width="800">
 
 - **domain/** — Pure Kotlin (zero framework deps). Models, use cases, repository interfaces.
-- **data/** — Android library. Retrofit API calls, DataStore persistence, BusStopIndex with TokenTrie for search.
-- **app/** — Android app. Jetpack Compose UI, ViewModels, theme, components.
+- **data/** — Android library. Retrofit API calls, DataStore persistence, BusStopIndex with TokenTrie for search, update checker.
+- **app/** — Android app. Jetpack Compose UI, ViewModels (MainViewModel + ThemeManager + UpdateManager), theme, components.
 
 ## Pipeline
 
 <img src="docs/pipeline.svg" alt="Development pipeline" width="800">
 
 1. **Development** — Code written iteratively by AI agent + human review. Source, tests, and config live in `main`.
-2. **CI** — Every push triggers linting, 154+ unit tests, and architecture boundary checks via GitHub Actions. Build cache + config cache (Gradle work: ~25s).
-3. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.8 MB (vs 18 MB debug).
-4. **Release** — APK signed with debug keystore, published as a GitHub Release (gh release), distributed via Obtainium.
+2. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.7 MB (vs debug).
+3. **Test** — 161 unit tests across 9 test classes (domain, data, app layers + architecture constraints).
+4. **Release** — APK published as a GitHub Release (`gh release create`), distributed via Obtainium.
 
 ## Tech Stack
 
 | Layer         | Technology                                                |
 | ------------- | --------------------------------------------------------- |
-| Language      | Kotlin 2.1                                                |
-| UI            | Jetpack Compose (BOM 2025.01) + Material 3                |
+| Language      | Kotlin 2.4.0                                              |
+| UI            | Jetpack Compose (BOM 2026.05.01) + Material 3             |
 | Architecture  | MVVM + Clean Architecture (3 modules)                     |
-| Networking    | Retrofit 2 + OkHttp 4                                     |
+| Networking    | Retrofit 3 + OkHttp 5                                     |
 | Serialization | Gson (data layer only)                                    |
 | Persistence   | DataStore Preferences                                     |
-| Async         | Kotlin Coroutines 1.9 + Flow                              |
-| DI            | Manual constructor injection                              |
+| Async         | Kotlin Coroutines 1.11 + Flow                             |
+| DI            | Manual constructor injection through ViewModel Factory    |
 | Search        | Inverted index + TokenTrie (prefix) + Levenshtein (fuzzy) |
 | Testing       | JUnit 4, MockK, Coroutines Test                           |
 | Minification  | R8 + ProGuard (release builds)                            |
-| Target        | Android 15 (SDK 35), min SDK 24                           |
+| Gradle        | 9.5.1, AGP 9.2.1                                          |
+| Target        | Android 17 (SDK 37), minSdk 26                            |
 
 ## Build from Source
 
 ### Prerequisites
 
 - **JDK 17** (OpenJDK)
-- **Android SDK 35** with build tools
+- **Android SDK 37** with build tools
 - Set `ANDROID_HOME` to your SDK path
 
 ### Commands
@@ -110,23 +112,23 @@ Or [build from source](#build-from-source) for a debug APK.
 | Check              | When                            | Where                                                                |
 | ------------------ | ------------------------------- | -------------------------------------------------------------------- |
 | APK integrity      | Every `./gradlew assembleDebug` | `app/build.gradle.kts` — `checkAndRenameDebugApk`                    |
-| Lint + Tests + APK | Every `git push`                | `.github/workflows/ci.yml`                                           |
-| Architecture tests | Every `./gradlew test`          | `ArchitectureTest.kt` — layer separation, ProGuard, dependency rules |
+| Architecture tests | Every `./gradlew test`          | `ArchitectureTest.kt` — 8 rules (layer separation, ProGuard, deps)   |
 
 ## Testing
 
-**154 tests** (151 unit + 3 instrumentation) across 9 test files:
+**161 tests** across 9 test classes:
 
 | Module                        | Tests | What's covered                                                              |
 | ----------------------------- | ----- | --------------------------------------------------------------------------- |
 | Domain: BusStopUseCase        | 28    | sortServices, sortServicesWithPins, applyPinning, toggleCollapsed           |
 | Domain: Model                 | 8     | toDisplayArrival eta/load/busType mapping                                   |
 | Domain: RefreshCoordinator    | 6     | Cooldown, independent cooldowns, concurrent batching                        |
-| Domain: AutoRefreshController | 7     | Start/stop/restart/onCleared lifecycle                                      |
+| Domain: AutoRefreshController | 7     | Start/stop/restart lifecycle                                                |
 | Data: BusStopIndex            | 45    | TokenTrie search (exact, prefix, fuzzy, abbreviations, sorting, findNearby) |
 | Data: RetryUtil               | 6     | Retry with backoff, CancellationException propagation                       |
+| Data: UpdateCheckerImpl       | 6     | GitHub API parsing, version comparison, error handling, download guard      |
 | App: MainViewModel            | 47    | add/remove/move/pin/collapse/refresh/sort/errors                            |
-| App: Architecture             | 4     | Layer separation, minification, dependency rules, ProGuard                  |
+| App: Architecture             | 8     | Layer separation, module deps, domain purity, catalog freshness, ProGuard   |
 
 ## API
 

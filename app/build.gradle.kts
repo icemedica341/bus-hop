@@ -56,8 +56,8 @@ android {
         applicationId = "com.bushop"
         minSdk = 26
         targetSdk = 37
-        versionCode = 44
-        versionName = "1.0.0"
+        versionCode = 45
+        versionName = "1.0.1"
 
         androidResources.localeFilters += "en"
 
