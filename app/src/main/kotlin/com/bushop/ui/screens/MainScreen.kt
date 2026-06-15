@@ -227,11 +227,13 @@ fun MainScreen(viewModel: MainViewModel) {
 
     // Cancel previous snackbar when a new message arrives — prevents stale
     // queued notifications on rapid pin/unpin.
-    var snackbarJob by remember { mutableStateOf<Job?>(null) }
+    // Using arrayOfNulls to avoid Compose MutableState overhead (snackbarJob
+    // is never read for rendering, only for cancellation).
+    val snackbarJob = remember { arrayOfNulls<Job>(1) }
     LaunchedEffect(Unit) {
         viewModel.snackbarMessage.collect { message ->
-            snackbarJob?.cancel()
-            snackbarJob =
+            snackbarJob[0]?.cancel()
+            snackbarJob[0] =
                 launch {
                     snackbarHostState.showSnackbar(message)
                 }
