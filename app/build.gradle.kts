@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -51,16 +50,16 @@ abstract class CheckAndRenameDebugApk : DefaultTask() {
 
 android {
     namespace = "com.bushop"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.bushop"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 44
         versionName = "1.0.0"
 
-        resConfigs("en")
+        androidResources.localeFilters += "en"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -93,9 +92,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    // jvmTarget is configured through Java 17 compileOptions (below) + jvmToolchain
+    kotlin { jvmToolchain(17) }
 
     buildFeatures {
         compose = true
