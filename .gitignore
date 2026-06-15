@@ -84,3 +84,4 @@ bus-hop-content/.git-hooks/
 .git-hooks/
 keystore.jks
 .kotlin/
+HANDOVER.md

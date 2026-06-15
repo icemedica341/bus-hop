@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Splash screen theme (shown on cold start before app content is ready) -->
+    <style name="Theme.BusHop.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.BusHop</item>
+    </style>
+
+    <!-- Main app theme (installed by installSplashScreen() after splash) -->
     <style name="Theme.BusHop" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>

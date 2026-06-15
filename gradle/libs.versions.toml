@@ -3,6 +3,7 @@ agp = "8.7.3"
 kotlin = "2.1.0"
 compose-bom = "2025.01.01"
 core-ktx = "1.15.0"
+core-splashscreen = "1.0.1"
 lifecycle = "2.8.7"
 activity = "1.9.3"
 retrofit = "2.9.0"
@@ -17,6 +18,7 @@ mockk = "1.13.9"
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
