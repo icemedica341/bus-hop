@@ -1,31 +1,123 @@
 flowchart TB
-    subgraph domain["domain/ — Pure Kotlin"]
-        direction TB
-        UC["UseCases"]
-        IFACE["Repository Interface"]
-        MODELS["Models (no deps)"]
-    end
+    %% ─── STYLING & CLASS DEFINITIONS ───
+    classDef blueBorder fill:#fff,stroke:#0052cc,stroke-width:2px,color:#333;
+    classDef mainBlue fill:#e8f4f8,stroke:#0052cc,stroke-width:2px,color:#0052cc,font-weight:bold;
+    classDef nodeBlue fill:#e8f4f8,stroke:#0052cc,stroke-width:1px,color:#333;
+    classDef nodeGreen fill:#e6f4ea,stroke:#137333,stroke-width:1px,color:#137333;
+    classDef nodeYellow fill:#fff8e1,stroke:#b06000,stroke-width:1px,color:#b06000;
+    classDef extDashed fill:#f8f9fa,stroke:#70757a,stroke-width:1.5px,stroke-dasharray: 5 5,color:#333;
+    classDef textOnly fill:none,stroke:none,color:#5f6368,font-style:italic;
 
-    subgraph app["app/ — Android App"]
-        direction TB
-        UI["UI (Compose)"]
-        VM["ViewModel (State)"]
-        C["Components (Theme, Dialogs)"]
-    end
+    %% ==========================================================
+    %% 1. ARCHITECTURE SECTION (TOP BLOCK)
+    %% ==========================================================
+    subgraph ARCH["Architecture"]
+        direction LR
 
-    subgraph data["data/ — Data Layer"]
-        direction TB
-        API["API (Retrofit + Arrivelah)"]
-        REPO["BusRepositoryImpl"]
-        LOCAL["Local (DataStore + Index)"]
-        TRIE["TokenTrie (Search Index)"]
-    end
+        %% ── UI LAYER ──
+        subgraph UI["UI Layer (Compose)"]
+            direction TB
+            A1[MainActivity]:::nodeBlue
+            A2[MainScreen]:::nodeGreen
+            A3[MainViewModel]:::nodeGreen
+            A4[BusHopTheme]:::nodeBlue
+            A5["setContent + State"]:::textOnly
+            A6[Manual DI]:::nodeYellow
+            A1 --- A2 --- A3 --- A4 --- A5 --- A6
+        end
+        style UI fill:#fff,stroke:#0052cc,stroke-width:2px
 
-    UI --> VM
-    VM --> C
-    VM --> UC
-    UC --> IFACE
-    IFACE --> REPO
-    API --> REPO
-    LOCAL --> REPO
-    TRIE --> LOCAL
+        %% ── DOMAIN LAYER ──
+        subgraph DOM["Domain Layer (pure Kotlin)"]
+            direction TB
+            B1["UseCases<br><small>BusStopUseCase · AutoRefresh · StopCoordinator</small>"]:::nodeGreen
+            B2[BusRepository interface]:::nodeBlue
+            B3["Models<br><small>BusStop · BusArrival · NetworkResult · ThemeMode</small>"]:::nodeGreen
+            B4[No Android imports]:::nodeYellow
+            B1 --- B2 --- B3 --- B4
+        end
+        style DOM fill:#fff,stroke:#0052cc,stroke-width:2px
+
+        %% ── DATA LAYER ──
+        subgraph DAT["Data Layer"]
+            direction TB
+            C1[RetrofitBusArrivalDataSource]:::nodeBlue
+            C2[ArrivelahApi Retrofit]:::nodeBlue
+            C3[BusStopStorage DataStore]:::nodeBlue
+            C4[BusStopIndex TokenTrie]:::nodeBlue
+            C5[BusRepositoryImpl ties it]:::nodeYellow
+            C1 --- C2 --- C3 --- C4 --- C5
+        end
+        style DAT fill:#fff,stroke:#0052cc,stroke-width:2px
+
+        %% ── EXTERNAL LAYER ──
+        subgraph EXT["External"]
+            direction TB
+            E1["Arrivelah API<br><small>arrivelah2.busrouter.sg</small><br><br>LTA DataMall<br><small>BusArrivalv2</small><br><br><small>No API key required</small>"]:::textOnly
+        end
+        style EXT fill:#f8f9fa,stroke:#70757a,stroke-width:1.5px,stroke-dasharray: 5 5
+
+        %% Main Structural Inter-Layer Connections
+        UI --> DOM --> DAT --> EXT
+    end
+    style ARCH fill:none,stroke:#0052cc,stroke-width:2px
+
+    %% ==========================================================
+    %% 2. DATA FLOW SECTION (BOTTOM BLOCK)
+    %% ==========================================================
+    subgraph DF["Data Flow"]
+        direction LR
+
+        %% Column 1: UI Initialization
+        subgraph DF_COL1[" "]
+            direction TB
+            F1[MainActivity]:::nodeGreen
+            F2[setContent MainScreen]:::nodeBlue
+            F1 --> F2
+        end
+        style DF_COL1 fill:none,stroke:none
+
+        %% Column 2: Core Logic
+        subgraph DF_COL2[" "]
+            direction TB
+            G1[MainViewModel]:::nodeGreen
+            G2[BusStopUseCase]:::nodeBlue
+            G3[BusRepository]:::nodeBlue
+            G1 --> G2 --> G3
+        end
+        style DF_COL2 fill:none,stroke:none
+
+        %% Column 3: Network Handling
+        subgraph DF_COL3[" "]
+            direction TB
+            H1[RetrofitDataSource]:::nodeBlue
+            H2[ArrivelahApi HTTP GET]:::nodeBlue
+            H1 --> H2
+        end
+        style DF_COL3 fill:none,stroke:none
+
+        %% Column 4: Remote Endpoints
+        subgraph DF_COL4[" "]
+            direction TB
+            I1[Arrivelah Server]:::extDashed
+            I2[LTA DataMall]:::extDashed
+            I1 --> I2
+        end
+        style DF_COL4 fill:none,stroke:none
+
+        %% Column 5: Storage & Indexing
+        subgraph DF_COL5[" "]
+            direction TB
+            J1[BusStopStorage]:::nodeBlue
+            J2[BusStopIndex search]:::nodeBlue
+            J1 --> J2
+        end
+        style DF_COL5 fill:none,stroke:none
+
+        %% Horizontal Execution Links
+        F2 -.-> G1
+        G3 -.-> H2
+        H2 --> I1
+        I2 -.-> J1
+    end
+    style DF fill:#e8f4f8,stroke:#0052cc,stroke-width:2px

@@ -1,18 +1,43 @@
-flowchart TB
-    subgraph CI["Continuous Integration (GitHub Actions — on push / PR)"]
-        direction LR
-        SOURCE["Source Code"] --> BUILD["Gradle Build"]
-        BUILD --> LINT["Lint, 154 Tests, Architecture Check"]
-        BUILD --> DEBUG["Debug APK"]
-    end
+---
+config:
+  theme: neutral
+  themeVariables:
+    primaryColor: "#e8f4f8"
+    secondaryColor: "#d4e8f0"
+    tertiaryColor: "#d4edda"
+    mainBkg: "#fff"
+  flowchart:
+    curve: basis
+    padding: 12
+    nodeSpacing: 40
+    rankSpacing: 60
+---
+flowchart LR
+  subgraph DEV["Development"]
+      direction TB
+      KOTLIN[Kotlin 2.1 + Compose BOM]
+      TEST[Unit tests<br>154 passing]
+      LINT[Detekt/Lint<br>checks]
+  end
 
-    subgraph RELEASE["Release (manual — gh release)"]
-        direction LR
-        MAIN["main branch"] --> R8["R8 Minification + shrinkResources"]
-        R8 --> APK["Release APK (1.8 MB)"]
-        APK --> SIGN["APK Signing (debug keystore)"]
-        SIGN --> GH["GitHub Release"]
-    end
+  subgraph CI["CI (GitHub Actions)"]
+      direction TB
+      BUILD[assembleDebug]
+      CHECK[Static analysis]
+      ARCH[ArchitectureTest]
+  end
 
-    GH --> OBT["Obtainium"]
-    OBT --> USER["User Device"]
+  subgraph REL["Release"]
+      direction TB
+      R8[R8 Optimizer<br>minify + shrink]
+      SIGN[APK signing]
+      PUBLISH[GitHub Release]
+  end
+
+  KOTLIN --> TEST --> LINT
+  LINT --> BUILD
+  BUILD --> CHECK
+  CHECK --> ARCH
+  ARCH --> R8
+  R8 --> SIGN
+  SIGN --> PUBLISH
