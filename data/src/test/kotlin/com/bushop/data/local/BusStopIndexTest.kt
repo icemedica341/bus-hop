@@ -1,5 +1,6 @@
 package com.bushop.data.local
 
+import com.bushop.domain.model.BusStopEntry
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

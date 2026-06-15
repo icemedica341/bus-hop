@@ -118,6 +118,51 @@ class ArchitectureTest {
         )
     }
 
+    // ── app module must not import data module directly ──
+
+    @Test
+    fun `app module does not import bushop data classes`() {
+        val violations = mutableListOf<String>()
+
+        // Known DI imports that are acceptable (composition root in MainActivity.kt and Factory):
+        // RetrofitBusArrivalDataSource, BusStopStorage, BusRepositoryImpl — wired in Activity
+        // UpdateCheckerImpl — concrete implementation injected at creation site
+        // BusStopIndex — concrete implementation needed for randomEntry() not in repository
+        val allowedPrefixes =
+            listOf(
+                "import com.bushop.data.api.RetrofitBusArrivalDataSource",
+                "import com.bushop.data.api.UpdateCheckerImpl",
+                "import com.bushop.data.local.BusStopIndex",
+                "import com.bushop.data.local.BusStopStorage",
+                "import com.bushop.data.repository.BusRepositoryImpl",
+            )
+
+        val appRoot = File(projectRoot, "app/src/main/kotlin")
+
+        appRoot
+            .walkTopDown()
+            .filter { it.extension == "kt" }
+            .forEach { file ->
+                val lines = file.readLines()
+                for (line in lines) {
+                    val trimmed = line.trim()
+                    if (trimmed.startsWith("import com.bushop.data.") &&
+                        allowedPrefixes.none { trimmed == it }
+                    ) {
+                        violations.add("${file.name}: $trimmed")
+                    }
+                }
+            }
+
+        Assert.assertTrue(
+            buildString {
+                appendLine("app/ module must not import com.bushop.data.* — use domain-layer abstractions:")
+                violations.forEach { appendLine("  $it") }
+            },
+            violations.isEmpty(),
+        )
+    }
+
     // ── ProGuard keep rules must reference existing first-party packages ──
 
     @Test

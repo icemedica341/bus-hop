@@ -31,6 +31,11 @@ class StopRefreshCoordinator(
         }
     }
 
+    /** Remove stored mutexes for codes that are no longer in use. */
+    fun cleanupMutexes(activeCodes: Set<String>) {
+        refreshMutexes.keys.removeAll { it !in activeCodes }
+    }
+
     /** Refresh all [codes] in batches of [maxConcurrent]. */
     suspend fun refreshAllConcurrent(
         codes: List<String>,

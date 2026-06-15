@@ -28,7 +28,7 @@ class BusStopStorage(
     private val context: Context,
 ) {
     companion object {
-        private const val CACHE_TTL_MS = 24 * 60 * 60 * 1000L // 24 hours
+        private const val CACHE_DISK_PERSISTENCE_MS = 24 * 60 * 60 * 1000L // Keep data on disk for 24h
         private const val MAX_SAVED_STOPS = 15
 
         // Use getParameterized() instead of anonymous TypeToken subclasses —
@@ -139,7 +139,7 @@ class BusStopStorage(
 
     /** Flow of [code -> List<BusService>] for stops with cached data (non-stale). */
     fun getBusServicesFlow(): Flow<Map<String, List<BusService>>> {
-        val ttlMs = CACHE_TTL_MS
+        val ttlMs = CACHE_DISK_PERSISTENCE_MS
         return context.dataStore.data
             .map { prefs ->
                 val now = System.currentTimeMillis()

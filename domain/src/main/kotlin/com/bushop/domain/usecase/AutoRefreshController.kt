@@ -32,8 +32,4 @@ class AutoRefreshController(
         job?.cancel()
         job = null
     }
-
-    fun onCleared() {
-        stop()
-    }
 }

@@ -2,9 +2,10 @@ package com.bushop.data.api
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 /**
- * Retry a suspend [block] up to [maxRetries] times with exponential backoff.
+ * Retry a suspend [block] up to [maxRetries] times with exponential backoff + jitter.
  * Re-throws [CancellationException] immediately — does not suppress cancellation.
  */
 suspend fun <T> retrySuspend(
@@ -24,7 +25,9 @@ suspend fun <T> retrySuspend(
             lastError = e
         }
         if (attempt < maxRetries) {
-            delay(initialDelayMs * (1 shl attempt))
+            val baseDelay = initialDelayMs * (1 shl attempt)
+            val jitter = Random.nextLong(0, baseDelay / 2)
+            delay(baseDelay + jitter)
         }
     }
     return Result.failure(lastError ?: Exception("Max retries exceeded"))

@@ -74,13 +74,13 @@ class AutoRefreshControllerTest {
         }
 
     @Test
-    fun `onCleared stops the controller`() =
+    fun `stop stops the controller`() =
         runTest {
             val controller = AutoRefreshController(this)
             var count = 0
             controller.start(intervalSeconds = 1) { count++ }
             val afterFirst = count
-            controller.onCleared()
+            controller.stop()
             assertTrue(count >= afterFirst)
         }
 }
