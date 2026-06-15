@@ -3,6 +3,7 @@ package com.bushop.data.local
 import android.content.Context
 import android.util.Log
 import com.bushop.data.api.GsonProvider
+import com.bushop.domain.model.BusStopEntry
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,16 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import kotlin.math.pow
 import kotlin.random.Random
-
-data class BusStopEntry(
-    val code: String,
-    val name: String,
-    val road: String = "",
-    val lat: Double? = null,
-    val lng: Double? = null,
-) {
-    val displayName: String get() = if (name.isNotBlank()) "$name, $road" else code
-}
 
 /**
  * In-memory index of all Singapore bus stops.

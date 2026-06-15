@@ -2,6 +2,7 @@ package com.bushop.domain.repository
 
 import com.bushop.domain.model.BusService
 import com.bushop.domain.model.BusStop
+import com.bushop.domain.model.BusStopEntry
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.NetworkResult
 import com.bushop.domain.model.ThemeMode
@@ -52,4 +53,15 @@ interface BusRepository {
     suspend fun reorderStops(stops: List<BusStop>)
 
     suspend fun getBusArrivals(busStopCode: String): NetworkResult<List<BusService>>
+
+    // ── Search (delegated to BusStopIndex) ──
+    fun searchBusStops(query: String): List<BusStopEntry>
+
+    fun findBusStopByCode(code: String): BusStopEntry?
+
+    fun findNearbyStops(
+        lat: Double,
+        lng: Double,
+        radiusKm: Double = 0.5,
+    ): List<BusStopEntry>
 }

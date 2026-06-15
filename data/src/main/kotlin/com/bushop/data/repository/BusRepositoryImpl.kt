@@ -6,6 +6,7 @@ import com.bushop.data.local.BusStopStorage
 import com.bushop.domain.api.BusArrivalDataSource
 import com.bushop.domain.model.BusService
 import com.bushop.domain.model.BusStop
+import com.bushop.domain.model.BusStopEntry
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.NetworkResult
 import com.bushop.domain.model.ThemeMode
@@ -86,6 +87,16 @@ class BusRepositoryImpl(
     override suspend fun reorderStops(stops: List<BusStop>) {
         storage.reorderStops(stops)
     }
+
+    override fun searchBusStops(query: String): List<BusStopEntry> = busStopIndex.search(query)
+
+    override fun findBusStopByCode(code: String): BusStopEntry? = busStopIndex.findByCode(code)
+
+    override fun findNearbyStops(
+        lat: Double,
+        lng: Double,
+        radiusKm: Double,
+    ): List<BusStopEntry> = busStopIndex.findNearby(lat, lng, radiusKm)
 
     override suspend fun getBusArrivals(busStopCode: String): NetworkResult<List<BusService>> {
         val result =

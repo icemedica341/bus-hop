@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.bushop.data.local.BusStopEntry
+import com.bushop.domain.model.BusStopEntry
 import kotlinx.coroutines.delay
 
 @Composable

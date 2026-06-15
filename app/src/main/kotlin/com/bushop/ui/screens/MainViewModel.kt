@@ -8,16 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bushop.BuildConfig
-import com.bushop.data.api.UpdateChecker
-import com.bushop.data.api.UpdateInfo
-import com.bushop.data.local.BusStopEntry
+import com.bushop.data.api.UpdateCheckerImpl
 import com.bushop.data.local.BusStopIndex
+import com.bushop.domain.api.UpdateChecker
 import com.bushop.domain.model.BusStop
+import com.bushop.domain.model.BusStopEntry
 import com.bushop.domain.model.BusStopWithArrivals
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.DuplicateStopException
 import com.bushop.domain.model.NetworkResult
 import com.bushop.domain.model.ThemeMode
+import com.bushop.domain.model.UpdateInfo
 import com.bushop.domain.repository.BusRepository
 import com.bushop.domain.usecase.AutoRefreshController
 import com.bushop.domain.usecase.BusStopUseCase
@@ -37,6 +38,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 /** Tracks the health of the external bus arrival API. */
@@ -52,11 +54,13 @@ class MainViewModel(
     companion object {
         private const val DEFAULT_AUTO_REFRESH_INTERVAL = 30
         private const val COLLAPSE_DEBOUNCE_MS = 500L
+        private const val REFRESH_COOLDOWN_MS = 400L
         private const val DEGRADED_THRESHOLD = 3
         private const val DOWN_THRESHOLD = 10
     }
 
-    private var isAutoRefreshing = false
+    private val isAutoRefreshing = AtomicBoolean(false)
+    private var searchJob: Job? = null
 
     private val autoRefreshController = AutoRefreshController(viewModelScope)
 
@@ -134,7 +138,7 @@ class MainViewModel(
 
     // ── Index readiness ──
 
-    val isIndexReady: StateFlow<Boolean> = busStopIndex.isReady
+    val isIndexReady: StateFlow<Boolean> = repository.isIndexReady
 
     private val _searchResults = MutableStateFlow<List<BusStopEntry>>(emptyList())
     val searchResults: StateFlow<List<BusStopEntry>> = _searchResults.asStateFlow()
@@ -180,7 +184,7 @@ class MainViewModel(
                     nearbyError = "Could not get current location. Try again later."
                     return@launch
                 }
-                nearbyStops = busStopIndex.findNearby(location.latitude, location.longitude)
+                nearbyStops = repository.findNearbyStops(location.latitude, location.longitude)
                 if (nearbyStops.isEmpty()) {
                     nearbyError = "No bus stops found nearby."
                 }
@@ -213,17 +217,24 @@ class MainViewModel(
         }
     }
 
-    private val updateChecker = UpdateChecker()
+    private val updateChecker: UpdateChecker = UpdateCheckerImpl(getApplication(), BuildConfig.VERSION_NAME)
 
     fun checkForUpdate() {
         if (isCheckingUpdate) return
         isCheckingUpdate = true
         viewModelScope.launch {
             try {
-                val info = updateChecker.checkForUpdate(BuildConfig.VERSION_NAME)
-                updateInfo = info
-                if (info != null && info.hasUpdate) {
-                    _snackbarMessage.tryEmit("Update v${info.latestVersion} available")
+                when (val result = updateChecker.checkForUpdate()) {
+                    is NetworkResult.Success -> {
+                        updateInfo = result.data
+                        if (result.data.hasUpdate) {
+                            _snackbarMessage.tryEmit("Update v${result.data.latestVersion} available")
+                        }
+                    }
+
+                    is NetworkResult.Error -> {
+                        _snackbarMessage.tryEmit("Update check failed: ${result.message}")
+                    }
                 }
             } finally {
                 isCheckingUpdate = false
@@ -233,32 +244,18 @@ class MainViewModel(
 
     /** Download the latest APK and launch the install intent via FileProvider. */
     fun downloadAndInstallUpdate() {
-        val info = updateInfo ?: return
         if (isDownloadingUpdate) return
         isDownloadingUpdate = true
         viewModelScope.launch {
             try {
-                val updatesDir = File(getApplication<android.app.Application>().cacheDir, "updates").also { it.mkdirs() }
-                val targetFile = File(updatesDir, "bus-hop-update.apk")
-                val success = updateChecker.downloadApk(info.downloadUrl, targetFile)
-                if (success) {
-                    val apkUri =
-                        androidx.core.content.FileProvider.getUriForFile(
-                            getApplication(),
-                            "${getApplication<android.app.Application>().packageName}.fileprovider",
-                            targetFile,
-                        )
-                    val intent =
-                        android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-                            setDataAndType(apkUri, "application/vnd.android.package-archive")
-                            flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or
-                                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        }
-                    getApplication<android.app.Application>().startActivity(intent)
-                    targetFile.delete()
-                    _snackbarMessage.tryEmit("Installing v${info.latestVersion}…")
-                } else {
-                    _snackbarMessage.tryEmit("Download failed")
+                when (val result = updateChecker.downloadAndUpdateInstall()) {
+                    is NetworkResult.Success -> {
+                        _snackbarMessage.tryEmit("Installation launched…")
+                    }
+
+                    is NetworkResult.Error -> {
+                        _snackbarMessage.tryEmit("Download failed: ${result.message}")
+                    }
                 }
             } catch (e: CancellationException) {
                 throw e
@@ -273,34 +270,78 @@ class MainViewModel(
     init {
         // Restore persisted preferences
         viewModelScope.launch {
-            repository.themeModeFlow.collect { mode ->
-                _themeModeFlow.value = mode
+            try {
+                repository.themeModeFlow.collect { mode ->
+                    _themeModeFlow.value = mode
+                }
+            } catch (
+                e: CancellationException,
+            ) {
+                throw e
+            } catch (_: Exception) {
+                // flow ended
             }
         }
         viewModelScope.launch {
-            repository.colorSchemeOptionFlow.collect { option ->
-                _colorSchemeOptionFlow.value = option
+            try {
+                repository.colorSchemeOptionFlow.collect { option ->
+                    _colorSchemeOptionFlow.value = option
+                }
+            } catch (
+                e: CancellationException,
+            ) {
+                throw e
+            } catch (_: Exception) {
+                // flow ended
             }
         }
         viewModelScope.launch {
-            autoRefreshIntervalSeconds = repository.getAutoRefreshIntervalOnce()
-            if (autoRefreshIntervalSeconds > 0) {
-                autoRefreshController.start(autoRefreshIntervalSeconds) { refreshAll(isAutoRefresh = true) }
+            try {
+                autoRefreshIntervalSeconds = repository.getAutoRefreshIntervalOnce()
+                if (autoRefreshIntervalSeconds > 0) {
+                    autoRefreshController.start(autoRefreshIntervalSeconds) { refreshAll(isAutoRefresh = true) }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // ignored
             }
         }
         viewModelScope.launch {
-            repository.pinnedServicesFlow.collect { pinned ->
-                _pinnedServices.value = pinned
+            try {
+                repository.pinnedServicesFlow.collect { pinned ->
+                    _pinnedServices.value = pinned
+                }
+            } catch (
+                e: CancellationException,
+            ) {
+                throw e
+            } catch (_: Exception) {
+                // flow ended
             }
         }
         viewModelScope.launch {
-            repository.pinnedStopsFlow.collect { pinned ->
-                _pinnedStops.value = pinned
+            try {
+                repository.pinnedStopsFlow.collect { pinned ->
+                    _pinnedStops.value = pinned
+                }
+            } catch (
+                e: CancellationException,
+            ) {
+                throw e
+            } catch (_: Exception) {
+                // flow ended
             }
         }
         viewModelScope.launch {
-            repository.hasSeenHintFlow.collect { seen ->
-                hasSeenDragHint = seen
+            try {
+                repository.hasSeenHintFlow.collect { seen ->
+                    hasSeenDragHint = seen
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // flow ended
             }
         }
 
@@ -348,7 +389,7 @@ class MainViewModel(
                 lastUpdatedAll = list.maxOfOrNull { it.lastUpdated } ?: lastUpdatedAll
                 val pinnedFirst = list.sortedByDescending { it.isPinned }
                 _savedStops.value = pinnedFirst
-                if (pinnedFirst.isNotEmpty() && !isAutoRefreshing && pinnedFirst.any { it.services.isEmpty() || it.isStale }) {
+                if (pinnedFirst.isNotEmpty() && !isAutoRefreshing.get() && pinnedFirst.any { it.services.isEmpty() || it.isStale }) {
                     refreshAll(isAutoRefresh = true)
                 }
             }
@@ -360,7 +401,7 @@ class MainViewModel(
         addStopDialogVisible = true
         // Pick a random stop from the index once it's loaded (no copy, O(1))
         viewModelScope.launch {
-            busStopIndex.isReady.first { it }
+            repository.isIndexReady.first { it }
             busStopIndex.randomEntry()?.let {
                 randomHint = "${it.code} (${it.name})"
             }
@@ -369,13 +410,15 @@ class MainViewModel(
 
     fun searchBusStops(query: String) {
         addStopError = null
-        viewModelScope.launch(Dispatchers.Default) {
-            val results = busStopIndex.search(query)
-            _searchResults.value = results
-        }
+        searchJob?.cancel()
+        searchJob =
+            viewModelScope.launch(Dispatchers.Default) {
+                val results = repository.searchBusStops(query)
+                _searchResults.value = results
+            }
     }
 
-    fun findBusStopByCode(code: String) = busStopIndex.findByCode(code)
+    fun findBusStopByCode(code: String) = repository.findBusStopByCode(code)
 
     fun hideAddStopDialog() {
         addStopDialogVisible = false
@@ -396,23 +439,29 @@ class MainViewModel(
                 addStopIsLoading = true
                 addStopError = null
 
-                // Validate stop exists by fetching arrivals first
-                when (val arrivalResult = getBusArrivalsSafely(formattedCode)) {
-                    is NetworkResult.Error -> {
-                        addStopError = "Could not verify bus stop (${arrivalResult.message})."
-                        addStopIsLoading = false
-                        return@launch
-                    }
+                // Try local lookup first — allows offline save for known stops
+                val localEntry = repository.findBusStopByCode(formattedCode)
 
-                    is NetworkResult.Success -> {
-                        consecutiveFailures.set(0)
-                        _apiStatus.value = ApiStatus.Healthy
+                if (localEntry == null) {
+                    // Not found locally — network validation required
+                    when (val arrivalResult = getBusArrivalsSafely(formattedCode)) {
+                        is NetworkResult.Error -> {
+                            addStopError = "Could not verify bus stop (${arrivalResult.message})."
+                            addStopIsLoading = false
+                            return@launch
+                        }
+
+                        is NetworkResult.Success -> {
+                            consecutiveFailures.set(0)
+                            _apiStatus.value = ApiStatus.Healthy
+                        }
                     }
                 }
 
+                val stopName = name.ifBlank { localEntry?.name ?: "" }
                 val result =
                     try {
-                        repository.addBusStop(BusStop(code = formattedCode, name = name))
+                        repository.addBusStop(BusStop(code = formattedCode, name = stopName))
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
@@ -433,6 +482,14 @@ class MainViewModel(
                 addStopIsLoading = false
                 hideAddStopDialog()
                 _recentlyAddedStop.value = formattedCode
+
+                // Background validation for locally-found stops — failure is OK
+                if (localEntry != null) {
+                    viewModelScope.launch {
+                        getBusArrivalsSafely(formattedCode)
+                        // Result intentionally ignored — stop remains saved
+                    }
+                }
             } else {
                 addStopError = "Invalid bus stop code"
             }
@@ -450,9 +507,19 @@ class MainViewModel(
 
     fun removeBusStop(code: String) {
         // Update state immediately (don't wait for DataStore flow)
+        val removedStop = _savedStops.value.find { it.busStop.code == code }
         _savedStops.value = _savedStops.value.filter { it.busStop.code != code }
         viewModelScope.launch {
-            repository.removeBusStop(code)
+            try {
+                repository.removeBusStop(code)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (removedStop != null) {
+                    _savedStops.value = _savedStops.value + removedStop
+                }
+                _snackbarMessage.tryEmit("Failed to remove bus stop")
+            }
         }
     }
 
@@ -544,6 +611,14 @@ class MainViewModel(
         }
     }
 
+    /** Helper: update one stop in _savedStops by index without full list rebuild. */
+    private fun updateStop(
+        index: Int,
+        transform: (BusStopWithArrivals) -> BusStopWithArrivals,
+    ) {
+        _savedStops.value = _savedStops.value.toMutableList().apply { this[index] = transform(this[index]) }
+    }
+
     fun refreshArrivals(
         code: String,
         isAutoRefresh: Boolean = false,
@@ -557,8 +632,7 @@ class MainViewModel(
 
     fun refreshAll(isAutoRefresh: Boolean = false) {
         if (isAutoRefresh) {
-            if (isAutoRefreshing) return
-            isAutoRefreshing = true
+            if (!isAutoRefreshing.compareAndSet(false, true)) return
             viewModelScope.launch {
                 try {
                     refreshCoordinator.refreshAllConcurrent(
@@ -567,7 +641,7 @@ class MainViewModel(
                         refreshBlock = { refreshArrivalsInternal(it, true) },
                     )
                 } finally {
-                    isAutoRefreshing = false
+                    isAutoRefreshing.set(false)
                 }
             }
             return
@@ -582,7 +656,7 @@ class MainViewModel(
                     isAutoRefresh = false,
                     refreshBlock = { refreshArrivalsInternal(it, false) },
                 )
-                delay(400)
+                delay(REFRESH_COOLDOWN_MS)
             } finally {
                 isRefreshing = false
             }
@@ -729,15 +803,18 @@ class MainViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        autoRefreshController.onCleared()
+        autoRefreshController.stop()
     }
 
     class Factory(
         private val application: android.app.Application,
         private val repository: BusRepository,
         private val busStopIndex: BusStopIndex,
+        private val useCase: BusStopUseCase = BusStopUseCase(),
+        private val refreshCoordinator: StopRefreshCoordinator = StopRefreshCoordinator(),
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = MainViewModel(application, repository, busStopIndex) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            MainViewModel(application, repository, busStopIndex, useCase, refreshCoordinator) as T
     }
 }

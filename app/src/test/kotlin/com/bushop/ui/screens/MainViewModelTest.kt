@@ -1,11 +1,11 @@
 package com.bushop.ui.screens
 
 import android.app.Application
-import com.bushop.data.local.BusStopEntry
 import com.bushop.data.local.BusStopIndex
 import com.bushop.domain.model.BusInfo
 import com.bushop.domain.model.BusService
 import com.bushop.domain.model.BusStop
+import com.bushop.domain.model.BusStopEntry
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.DuplicateStopException
 import com.bushop.domain.model.NetworkResult
@@ -73,6 +73,9 @@ class MainViewModelTest {
                     colorSchemeFlow.value = firstArg()
                 }
                 coEvery { setThemeMode(any<ThemeMode>()) } answers { }
+                coEvery { findBusStopByCode(any()) } returns null
+                coEvery { searchBusStops(any()) } returns emptyList()
+                coEvery { findNearbyStops(any(), any(), any()) } returns emptyList()
             }
 
         busStopIndex =
@@ -614,7 +617,7 @@ class MainViewModelTest {
     @Test
     fun `searchBusStops delegates to index`() =
         runTest(testDispatcher) {
-            every { busStopIndex.search("123") } returns
+            coEvery { repository.searchBusStops("123") } returns
                 listOf(
                     BusStopEntry("12345", "Test Stop", "Test Rd"),
                 )
@@ -623,18 +626,18 @@ class MainViewModelTest {
             val results = viewModel.searchResults.first { it.isNotEmpty() }
 
             assertEquals("12345", results.first().code)
-            verify { busStopIndex.search("123") }
+            coVerify { repository.searchBusStops("123") }
         }
 
     @Test
     fun `findBusStopByCode delegates to index`() {
-        every { busStopIndex.findByCode("12345") } returns BusStopEntry("12345", "Test Stop", "Test Rd")
+        coEvery { repository.findBusStopByCode("12345") } returns BusStopEntry("12345", "Test Stop", "Test Rd")
 
         val result = viewModel.findBusStopByCode("12345")
 
         assertNotNull(result)
         assertEquals("Test Stop", result?.name)
-        verify { busStopIndex.findByCode("12345") }
+        coVerify { repository.findBusStopByCode("12345") }
     }
 
     // ── Refresh failure ──

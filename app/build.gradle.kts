@@ -55,10 +55,12 @@ android {
 
     defaultConfig {
         applicationId = "com.bushop"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 44
         versionName = "1.0.0"
+
+        resConfigs("en")
 
         vectorDrawables {
             useSupportLibrary = true
@@ -87,7 +89,6 @@ android {
     }
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -139,8 +140,6 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
     androidTestImplementation(libs.compose.ui.test.junit4)
-
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
