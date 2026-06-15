@@ -212,4 +212,186 @@ class ArchitectureTest {
             violations.isEmpty(),
         )
     }
+
+    // ── Domain module must not depend on Android or AndroidX ──
+
+    @Test
+    fun `domain module has no Android dependencies`() {
+        val buildFile = File(projectRoot, "domain/build.gradle.kts")
+        Assert.assertTrue("domain/build.gradle.kts not found", buildFile.exists())
+        val lines = buildFile.readLines()
+        val violations = mutableListOf<String>()
+        val androidPatterns =
+            listOf("androidx.", "android.", "com.android.", "com.google.android.")
+        for (line in lines) {
+            val trimmed = line.trim()
+            if (trimmed.startsWith("implementation") || trimmed.startsWith("api") ||
+                trimmed.startsWith("compileOnly") || trimmed.startsWith("runtimeOnly")
+            ) {
+                for (pattern in androidPatterns) {
+                    if (trimmed.contains(pattern)) {
+                        violations.add(trimmed)
+                        break
+                    }
+                }
+            }
+        }
+        Assert.assertTrue(
+            buildString {
+                appendLine("domain/ module must not depend on Android/AndroidX libraries:")
+                violations.forEach { appendLine("  $it") }
+            },
+            violations.isEmpty(),
+        )
+    }
+
+    // ── Module dependency direction ──
+
+    @Test
+    fun `module dependency direction is correct`() {
+        val violations = mutableListOf<String>()
+
+        // domain must not depend on data or app
+        val domainBuild = File(projectRoot, "domain/build.gradle.kts").readLines()
+        for (line in domainBuild) {
+            val trimmed = line.trim()
+            if (trimmed.startsWith("implementation") || trimmed.startsWith("api")) {
+                if (trimmed.contains("project(\":data") || trimmed.contains("project(\":app")) {
+                    violations.add("domain/build.gradle.kts: $trimmed")
+                }
+            }
+        }
+
+        // data must depend on domain but not on app
+        val dataBuild = File(projectRoot, "data/build.gradle.kts").readLines()
+        var hasDomainDep = false
+        for (line in dataBuild) {
+            val trimmed = line.trim()
+            if (trimmed.startsWith("implementation") || trimmed.startsWith("api")) {
+                if (trimmed.contains("project(\":domain")) hasDomainDep = true
+                if (trimmed.contains("project(\":app")) {
+                    violations.add("data/build.gradle.kts: $trimmed")
+                }
+            }
+        }
+        if (!hasDomainDep) {
+            violations.add("data/build.gradle.kts: missing dependency on :domain")
+        }
+
+        Assert.assertTrue(
+            buildString {
+                appendLine("Module dependency direction violations:")
+                violations.forEach { appendLine("  $it") }
+            },
+            violations.isEmpty(),
+        )
+    }
+
+    // ── Version catalog has no unused entries ──
+    // Scopes regex to the correct TOML section ([versions], [libraries], [plugins]).
+
+    @Test
+    fun `all version catalog entries are referenced`() {
+        val catalogFile = File(projectRoot, "gradle/libs.versions.toml")
+        Assert.assertTrue("libs.versions.toml not found", catalogFile.exists())
+        val lines = catalogFile.readLines()
+
+        // Track which TOML section we are in
+        var section = ""
+        val versionKeys = mutableListOf<String>()
+        val libraryKeys = mutableListOf<String>()
+        val pluginKeys = mutableListOf<String>()
+
+        for (line in lines) {
+            val trimmed = line.trim()
+            when {
+                trimmed == "[versions]" -> {
+                    section = "versions"
+                }
+
+                trimmed == "[libraries]" -> {
+                    section = "libraries"
+                }
+
+                trimmed == "[plugins]" -> {
+                    section = "plugins"
+                }
+
+                trimmed.startsWith("[") -> {
+                    section = "other"
+                }
+
+                trimmed.isEmpty() || trimmed.startsWith("#") -> {
+                    continue
+                }
+
+                section == "versions" -> {
+                    val eqIdx = trimmed.indexOf('=')
+                    if (eqIdx > 0) versionKeys.add(trimmed.substring(0, eqIdx).trim())
+                }
+
+                section == "libraries" -> {
+                    val eqIdx = trimmed.indexOf("= {")
+                    if (eqIdx > 0) libraryKeys.add(trimmed.substring(0, eqIdx).trim())
+                }
+
+                section == "plugins" -> {
+                    val eqIdx = trimmed.indexOf("= {")
+                    if (eqIdx > 0) pluginKeys.add(trimmed.substring(0, eqIdx).trim())
+                }
+            }
+        }
+
+        // Search all build.gradle.kts files for references
+        val allBuildFiles =
+            listOf(
+                File(projectRoot, "build.gradle.kts"),
+                File(projectRoot, "app/build.gradle.kts"),
+                File(projectRoot, "data/build.gradle.kts"),
+                File(projectRoot, "domain/build.gradle.kts"),
+            )
+        val allBuildText = allBuildFiles.filter { it.exists() }.joinToString("\n") { it.readText() }
+
+        val violations = mutableListOf<String>()
+
+        // Check each library key has a "libs.<key>" reference in build files
+        // (hyphens in catalog keys map to dots in Kotlin DSL accessors)
+        for (key in libraryKeys) {
+            val dslKey = key.replace("-", ".")
+            val refPattern = "libs.$dslKey"
+            if (!allBuildText.contains(refPattern)) {
+                violations.add("'$key' defined in libs.versions.toml but never referenced (looked for libs.$dslKey)")
+            }
+        }
+
+        // Check each plugin key has a "libs.plugins.<key>" reference in build files
+        for (key in pluginKeys) {
+            val dslKey = key.replace("-", ".")
+            val refPattern = "libs.plugins.$dslKey"
+            if (!allBuildText.contains(refPattern)) {
+                violations.add("'$key' defined in [plugins] but never referenced (looked for $refPattern)")
+            }
+        }
+
+        // Check each version key that's not referenced by any library entry
+        val referencedVersions =
+            Regex("""version\.ref\s*=\s*"([^"]+)""")
+                .findAll(catalogFile.readText())
+                .map { it.groupValues[1] }
+                .toSet()
+
+        for (key in versionKeys) {
+            if (key !in referencedVersions) {
+                violations.add("version '$key' defined but not referenced by any library entry")
+            }
+        }
+
+        Assert.assertTrue(
+            buildString {
+                appendLine("Version catalog issues:")
+                violations.forEach { appendLine("  $it") }
+            },
+            violations.isEmpty(),
+        )
+    }
 }

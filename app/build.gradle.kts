@@ -140,6 +140,9 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
     androidTestImplementation(libs.compose.ui.test.junit4)
 
+    // Compose Compiler plugin (Kotlin 2.4+) requires compose runtime on all source sets
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.compose.runtime)
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockk)

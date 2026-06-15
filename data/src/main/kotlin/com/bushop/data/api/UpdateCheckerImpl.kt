@@ -17,8 +17,8 @@ import java.io.FileOutputStream
 class UpdateCheckerImpl(
     private val context: Context,
     private val currentVersion: String,
+    internal val client: okhttp3.OkHttpClient = ApiClient.okHttpClient,
 ) : UpdateChecker {
-    private val client = ApiClient.okHttpClient
     private val gson = GsonProvider.gson
     private val apiUrl = "https://api.github.com/repos/icemedica341/BusHop/releases/latest"
 
