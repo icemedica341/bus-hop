@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bushop.data.api.RetrofitBusArrivalDataSource
+import com.bushop.data.api.UpdateCheckerImpl
 import com.bushop.data.local.BusStopIndex
 import com.bushop.data.local.BusStopStorage
 import com.bushop.data.repository.BusRepositoryImpl
@@ -43,7 +44,8 @@ class MainActivity : ComponentActivity() {
                 lifecycleScope.launch { idx.load() }
             }
         val repository = BusRepositoryImpl(storage, dataSource, busStopIndex)
-        val viewModelFactory = MainViewModel.Factory(application, repository, busStopIndex)
+        val updateChecker = UpdateCheckerImpl(applicationContext, BuildConfig.VERSION_NAME)
+        val viewModelFactory = MainViewModel.Factory(application, repository, busStopIndex, updateChecker)
 
         setContent {
             val viewModel: MainViewModel = viewModel(factory = viewModelFactory)

@@ -7,8 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.bushop.BuildConfig
-import com.bushop.data.api.UpdateCheckerImpl
 import com.bushop.data.local.BusStopIndex
 import com.bushop.domain.api.UpdateChecker
 import com.bushop.domain.model.BusStop
@@ -18,7 +16,6 @@ import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.DuplicateStopException
 import com.bushop.domain.model.NetworkResult
 import com.bushop.domain.model.ThemeMode
-import com.bushop.domain.model.UpdateInfo
 import com.bushop.domain.repository.BusRepository
 import com.bushop.domain.usecase.AutoRefreshController
 import com.bushop.domain.usecase.BusStopUseCase
@@ -48,9 +45,17 @@ class MainViewModel(
     application: android.app.Application,
     private val repository: BusRepository,
     private val busStopIndex: BusStopIndex,
+    private val updateChecker: UpdateChecker,
     private val useCase: BusStopUseCase = BusStopUseCase(),
     private val refreshCoordinator: StopRefreshCoordinator = StopRefreshCoordinator(),
 ) : AndroidViewModel(application) {
+    /** Delegated theme and colour-scheme management. */
+    val themeManager = ThemeManager(viewModelScope, repository)
+
+    /** Delegated update check, download, and install. */
+    val updateManager =
+        UpdateManager(viewModelScope, updateChecker, repository) { msg -> _snackbarMessage.tryEmit(msg) }
+
     companion object {
         private const val DEFAULT_AUTO_REFRESH_INTERVAL = 30
         private const val COLLAPSE_DEBOUNCE_MS = 500L
@@ -112,29 +117,14 @@ class MainViewModel(
         _apiStatus.value = ApiStatus.Healthy
     }
 
-    // ── Theme ──
+    // ── Theme (delegated to ThemeManager) ──
 
-    private val _themeModeFlow = MutableStateFlow(ThemeMode.SYSTEM)
-    val themeModeFlow: StateFlow<ThemeMode> = _themeModeFlow.asStateFlow()
+    val themeModeFlow: StateFlow<ThemeMode> get() = themeManager.themeModeFlow
+    val colorSchemeOptionFlow: StateFlow<ColorSchemeOption> get() = themeManager.colorSchemeOptionFlow
 
-    fun setThemeMode(mode: ThemeMode) {
-        _themeModeFlow.value = mode
-        viewModelScope.launch {
-            repository.setThemeMode(mode)
-        }
-    }
+    fun setThemeMode(mode: ThemeMode) = themeManager.setThemeMode(mode)
 
-    // ── Colour scheme ──
-
-    private val _colorSchemeOptionFlow = MutableStateFlow(ColorSchemeOption.BLUE)
-    val colorSchemeOptionFlow: StateFlow<ColorSchemeOption> = _colorSchemeOptionFlow.asStateFlow()
-
-    fun setColorSchemeOption(option: ColorSchemeOption) {
-        _colorSchemeOptionFlow.value = option
-        viewModelScope.launch {
-            repository.setColorSchemeOption(option)
-        }
-    }
+    fun setColorSchemeOption(option: ColorSchemeOption) = themeManager.setColorSchemeOption(option)
 
     // ── Index readiness ──
 
@@ -200,101 +190,36 @@ class MainViewModel(
         }
     }
 
-    // ── Update checker ──
+    // ── Update checker (delegated to UpdateManager) ──
 
-    var updateInfo by mutableStateOf<UpdateInfo?>(null)
-        private set
-    var isCheckingUpdate by mutableStateOf(false)
-        private set
-    var isDownloadingUpdate by mutableStateOf(false)
-    var hasSeenDragHint by mutableStateOf(false)
-        private set
-
-    fun dismissHint() {
-        hasSeenDragHint = true
-        viewModelScope.launch {
-            repository.saveHintSeen(true)
+    var updateInfo get() = updateManager.updateInfo
+        set(v) {
+            updateManager.updateInfo = v
         }
-    }
-
-    private val updateChecker: UpdateChecker = UpdateCheckerImpl(getApplication(), BuildConfig.VERSION_NAME)
-
-    fun checkForUpdate() {
-        if (isCheckingUpdate) return
-        isCheckingUpdate = true
-        viewModelScope.launch {
-            try {
-                when (val result = updateChecker.checkForUpdate()) {
-                    is NetworkResult.Success -> {
-                        updateInfo = result.data
-                        if (result.data.hasUpdate) {
-                            _snackbarMessage.tryEmit("Update v${result.data.latestVersion} available")
-                        }
-                    }
-
-                    is NetworkResult.Error -> {
-                        _snackbarMessage.tryEmit("Update check failed: ${result.message}")
-                    }
-                }
-            } finally {
-                isCheckingUpdate = false
-            }
+    var isCheckingUpdate get() = updateManager.isCheckingUpdate
+        set(v) {
+            updateManager.isCheckingUpdate = v
         }
-    }
-
-    /** Download the latest APK and launch the install intent via FileProvider. */
-    fun downloadAndInstallUpdate() {
-        if (isDownloadingUpdate) return
-        isDownloadingUpdate = true
-        viewModelScope.launch {
-            try {
-                when (val result = updateChecker.downloadAndUpdateInstall()) {
-                    is NetworkResult.Success -> {
-                        _snackbarMessage.tryEmit("Installation launched…")
-                    }
-
-                    is NetworkResult.Error -> {
-                        _snackbarMessage.tryEmit("Download failed: ${result.message}")
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _snackbarMessage.tryEmit("Install failed. Check storage space and try again.")
-            } finally {
-                isDownloadingUpdate = false
-            }
+    var isDownloadingUpdate get() = updateManager.isDownloadingUpdate
+        set(v) {
+            updateManager.isDownloadingUpdate = v
         }
-    }
+    var hasSeenDragHint get() = updateManager.hasSeenDragHint
+        set(v) {
+            updateManager.hasSeenDragHint = v
+        }
+
+    fun dismissHint() = updateManager.dismissHint()
+
+    fun checkForUpdate() = updateManager.checkForUpdate()
+
+    fun downloadAndInstallUpdate() = updateManager.downloadAndInstallUpdate()
 
     init {
-        // Restore persisted preferences
-        viewModelScope.launch {
-            try {
-                repository.themeModeFlow.collect { mode ->
-                    _themeModeFlow.value = mode
-                }
-            } catch (
-                e: CancellationException,
-            ) {
-                throw e
-            } catch (_: Exception) {
-                // flow ended
-            }
-        }
-        viewModelScope.launch {
-            try {
-                repository.colorSchemeOptionFlow.collect { option ->
-                    _colorSchemeOptionFlow.value = option
-                }
-            } catch (
-                e: CancellationException,
-            ) {
-                throw e
-            } catch (_: Exception) {
-                // flow ended
-            }
-        }
+        // Restore persisted preferences from delegates
+        themeManager.observePersisted()
+        updateManager.observePersisted()
+
         viewModelScope.launch {
             try {
                 autoRefreshIntervalSeconds = repository.getAutoRefreshIntervalOnce()
@@ -328,17 +253,6 @@ class MainViewModel(
             } catch (
                 e: CancellationException,
             ) {
-                throw e
-            } catch (_: Exception) {
-                // flow ended
-            }
-        }
-        viewModelScope.launch {
-            try {
-                repository.hasSeenHintFlow.collect { seen ->
-                    hasSeenDragHint = seen
-                }
-            } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
                 // flow ended
@@ -675,15 +589,7 @@ class MainViewModel(
         }
     }
 
-    fun toggleThemeMode() {
-        setThemeMode(
-            when (_themeModeFlow.value) {
-                ThemeMode.SYSTEM -> ThemeMode.LIGHT
-                ThemeMode.LIGHT -> ThemeMode.DARK
-                ThemeMode.DARK -> ThemeMode.SYSTEM
-            },
-        )
-    }
+    fun toggleThemeMode() = themeManager.toggleThemeMode()
 
     fun toggleSortOrder() {
         val newValue = !_sortByEarliest.value
@@ -810,11 +716,12 @@ class MainViewModel(
         private val application: android.app.Application,
         private val repository: BusRepository,
         private val busStopIndex: BusStopIndex,
+        private val updateChecker: UpdateChecker,
         private val useCase: BusStopUseCase = BusStopUseCase(),
         private val refreshCoordinator: StopRefreshCoordinator = StopRefreshCoordinator(),
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            MainViewModel(application, repository, busStopIndex, useCase, refreshCoordinator) as T
+            MainViewModel(application, repository, busStopIndex, updateChecker, useCase, refreshCoordinator) as T
     }
 }
