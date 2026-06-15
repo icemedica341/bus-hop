@@ -712,24 +712,24 @@ fun BusServiceRow(
     }
 }
 
+// ── Operator badge constants ──
+private val operatorColor =
+    mapOf(
+        "SBST" to Color(0xFF0055A4),
+        "SMRT" to Color(0xFF003D7C),
+        "TTS" to Color(0xFF8B0000),
+        "GAS" to Color(0xFF6B8E23),
+    )
+private val operatorLabel =
+    mapOf(
+        "SBST" to "SBS",
+    )
+private val defaultOperatorColor = Color(0xFF666666)
+
 @Composable
 private fun OperatorBadge(operator: String) {
-    val color =
-        when (operator) {
-            "SBST" -> Color(0xFF0055A4)
-            "SMRT" -> Color(0xFF003D7C)
-            "TTS" -> Color(0xFF8B0000)
-            "GAS" -> Color(0xFF6B8E23)
-            else -> Color(0xFF666666)
-        }
-    val label =
-        when (operator) {
-            "SBST" -> "SBS"
-            "SMRT" -> "SMRT"
-            "TTS" -> "TTS"
-            "GAS" -> "GAS"
-            else -> operator
-        }
+    val color = operatorColor[operator] ?: defaultOperatorColor
+    val label = operatorLabel[operator] ?: operator
 
     Box(
         modifier =

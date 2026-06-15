@@ -84,7 +84,8 @@ class MainViewModelTest {
                 every { findByCode(any()) } returns null
             }
 
-        viewModel = MainViewModel(mockk(relaxed = true), repository, busStopIndex)
+        val updateChecker = mockk<com.bushop.domain.api.UpdateChecker>(relaxed = true)
+        viewModel = MainViewModel(mockk(relaxed = true), repository, busStopIndex, updateChecker)
     }
 
     @After

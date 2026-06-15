@@ -314,33 +314,63 @@ class BusStopIndex(
     ): Int {
         if (qt.raw in rawTokens || qt.expanded in expandedTokens) return 1000
 
-        val candidates = rawTokens + expandedTokens
-        for (t in candidates) {
-            when {
-                t.startsWith(qt.raw) || t.startsWith(qt.expanded) -> return 800
-                qt.raw.startsWith(t) && t.length >= 2 -> return 600
-                t.contains(qt.raw) || t.contains(qt.expanded) -> return 400
-                qt.raw.contains(t) && t.length >= 2 -> return 300
-            }
+        // Iterate both lists separately to avoid allocating a merged list
+        for (t in rawTokens) {
+            val r = matchTokenScore(qt, t)
+            if (r != 0) return r
+        }
+        for (t in expandedTokens) {
+            val r = matchTokenScore(qt, t)
+            if (r != 0) return r
         }
 
         // Multi-word abbreviation: match any expansion sub-token
         if (qt.expandedSubs.size > 1) {
             for (sub in qt.expandedSubs) {
                 if (sub.length < 2) continue
-                for (t in candidates) {
+                for (t in rawTokens) {
+                    if (t.length >= 2 && (t == sub || t.startsWith(sub) || sub.startsWith(t))) return 400
+                }
+                for (t in expandedTokens) {
                     if (t.length >= 2 && (t == sub || t.startsWith(sub) || sub.startsWith(t))) return 400
                 }
             }
         }
 
         // Fuzzy: Levenshtein with optimised pre-checks
-        for (t in candidates) {
-            val limit = if (t.length >= 6) 2 else 1
-            if (qt.raw.length >= 3 && levenshtein(t, qt.raw, limit) <= limit) return 250
-            if (qt.expanded.length >= 3 && levenshtein(t, qt.expanded, limit) <= limit) return 220
+        for (t in rawTokens) {
+            val r = matchTokenFuzzy(qt, t)
+            if (r != 0) return r
+        }
+        for (t in expandedTokens) {
+            val r = matchTokenFuzzy(qt, t)
+            if (r != 0) return r
         }
 
+        return 0
+    }
+
+    /** Score a single token against the query — returns 0 if no match. */
+    private fun matchTokenScore(
+        qt: QueryToken,
+        t: String,
+    ): Int =
+        when {
+            t.startsWith(qt.raw) || t.startsWith(qt.expanded) -> 800
+            qt.raw.startsWith(t) && t.length >= 2 -> 600
+            t.contains(qt.raw) || t.contains(qt.expanded) -> 400
+            qt.raw.contains(t) && t.length >= 2 -> 300
+            else -> 0
+        }
+
+    /** Fuzzy (Levenshtein) match for a single token — returns 0 if no match. */
+    private fun matchTokenFuzzy(
+        qt: QueryToken,
+        t: String,
+    ): Int {
+        val limit = if (t.length >= 6) 2 else 1
+        if (qt.raw.length >= 3 && levenshtein(t, qt.raw, limit) <= limit) return 250
+        if (qt.expanded.length >= 3 && levenshtein(t, qt.expanded, limit) <= limit) return 220
         return 0
     }
 
