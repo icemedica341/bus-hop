@@ -124,6 +124,7 @@ dependencies {
     androidTestImplementation(composeBom)
 
     implementation(libs.core.ktx)
+    implementation(libs.core.splashscreen)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
 
