@@ -17,10 +17,11 @@ import java.io.FileOutputStream
 class UpdateCheckerImpl(
     private val context: Context,
     private val currentVersion: String,
+    private val githubRepo: String = "icemedica341/Bus-Hop",
     internal val client: okhttp3.OkHttpClient = ApiClient.okHttpClient,
 ) : UpdateChecker {
     private val gson = GsonProvider.gson
-    private val apiUrl = "https://api.github.com/repos/icemedica341/BusHop/releases/latest"
+    private val apiUrl = "https://api.github.com/repos/$githubRepo/releases/latest"
 
     private var latestUpdateInfo: UpdateInfo? = null
 
