@@ -25,7 +25,7 @@ class UpdateCheckerImplTest {
     fun setUp() {
         context = mockk(relaxed = true)
         client = mockk()
-        checker = UpdateCheckerImpl(context, "1.0.0", client)
+        checker = UpdateCheckerImpl(context, "1.0.0", client = client)
     }
 
     @Test
@@ -40,7 +40,7 @@ class UpdateCheckerImplTest {
                   "assets": [
                     {
                       "name": "bus-hop-v1.1.0.apk",
-                      "browser_download_url": "https://github.com/icemedica341/BusHop/releases/download/v1.1.0/bus-hop-v1.1.0.apk"
+                      "browser_download_url": "https://github.com/icemedica341/Bus-Hop/releases/download/v1.1.0/bus-hop-v1.1.0.apk"
                     }
                   ]
                 }
@@ -99,7 +99,7 @@ class UpdateCheckerImplTest {
                   "assets": [
                     {
                       "name": "bus-hop-v1.0.0.apk",
-                      "browser_download_url": "https://github.com/icemedica341/BusHop/releases/download/v1.0.0/bus-hop-v1.0.0.apk"
+                      "browser_download_url": "https://github.com/icemedica341/Bus-Hop/releases/download/v1.0.0/bus-hop-v1.0.0.apk"
                     }
                   ]
                 }
@@ -161,7 +161,7 @@ class UpdateCheckerImplTest {
     private fun buildResponse(body: ResponseBody): Response =
         Response
             .Builder()
-            .request(Request.Builder().url("https://api.github.com/repos/icemedica341/BusHop/releases/latest").build())
+            .request(Request.Builder().url("https://api.github.com/repos/icemedica341/Bus-Hop/releases/latest").build())
             .protocol(Protocol.HTTP_1_1)
             .code(200)
             .message("OK")

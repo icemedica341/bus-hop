@@ -4,14 +4,19 @@
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search. No ads, no accounts, no tracking.</p>
   <p>
-    <img src="https://img.shields.io/badge/Kotlin-2.4-7F52FF?logo=kotlin&logoColor=white">
-    <img src="https://img.shields.io/badge/Compose-BOM%202026.05-4285F4?logo=jetpackcompose&logoColor=white">
-    <img src="https://img.shields.io/badge/minSdk-26-34A853">
-    <img src="https://img.shields.io/badge/targetSdk-37-34A853">
-    <img src="https://img.shields.io/badge/license-MIT-yellow">
-    <img src="https://img.shields.io/badge/tests-161%20passing-34A853">
+    <img src="docs/badges/kotlin.svg">
+    <img src="docs/badges/compose.svg">
+    <img src="docs/badges/minsdk.svg">
+    <img src="docs/badges/targetsdk.svg">
+    <img src="docs/badges/license.svg">
+    <img src="docs/badges/tests.svg">
   </p>
 </div>
+
+<p align="center">
+  <a href="./CREDITS.md"><img src="docs/badges/gpt5.4.svg" alt="GPT 5.4"></a>
+  <a href="./CREDITS.md"><img src="docs/badges/deepseek.svg" alt="DeepSeek V4 Flash"></a>
+</p>
 
 ---
 
@@ -47,7 +52,7 @@
 
 ## Download
 
-> **Latest release:** [v1.0.1](https://github.com/icemedica341/BusHop/releases/latest) — `app-release.apk` (**1.7 MB**, R8-minified, shrinkResources, signed)
+> **Latest release:** [v1.0.1](https://github.com/icemedica341/Bus-Hop/releases/latest) — `app-release.apk` (**1.7 MB**, R8-minified, shrinkResources, signed)
 
 Or [build from source](#build-from-source) for a debug APK.
 
@@ -63,9 +68,9 @@ Or [build from source](#build-from-source) for a debug APK.
 
 <img src="docs/pipeline.svg" alt="Development pipeline" width="800">
 
-1. **Development** — Code written iteratively by AI agent + human review. Source, tests, and config live in `main`.
+1. **Development** — AI-driven implementation steered by human architectural direction. Source, tests, and config live in `main`.
 2. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.7 MB (vs debug).
-3. **Test** — 161 unit tests across 9 test classes (domain, data, app layers + architecture constraints).
+3. **Test** — Unit tests across 9 test classes (domain, data, app layers + architecture constraints). Run `./gradlew updateBadges -PautoDetect` after changing test count.
 4. **Release** — APK published as a GitHub Release (`gh release create`), distributed via Obtainium.
 
 ## Tech Stack
@@ -109,14 +114,15 @@ Or [build from source](#build-from-source) for a debug APK.
 
 ## Automated Checks
 
-| Check              | When                            | Where                                                                |
-| ------------------ | ------------------------------- | -------------------------------------------------------------------- |
-| APK integrity      | Every `./gradlew assembleDebug` | `app/build.gradle.kts` — `checkAndRenameDebugApk`                    |
-| Architecture tests | Every `./gradlew test`          | `ArchitectureTest.kt` — 8 rules (layer separation, ProGuard, deps)   |
+| Check              | When                            | Where                                                              |
+| ------------------ | ------------------------------- | ------------------------------------------------------------------ |
+| APK integrity      | Every `./gradlew assembleDebug` | `app/build.gradle.kts` — `checkAndRenameDebugApk`                  |
+| Architecture tests | Every `./gradlew test`          | `ArchitectureTest.kt` — 8 rules (layer separation, ProGuard, deps) |
+| Badge freshness    | After test count changes        | `./gradlew updateBadges -PtestCount=N` — refresh static SVGs       |
 
 ## Testing
 
-**161 tests** across 9 test classes:
+**Unit tests** across 9 test classes — see [tests badge](docs/badges/tests.svg) for current count:
 
 | Module                        | Tests | What's covered                                                              |
 | ----------------------------- | ----- | --------------------------------------------------------------------------- |
