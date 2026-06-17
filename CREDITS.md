@@ -7,9 +7,9 @@ of us predicted alone.
 
 ## AI Contributions
 
-| Phase               | Model             | Reasoning | Tool          | Role                                                |
-| ------------------- | ----------------- | --------- | ------------- | --------------------------------------------------- |
-| Early prototyping   | GPT 5.4           | high      | Codex Desktop | AI: implementation · Human: architecture & steering |
-| Primary development | DeepSeek V4 Flash | max       | OpenCode TUI  | AI: implementation · Human: oversight & goals       |
+| Phase               | Model             | Reasoning | Interface     | Plan | Role                                                |
+| ------------------- | ----------------- | --------- | ------------- | ---- | --------------------------------------------------- |
+| Early prototyping   | GPT 5.4           | high      | Codex Desktop | Plus | AI: implementation · Human: architecture & steering |
+| Primary development | DeepSeek V4 Flash | max       | OpenCode TUI  | Go   | AI: implementation · Human: oversight & goals       |
 
 **Reasoning** refers to the model's reasoning effort setting where available.

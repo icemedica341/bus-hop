@@ -14,6 +14,8 @@
 </div>
 
 <p align="center">
+  <sub>Built with AI assistance — see <a href="./CREDITS.md">CREDITS.md</a></sub>
+  <br>
   <a href="./CREDITS.md"><img src="docs/badges/gpt5.4.svg" alt="GPT 5.4"></a>
   <a href="./CREDITS.md"><img src="docs/badges/deepseek.svg" alt="DeepSeek V4 Flash"></a>
 </p>
