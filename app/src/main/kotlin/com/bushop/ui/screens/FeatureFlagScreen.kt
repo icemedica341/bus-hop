@@ -1,5 +1,17 @@
 package com.bushop.ui.screens
 
+
+/**
+ * ┌─ FeatureFlagDialog ──────────────────────────────┐
+ * │  app/ layer · Debug UI for runtime flag toggles  │
+ * │                                                   │
+ * │  AlertDialog listing all FeatureFlag.entries     │
+ * │  Switch per flag → setOverride(ctx, key, bool)   │
+ * │  Reset All → clears all SharedPreferences        │
+ * │  Accessed: long-press version in SettingsSheet   │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

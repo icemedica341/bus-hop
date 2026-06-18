@@ -1,5 +1,18 @@
 package com.bushop.domain.repository
 
+
+/**
+ * ┌─ BusRepository ──────────────────────────────────┐
+ * │  domain/ layer · Repository interface            │
+ * │                                                   │
+ * │  getArrivals(code) ─→ Flow<BusStopWithArrivals>  │
+ * │  savedStops flow, pin/collapse/delete operations │
+ * │  Theme/color preferences read/write              │
+ * │  Search, nearby stops, drag hint state           │
+ * │  Implemented by BusRepositoryImpl in data/       │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import com.bushop.domain.model.BusService
 import com.bushop.domain.model.BusStop
 import com.bushop.domain.model.BusStopEntry

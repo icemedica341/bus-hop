@@ -1,5 +1,17 @@
 package com.bushop.data.api
 
+
+/**
+ * ┌─ ApiClient ──────────────────────────────────────┐
+ * │  data/ layer · Retrofit HTTP client setup        │
+ * │                                                   │
+ * │  BASE_URL = https://arrivelah2.busrouter.sg      │
+ * │  OkHttpClient + HttpLoggingInterceptor (debug)   │
+ * │  Retrofit instance → ArrivelahApi                │
+ * │  GsonConverterFactory for JSON deserialization   │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

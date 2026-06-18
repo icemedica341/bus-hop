@@ -1,5 +1,17 @@
 package com.bushop.ui.screens
 
+
+/**
+ * ┌─ UpdateManager ──────────────────────────────────┐
+ * │  app/ layer · In-app update management           │
+ * │                                                   │
+ * │  checkForUpdate() ─→ GitHub Releases API         │
+ * │  downloadAndInstallUpdate() ─→ APK download+open │
+ * │  hasSeenDragHint ─→ first-time tooltip flag      │
+ * │  Delegates to UpdateCheckerImpl for network calls│
+ * └───────────────────────────────────────────────────┘
+ */
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue

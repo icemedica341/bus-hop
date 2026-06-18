@@ -1,5 +1,21 @@
 package com.bushop.ui.screens
 
+
+/**
+ * ┌─ MainScreen ─────────────────────────────────────┐
+ * │  app/ layer · Root composable                    │
+ * │                                                   │
+ * │  Scaffold ─→ TopAppBar + Content                 │
+ * │    TopAppBar: sort, theme, settings, feature flags│
+ * │    Content: LazyColumn of BusStopCards            │
+ * │                                                   │
+ * │  PullToRefresh ─→ viewModel.refreshAll()          │
+ * │  Drag-to-reorder + Drag-to-delete                │
+ * │  SettingsSheet ─→ theme, refresh interval, update │
+ * │  FeatureFlagDialog ─→ long-press version label   │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility

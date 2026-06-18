@@ -1,5 +1,21 @@
 package com.bushop
 
+
+/**
+ * ┌─ FeatureFlag ────────────────────────────────────┐
+ * │  app/ layer · Runtime toggles                    │
+ * │                                                   │
+ * │  NEW_BUS_TIMELINE ─→ new arrival timeline UI      │
+ * │  NEARBY_STOPS_V2  ─→ enhanced nearby stops       │
+ * │  PINNED_REORDER   ─→ pinned reorder gestures     │
+ * │                                                   │
+ * │  isEnabled(ctx) ─→ read SharedPreferences        │
+ * │  setOverride()  ─→ toggle at runtime             │
+ * │  resetAll()     ─→ clear all overrides           │
+ * │  Backed by SharedPreferences, dark by default    │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import android.content.Context
 import android.content.SharedPreferences
 

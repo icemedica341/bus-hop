@@ -1,5 +1,18 @@
 package com.bushop.data.repository
 
+
+/**
+ * ┌─ BusRepositoryImpl ──────────────────────────────┐
+ * │  data/ layer · Adapter between domain + data     │
+ * │                                                   │
+ * │  Implements domain BusRepository interface       │
+ * │  Wires ArrivelahApi → arrival data               │
+ * │  Wires BusStopStorage → persisted state          │
+ * │  Wires BusStopIndex → search                     │
+ * │  domain ←── BusRepositoryImpl ──→ data APIs      │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import com.bushop.data.api.retrySuspend
 import com.bushop.data.local.BusStopIndex
 import com.bushop.data.local.BusStopStorage

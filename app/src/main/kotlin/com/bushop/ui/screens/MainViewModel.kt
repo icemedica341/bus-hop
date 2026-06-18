@@ -1,5 +1,20 @@
 package com.bushop.ui.screens
 
+
+/**
+ * ┌─ MainViewModel ──────────────────────────────────┐
+ * │  app/ layer · MVVM ViewModel                     │
+ * │                                                   │
+ * │  savedStops ─→ list state for UI                 │
+ * │  BusStopUseCase ─→ business logic                │
+ * │  ThemeManager ─→ theme mode + color scheme       │
+ * │  UpdateManager ─→ APK update check + install     │
+ * │  apiStatus ─→ degraded/down health banner        │
+ * │  FeatureFlag ─→ runtime toggles                  │
+ * │  sortByEarliest ─→ persisted sort preference     │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue

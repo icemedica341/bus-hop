@@ -1,5 +1,17 @@
 package com.bushop.data.api
 
+
+/**
+ * ┌─ UpdateCheckerImpl ──────────────────────────────┐
+ * │  data/ layer · GitHub release checker            │
+ * │                                                   │
+ * │  checkForUpdate() ─→ GitHub Releases API call     │
+ * │  Compare latest version with current versionName │
+ * │  downloadUpdate() ─→ APK download via OkHttp     │
+ * │  Implements domain UpdateChecker interface       │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider

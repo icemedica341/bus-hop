@@ -1,5 +1,17 @@
 package com.bushop
 
+
+/**
+ * ┌─ MainActivity ───────────────────────────────────┐
+ * │  app/ layer · Entry point                        │
+ * │                                                   │
+ * │  installSplashScreen() ─→ splash before content  │
+ * │  setContent { MainScreen(viewModel) } ─→ UI root │
+ * │  enableEdgeToEdge() ─→ immersive layout          │
+ * │  lifecycleScope ─→ permission handling           │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

@@ -1,5 +1,18 @@
 package com.bushop.data.local
 
+
+/**
+ * ┌─ BusStopIndex ───────────────────────────────────┐
+ * │  data/ layer · In-memory search engine           │
+ * │                                                   │
+ * │  TokenTrie O(k) prefix search                    │
+ * │  Levenshtein fuzzy matching                      │
+ * │  5,201 Singapore bus stops indexed from JSON     │
+ * │  findNearby(lat, lng, radius) ─→ geo search      │
+ * │  Loaded async on first access                    │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import android.content.Context
 import android.util.Log
 import com.bushop.data.api.GsonProvider

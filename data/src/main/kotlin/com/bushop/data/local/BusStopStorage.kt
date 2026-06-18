@@ -1,5 +1,18 @@
 package com.bushop.data.local
 
+
+/**
+ * ┌─ BusStopStorage ─────────────────────────────────┐
+ * │  data/ layer · Persistence layer                 │
+ * │                                                   │
+ * │  DataStore Preferences backing                   │
+ * │  Saved stops, pinned services, sort order        │
+ * │  Collapse states, drag hint flag                 │
+ * │  Gson serialization for complex objects          │
+ * │  Exposed as Flow for reactive UI updates         │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
