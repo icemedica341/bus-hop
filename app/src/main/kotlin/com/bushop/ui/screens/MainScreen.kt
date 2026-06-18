@@ -9,8 +9,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -175,7 +177,7 @@ private fun ApiStatusBanner(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
     val savedStops by viewModel.savedStops.collectAsState()
@@ -187,6 +189,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val isIndexReady by viewModel.isIndexReady.collectAsState()
     val listState = rememberLazyListState()
     var showSettings by remember { mutableStateOf(false) }
+    var showFeatureFlags by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val pullToRefreshState = rememberPullToRefreshState()
@@ -590,6 +593,10 @@ fun MainScreen(viewModel: MainViewModel) {
         } // close outer Box
     } // close Scaffold content
 
+    if (showFeatureFlags) {
+        FeatureFlagDialog(onDismiss = { showFeatureFlags = false })
+    }
+
     if (showSettings) {
         SettingsSheet(
             currentTheme = themeMode,
@@ -607,6 +614,10 @@ fun MainScreen(viewModel: MainViewModel) {
             updateInfo = viewModel.updateInfo,
             onDownloadUpdate = { viewModel.downloadAndInstallUpdate() },
             onDismiss = { showSettings = false },
+            onOpenFeatureFlags = {
+                showSettings = false
+                showFeatureFlags = true
+            },
         )
     }
 
@@ -691,6 +702,7 @@ fun MainScreen(viewModel: MainViewModel) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SettingsSheet(
     currentTheme: ThemeMode,
@@ -705,6 +717,7 @@ private fun SettingsSheet(
     updateInfo: UpdateInfo?,
     onDownloadUpdate: () -> Unit,
     onDismiss: () -> Unit,
+    onOpenFeatureFlags: () -> Unit = {},
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -799,6 +812,11 @@ private fun SettingsSheet(
                     text = "v${BuildConfig.VERSION_NAME}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier =
+                        Modifier.combinedClickable(
+                            onClick = {},
+                            onLongClick = onOpenFeatureFlags,
+                        ),
                 )
                 TextButton(onClick = onCheckUpdate, enabled = !isCheckingUpdate) {
                     Text(if (isCheckingUpdate) "Checking…" else "Check for updates")
