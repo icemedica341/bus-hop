@@ -1,6 +1,5 @@
 package com.bushop.ui.screens
 
-
 /**
  * ┌─ MainScreen ─────────────────────────────────────┐
  * │  app/ layer · Root composable                    │
@@ -46,8 +45,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
@@ -300,11 +302,11 @@ fun MainScreen(viewModel: MainViewModel) {
                     }
                     IconButton(onClick = onThemeClick) {
                         Icon(
-                            painter =
+                            imageVector =
                                 when (themeMode) {
-                                    ThemeMode.SYSTEM -> painterResource(com.bushop.R.drawable.ic_brightness_auto)
-                                    ThemeMode.LIGHT -> painterResource(com.bushop.R.drawable.ic_light_mode)
-                                    ThemeMode.DARK -> painterResource(com.bushop.R.drawable.ic_dark_mode)
+                                    ThemeMode.SYSTEM -> Icons.Default.BrightnessAuto
+                                    ThemeMode.LIGHT -> Icons.Default.LightMode
+                                    ThemeMode.DARK -> Icons.Default.DarkMode
                                 },
                             contentDescription =
                                 when (themeMode) {

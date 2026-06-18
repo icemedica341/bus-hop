@@ -13,14 +13,14 @@
   </p>
 </div>
 
+---
+
 <p align="center">
   <sub>Built with AI assistance — see <a href="./CREDITS.md">CREDITS.md</a></sub>
   <br>
   <a href="./CREDITS.md"><img src="docs/badges/gpt5.4.svg" alt="GPT 5.4"></a>
   <a href="./CREDITS.md"><img src="docs/badges/deepseek.svg" alt="DeepSeek V4 Flash"></a>
 </p>
-
----
 
 ## Screenshots
 
@@ -58,7 +58,7 @@
 
 ## Download
 
-> **Latest release:** [v1.0.1](https://github.com/icemedica341/Bus-Hop/releases/latest) — `app-release.apk` (**1.7 MB**, R8-minified, shrinkResources, signed)
+> **Latest release:** [v1.0.3](https://github.com/icemedica341/Bus-Hop/releases/latest) — `bus-hop.apk` (**1.8 MB**, R8-minified, shrinkResources, signed)
 
 Or [build from source](#build-from-source) for a debug APK.
 
@@ -75,9 +75,9 @@ Or [build from source](#build-from-source) for a debug APK.
 <img src="docs/pipeline.svg" alt="Development pipeline" width="800">
 
 1. **Development** — AI-driven implementation steered by human architectural direction. In-progress features ship behind flags (dark by default) for gradual rollout and instant kill-switch. Unit tests (domain, data, app layers + architecture constraints) run via `./gradlew test`. Run `./gradlew updateBadges -PautoDetect` after changing test count.
-2. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.7 MB (vs debug).
+2. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.8 MB (vs debug).
 3. **Release** — APK signed and published as a GitHub Release (`gh release create`).
-4. **Ship** — Tagged release (`v1.0.1`) distributed via Obtainium.
+4. **Ship** — Tagged release (`v1.0.3`) distributed via Obtainium.
 
 ## Feature Flags
 
@@ -97,7 +97,7 @@ Flags are backed by `SharedPreferences` and can be toggled without a rebuild. Re
 | ------------- | --------------------------------------------------------- |
 | Language      | Kotlin 2.4.0                                              |
 | UI            | Jetpack Compose (BOM 2026.05.01) + Material 3             |
-| Icons         | Material Icons + custom drawables                         |
+| Icons         | Material Icons                                            |
 | Architecture  | MVVM + Clean Architecture (3 modules)                     |
 | Networking    | Retrofit 3 + OkHttp 5                                     |
 | Serialization | Gson (data layer only)                                    |
@@ -163,7 +163,7 @@ BusHop uses the [Arrivelah](https://github.com/cheeaun/arrivelah) API (`arrivela
 
 | Data          | Collected?                                                     |
 | ------------- | -------------------------------------------------------------- |
-| Location      | 🔘 — opt-in (fine + coarse), never sent off-device             |
+| Location      | 🔘 — opt-in, never sent off-device                             |
 | Personal info | ❌ — no accounts, no sign-in                                   |
 | Analytics     | ❌ — no tracking SDKs                                          |
 | Crash reports | ❌ — not collected                                             |
