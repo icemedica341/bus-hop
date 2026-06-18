@@ -32,18 +32,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
-import androidx.compose.material.icons.filled.Chair
-import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.outlined.Accessibility
-import androidx.compose.material.icons.outlined.DirectionsBus
-import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -71,6 +59,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -327,7 +316,7 @@ fun BusStopCard(
                         modifier = Modifier.size(20.dp),
                     ) {
                         Icon(
-                            imageVector = if (isPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                            painter = painterResource(com.bushop.R.drawable.ic_push_pin),
                             contentDescription = if (isPinned) "Unpin" else "Pin",
                             modifier = Modifier.size(12.dp),
                             tint = if (isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -342,7 +331,14 @@ fun BusStopCard(
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            imageVector = if (effectiveCollapsed) Icons.Default.ExpandMore else Icons.Default.ExpandLess,
+                            painter =
+                                if (effectiveCollapsed) {
+                                    painterResource(
+                                        com.bushop.R.drawable.ic_expand_more,
+                                    )
+                                } else {
+                                    painterResource(com.bushop.R.drawable.ic_expand_less)
+                                },
                             contentDescription = if (effectiveCollapsed) "Expand" else "Collapse",
                             modifier = Modifier.size(18.dp),
                         )
@@ -499,7 +495,7 @@ private fun OfflineBanner(onRetry: () -> Unit) {
         horizontalArrangement = Arrangement.Center,
     ) {
         Icon(
-            imageVector = Icons.Default.CloudOff,
+            painter = painterResource(com.bushop.R.drawable.ic_cloud_off),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onTertiaryContainer,
             modifier = Modifier.size(20.dp),
@@ -597,7 +593,7 @@ fun BusServiceRow(
                 if (service.next?.feature == "WAB") {
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
-                        imageVector = Icons.Outlined.Accessibility,
+                        painter = painterResource(com.bushop.R.drawable.ic_accessibility),
                         contentDescription = "Wheelchair accessible bus",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.primary,
@@ -611,12 +607,7 @@ fun BusServiceRow(
                 // Bus type row
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(
-                        imageVector =
-                            when {
-                                arrival.busType.contains("Double") -> Icons.Filled.DirectionsBus
-                                arrival.busType.contains("Bendy") -> Icons.Filled.DirectionsBus
-                                else -> Icons.Outlined.DirectionsBus
-                            },
+                        painter = painterResource(com.bushop.R.drawable.ic_directions_bus),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -632,11 +623,11 @@ fun BusServiceRow(
                 // Load row
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(
-                        imageVector =
+                        painter =
                             when {
-                                arrival.load.contains("Seats") -> Icons.Default.Chair
-                                arrival.load.contains("Standing") -> Icons.AutoMirrored.Filled.DirectionsWalk
-                                else -> Icons.Default.Warning
+                                arrival.load.contains("Seats") -> painterResource(com.bushop.R.drawable.ic_chair)
+                                arrival.load.contains("Standing") -> painterResource(com.bushop.R.drawable.ic_directions_walk)
+                                else -> painterResource(com.bushop.R.drawable.ic_warning)
                             },
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),

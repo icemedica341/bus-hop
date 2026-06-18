@@ -7,7 +7,6 @@ import com.bushop.domain.api.UpdateChecker
 import com.bushop.domain.model.NetworkResult
 import com.bushop.domain.model.UpdateInfo
 import com.bushop.domain.repository.BusRepository
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 /**
@@ -75,8 +74,6 @@ class UpdateManager(
                         onSnackbar("Download failed: ${result.message}")
                     }
                 }
-            } catch (e: CancellationException) {
-                throw e
             } catch (e: Exception) {
                 onSnackbar("Install failed. Check storage space and try again.")
             } finally {
@@ -90,8 +87,6 @@ class UpdateManager(
         scope.launch {
             try {
                 repository.hasSeenHintFlow.collect { seen -> hasSeenDragHint = seen }
-            } catch (e: CancellationException) {
-                throw e
             } catch (_: Exception) {
                 // flow ended
             }

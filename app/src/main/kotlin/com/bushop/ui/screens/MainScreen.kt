@@ -30,20 +30,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DirectionsBus
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -78,6 +70,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -269,7 +262,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.DirectionsBus,
+                            painter = painterResource(com.bushop.R.drawable.ic_directions_bus),
                             contentDescription = null,
                             modifier = Modifier.size(28.dp),
                             tint = MaterialTheme.colorScheme.primary,
@@ -284,18 +277,18 @@ fun MainScreen(viewModel: MainViewModel) {
                 actions = {
                     IconButton(onClick = onSortClick) {
                         Icon(
-                            imageVector = if (sortByEarliest) Icons.AutoMirrored.Filled.Sort else Icons.AutoMirrored.Outlined.Sort,
+                            painter = painterResource(com.bushop.R.drawable.ic_sort),
                             contentDescription = "Sort",
                             tint = if (sortByEarliest) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     IconButton(onClick = onThemeClick) {
                         Icon(
-                            imageVector =
+                            painter =
                                 when (themeMode) {
-                                    ThemeMode.SYSTEM -> Icons.Default.BrightnessAuto
-                                    ThemeMode.LIGHT -> Icons.Default.LightMode
-                                    ThemeMode.DARK -> Icons.Default.DarkMode
+                                    ThemeMode.SYSTEM -> painterResource(com.bushop.R.drawable.ic_brightness_auto)
+                                    ThemeMode.LIGHT -> painterResource(com.bushop.R.drawable.ic_light_mode)
+                                    ThemeMode.DARK -> painterResource(com.bushop.R.drawable.ic_dark_mode)
                                 },
                             contentDescription =
                                 when (themeMode) {
@@ -787,7 +780,7 @@ private fun SettingsSheet(
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Outlined.Accessibility,
+                        painter = painterResource(com.bushop.R.drawable.ic_accessibility),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.primary,
@@ -797,7 +790,7 @@ private fun SettingsSheet(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.DirectionsBus,
+                        painter = painterResource(com.bushop.R.drawable.ic_directions_bus),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,

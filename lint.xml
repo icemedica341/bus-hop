@@ -12,5 +12,4 @@
 
     <!-- Enforce common quality rules -->
     <issue id="ObsoleteSdkInt" severity="warning" />
-    <issue id="IconExpectedSize" severity="ignore" />
 </lint>

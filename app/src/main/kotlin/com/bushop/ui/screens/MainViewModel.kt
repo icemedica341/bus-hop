@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.File
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -523,14 +522,6 @@ class MainViewModel(
                 lastUpdatedAll = System.currentTimeMillis()
             }
         }
-    }
-
-    /** Helper: update one stop in _savedStops by index without full list rebuild. */
-    private fun updateStop(
-        index: Int,
-        transform: (BusStopWithArrivals) -> BusStopWithArrivals,
-    ) {
-        _savedStops.value = _savedStops.value.toMutableList().apply { this[index] = transform(this[index]) }
     }
 
     fun refreshArrivals(
