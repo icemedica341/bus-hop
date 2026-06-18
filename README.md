@@ -4,12 +4,12 @@
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search. No ads, no accounts, no tracking.</p>
   <p>
-    <img src="docs/badges/kotlin.svg">
-    <img src="docs/badges/compose.svg">
-    <img src="docs/badges/minsdk.svg">
-    <img src="docs/badges/targetsdk.svg">
-    <img src="docs/badges/license.svg">
-    <img src="docs/badges/tests.svg">
+    <img src="docs/badges/kotlin.svg" alt="Kotlin">
+    <img src="docs/badges/compose.svg" alt="Jetpack Compose">
+    <img src="docs/badges/minsdk.svg" alt="Min SDK 26">
+    <img src="docs/badges/targetsdk.svg" alt="Target SDK 37">
+    <img src="docs/badges/license.svg" alt="MIT License">
+    <img src="docs/badges/tests.svg" alt="161 tests">
   </p>
 </div>
 
@@ -31,26 +31,30 @@
 
 ## Features
 
-|     | Feature                  | Detail                                                                                           |
-| --- | ------------------------ | ------------------------------------------------------------------------------------------------ |
-| 🚌  | **Real-time arrivals**   | Shows next 3 buses per service with minutes-to-arrival                                           |
-| 🏷️  | **Operator badges**      | SBS, SMRT, TTS, Go-Ahead colour-coded                                                            |
-| 🚍  | **Bus type icons**       | Single Decker, Double Decker, Bendy                                                              |
-| 💺  | **Load indicator**       | Seats Available / Standing Available / Limited Standing                                          |
-| ♿  | **Wheelchair info**      | Wheelchair Accessible Bus (WAB) indicator                                                        |
-| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop. Survives restarts.              |
-| 🔍  | **Smart search**         | TokenTrie O(k) prefix search + Levenshtein fuzzy matching over 5,201 stops — instant, no network |
-| ✨  | **New stop pulse**       | List auto-scrolls to newly added stop with a brief blue pulse highlight                          |
-| 📍  | **Nearby stops**         | Location-based nearby stop finder (opt-in)                                                       |
-| 💡  | **Random hints**         | Random bus stop hint shown every time you open the search dialog (from all 5,201 stops)          |
-| 🌙  | **Theme support**        | Light, Dark, System-following, with Blue and Contrast Blue colour schemes — all persisted        |
-| 🔄  | **Auto-refresh**         | Configurable interval (30s / 1m / 2m / 5m / Off) — pauses in background                          |
-| ↘️  | **Pull to refresh**      | Swipe down to refresh all stops                                                                  |
-| 🖱️  | **Drag to reorder**      | Long-press and drag bus stops to reorder — commit on drag end                                    |
-| 🗑️  | **Drag to delete**       | Drag a stop into the bottom delete zone — card-center-in-zone threshold                          |
-| 🔒  | **Privacy first**        | Location is opt-in only. No accounts, no analytics, no telemetry                                 |
-| 📱  | **Material 3**           | Modern Compose UI with animations, pull-to-refresh, edge-to-edge                                 |
-| 🎨  | **Splash screen**        | Branded cold-start splash using core-splashscreen library                                        |
+|     | Feature                  | Detail                                                                                                        |
+| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| 🚌  | **Real-time arrivals**   | Shows next 3 buses per service with minutes-to-arrival                                                        |
+| 🏷️  | **Operator badges**      | SBS, SMRT, TTS, Go-Ahead colour-coded                                                                         |
+| 🚍  | **Bus type icons**       | Single Decker, Double Decker, Bendy                                                                           |
+| 💺  | **Load indicator**       | Seats Available / Standing Available / Limited Standing                                                       |
+| ♿  | **Wheelchair info**      | Wheelchair Accessible Bus (WAB) indicator                                                                     |
+| 📌  | **Pin stops & services** | Pin stops to the top; pin individual bus services within a stop. Survives restarts.                           |
+| 🔍  | **Smart search**         | TokenTrie O(k) prefix search + Levenshtein fuzzy matching over 5,201 stops — instant, no network              |
+| ✨  | **New stop pulse**       | List auto-scrolls to newly added stop with a brief blue pulse highlight                                       |
+| 📍  | **Nearby stops**         | Location-based nearby stop finder (opt-in)                                                                    |
+| 💡  | **Random hints**         | Random bus stop hint shown every time you open the search dialog (from all 5,201 stops)                       |
+| 🌙  | **Theme support**        | Light, Dark, System-following, with Blue and Contrast Blue colour schemes — all persisted                     |
+| 🔄  | **Auto-refresh**         | Configurable interval (30s / 1m / 2m / 5m / Off) — pauses in background                                       |
+| ↘️  | **Pull to refresh**      | Swipe down to refresh all stops                                                                               |
+| 🩺  | **API Health Banner**    | When the API has repeated failures, shows "Delayed" / "Under maintenance" banner — auto-dismisses on recovery |
+| 📡  | **Offline indicator**    | Cloud-off icon per stop when no internet, "No internet connection" label, separate from error state           |
+| 🖱️  | **Drag to reorder**      | Long-press and drag bus stops to reorder — commit on drag end                                                 |
+| 🗑️  | **Drag to delete**       | Drag a stop into the bottom delete zone — card-center-in-zone threshold                                       |
+| 🔢  | **Sort by earliest**     | Toggle stop card order by earliest arrival time — persists across restarts                                    |
+| 🔒  | **Privacy first**        | Location is opt-in only. No accounts, no analytics, no telemetry                                              |
+| 📱  | **Material 3**           | Modern Compose UI with animations, pull-to-refresh, edge-to-edge                                              |
+| 🎨  | **Splash screen**        | Branded cold-start splash using core-splashscreen library                                                     |
+| 📦  | **In-app update**        | Checks GitHub Releases for new version, downloads and installs APK directly                                   |
 
 ## Download
 
@@ -66,14 +70,26 @@ Or [build from source](#build-from-source) for a debug APK.
 - **data/** — Android library. Retrofit API calls, DataStore persistence, BusStopIndex with TokenTrie for search, update checker.
 - **app/** — Android app. Jetpack Compose UI, ViewModels (MainViewModel + ThemeManager + UpdateManager), theme, components.
 
-## Pipeline
+## Development Pipeline
 
 <img src="docs/pipeline.svg" alt="Development pipeline" width="800">
 
-1. **Development** — AI-driven implementation steered by human architectural direction. Source, tests, and config live in `main`.
+1. **Development** — AI-driven implementation steered by human architectural direction. Unit tests (domain, data, app layers + architecture constraints) run during this phase via `./gradlew test`. Run `./gradlew updateBadges -PautoDetect` after changing test count.
 2. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.7 MB (vs debug).
-3. **Test** — Unit tests across 9 test classes (domain, data, app layers + architecture constraints). Run `./gradlew updateBadges -PautoDetect` after changing test count.
-4. **Release** — APK published as a GitHub Release (`gh release create`), distributed via Obtainium.
+3. **Release** — APK signed and published as a GitHub Release (`gh release create`).
+4. **Ship** — Tagged release (`v1.0.1`) distributed via Obtainium.
+
+## Feature Flags
+
+In-progress features ship behind toggles (dark by default). Enable them at runtime via the debug menu — long-press the version label in Settings → Feature Flags.
+
+| Flag               | Default | Description                        |
+| ------------------ | ------- | ---------------------------------- |
+| `NEW_BUS_TIMELINE` | Off     | Redesigned bus arrival timeline    |
+| `NEARBY_STOPS_V2`  | Off     | Enhanced nearby stops with filters |
+| `PINNED_REORDER`   | Off     | Pinned-stop reorder gestures       |
+
+Flags are backed by `SharedPreferences` and can be toggled without a rebuild. Reset clears all overrides back to defaults. Add new flags to `FeatureFlag.kt` — the debug dialog picks them up automatically via `FeatureFlag.entries`.
 
 ## Tech Stack
 
@@ -81,6 +97,7 @@ Or [build from source](#build-from-source) for a debug APK.
 | ------------- | --------------------------------------------------------- |
 | Language      | Kotlin 2.4.0                                              |
 | UI            | Jetpack Compose (BOM 2026.05.01) + Material 3             |
+| Icons         | Material Icons Extended                                   |
 | Architecture  | MVVM + Clean Architecture (3 modules)                     |
 | Networking    | Retrofit 3 + OkHttp 5                                     |
 | Serialization | Gson (data layer only)                                    |
@@ -91,7 +108,7 @@ Or [build from source](#build-from-source) for a debug APK.
 | Testing       | JUnit 4, MockK, Coroutines Test                           |
 | Minification  | R8 + ProGuard (release builds)                            |
 | Gradle        | 9.5.1, AGP 9.2.1                                          |
-| Target        | Android 17 (SDK 37), minSdk 26                            |
+| Target        | SDK 37, minSdk 26                                         |
 
 ## Build from Source
 
@@ -144,14 +161,15 @@ BusHop uses the [Arrivelah](https://github.com/cheeaun/arrivelah) API (`arrivela
 
 ## Privacy
 
-| Data          | Collected?                                |
-| ------------- | ----------------------------------------- |
-| Location      | 🔘 — opt-in, never sent off-device        |
-| Personal info | ❌ — no accounts, no sign-in              |
-| Analytics     | ❌ — no tracking SDKs                     |
-| Crash reports | ❌ — not integrated                       |
-| Saved stops   | 🔒 — stored locally in DataStore          |
-| API calls     | 🔒 — direct to BusRouter, no intermediary |
+| Data          | Collected?                                                     |
+| ------------- | -------------------------------------------------------------- |
+| Location      | 🔘 — opt-in (fine + coarse), never sent off-device             |
+| Personal info | ❌ — no accounts, no sign-in                                   |
+| Analytics     | ❌ — no tracking SDKs                                          |
+| Crash reports | ❌ — not collected                                             |
+| APK install   | 🔘 — used only when you tap "Download & Install" for an update |
+| Saved stops   | 🔒 — stored locally in DataStore                               |
+| API calls     | 🔒 — direct to BusRouter, no intermediary                      |
 
 ## License
 
