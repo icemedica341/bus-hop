@@ -56,8 +56,8 @@ android {
         applicationId = "com.bushop"
         minSdk = 26
         targetSdk = 37
-        versionCode = 45
-        versionName = "1.0.1"
+versionCode = 46
+    versionName = "1.0.3"
 
         androidResources.localeFilters += "en"
 
@@ -113,6 +113,11 @@ tasks.register<CheckAndRenameDebugApk>("checkAndRenameDebugApk") {
     dependsOn("assembleDebug")
 }
 
+tasks.register<CheckAndRenameDebugApk>("renameReleaseApk") {
+    outputDir.set(layout.buildDirectory.dir("outputs/apk/release"))
+    dependsOn("assembleRelease")
+}
+
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
@@ -130,7 +135,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material.icons.extended)
 
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.compose)
