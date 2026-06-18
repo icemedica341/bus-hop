@@ -1,5 +1,17 @@
 package com.bushop.domain.usecase
 
+
+/**
+ * ┌─ AutoRefreshController ──────────────────────────┐
+ * │  domain/ layer · Periodic refresh scheduler      │
+ * │                                                   │
+ * │  start(intervalMs) ─→ launches recurring fetch   │
+ * │  stop() ─→ cancels coroutine job                 │
+ * │  Pauses when app in background (lifecycle-aware) │
+ * │  Starts on app foreground via ViewModel init     │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

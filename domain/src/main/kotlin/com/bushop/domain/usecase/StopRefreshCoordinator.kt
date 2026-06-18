@@ -1,5 +1,17 @@
 package com.bushop.domain.usecase
 
+
+/**
+ * ┌─ StopRefreshCoordinator ─────────────────────────┐
+ * │  domain/ layer · Coordinated refresh logic       │
+ * │                                                   │
+ * │  refreshStop() ─→ fetch + update single stop     │
+ * │  Cooldown per stop (prevents rapid refetch)      │
+ * │  Concurrent batching for multi-stop updates      │
+ * │  Thread-safe (ConcurrentHashMap backed)          │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

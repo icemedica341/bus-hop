@@ -1,5 +1,17 @@
 package com.bushop.ui.components
 
+
+/**
+ * ┌─ AddBusStopDialog ───────────────────────────────┐
+ * │  app/ layer · Search + add bus stop dialog       │
+ * │                                                   │
+ * │  Search field → BusStopIndex.search()            │
+ * │  Nearby button → LocationManager fallback        │
+ * │  Results list → add stop on tap                  │
+ * │  Duplicate / 50-stop-limit validation            │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

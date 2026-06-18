@@ -68,13 +68,13 @@ Or [build from source](#build-from-source) for a debug APK.
 
 - **domain/** — Pure Kotlin (zero framework deps). Models, use cases, repository interfaces.
 - **data/** — Android library. Retrofit API calls, DataStore persistence, BusStopIndex with TokenTrie for search, update checker.
-- **app/** — Android app. Jetpack Compose UI, ViewModels (MainViewModel + ThemeManager + UpdateManager), theme, components.
+- **app/** — Android app. Jetpack Compose UI, ViewModels (MainViewModel + ThemeManager + UpdateManager), feature flags (FeatureFlag + FeatureFlagScreen), theme, components.
 
 ## Development Pipeline
 
 <img src="docs/pipeline.svg" alt="Development pipeline" width="800">
 
-1. **Development** — AI-driven implementation steered by human architectural direction. Unit tests (domain, data, app layers + architecture constraints) run during this phase via `./gradlew test`. Run `./gradlew updateBadges -PautoDetect` after changing test count.
+1. **Development** — AI-driven implementation steered by human architectural direction. In-progress features ship behind flags (dark by default) for gradual rollout and instant kill-switch. Unit tests (domain, data, app layers + architecture constraints) run via `./gradlew test`. Run `./gradlew updateBadges -PautoDetect` after changing test count.
 2. **Build** — Release build with R8 minification + `shrinkResources` reduces the APK to ~1.7 MB (vs debug).
 3. **Release** — APK signed and published as a GitHub Release (`gh release create`).
 4. **Ship** — Tagged release (`v1.0.1`) distributed via Obtainium.
@@ -97,7 +97,7 @@ Flags are backed by `SharedPreferences` and can be toggled without a rebuild. Re
 | ------------- | --------------------------------------------------------- |
 | Language      | Kotlin 2.4.0                                              |
 | UI            | Jetpack Compose (BOM 2026.05.01) + Material 3             |
-| Icons         | Material Icons Extended                                   |
+| Icons         | Material Icons + custom drawables                         |
 | Architecture  | MVVM + Clean Architecture (3 modules)                     |
 | Networking    | Retrofit 3 + OkHttp 5                                     |
 | Serialization | Gson (data layer only)                                    |

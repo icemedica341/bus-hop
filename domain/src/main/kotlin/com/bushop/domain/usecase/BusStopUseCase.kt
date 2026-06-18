@@ -1,5 +1,18 @@
 package com.bushop.domain.usecase
 
+
+/**
+ * ┌─ BusStopUseCase ─────────────────────────────────┐
+ * │  domain/ layer · Core business logic             │
+ * │                                                   │
+ * │  sortServices() ─→ order buses by ETA            │
+ * │  sortServicesWithPins() ─→ pinned on top         │
+ * │  applyPinning() ─→ toggle pin state              │
+ * │  toggleCollapsed() ─→ collapse/expand stop       │
+ * │  Pure Kotlin — zero framework dependencies       │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import com.bushop.domain.model.BusService
 import com.bushop.domain.model.BusStopWithArrivals
 

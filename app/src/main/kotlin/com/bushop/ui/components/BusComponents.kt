@@ -1,5 +1,18 @@
 package com.bushop.ui.components
 
+
+/**
+ * ┌─ BusComponents ──────────────────────────────────┐
+ * │  app/ layer · Reusable Compose UI components     │
+ * │                                                   │
+ * │  BusStopSection ─→ header + service list per stop│
+ * │  ServiceRow ─→ bus type, load, timing per bus    │
+ * │  OfflineBanner, ErrorBanner ─→ status overlays   │
+ * │  LegendContent ─→ icon legend in settings        │
+ * │  Draggable stop cards with collapse/expand       │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState

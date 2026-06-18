@@ -1,5 +1,17 @@
 package com.bushop.ui.screens
 
+
+/**
+ * ┌─ ThemeManager ───────────────────────────────────┐
+ * │  app/ layer · Theme state management             │
+ * │                                                   │
+ * │  themeMode ─→ SYSTEM / LIGHT / DARK              │
+ * │  colorSchemeOption ─→ BLUE / CONTRAST_BLUE       │
+ * │  Persisted in DataStore via BusRepository        │
+ * │  Exposed as StateFlow to MainViewModel           │
+ * └───────────────────────────────────────────────────┘
+ */
+
 import androidx.lifecycle.viewModelScope
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.ThemeMode
