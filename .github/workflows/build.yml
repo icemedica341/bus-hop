@@ -78,7 +78,7 @@ jobs:
         if: github.ref_name == 'main'
         uses: stefanzweifel/git-auto-commit-action@e3481035be8e5cfb5a8c3efb81c1e4e0be7e1121 # v5.1.0
         with:
-          commit_message: chore: auto-update test count badge [skip ci]
+          commit_message: "chore: auto-update test count badge [skip ci]"
           file_pattern: docs/badges/*.svg
 
   gitleaks:
