@@ -13,11 +13,10 @@ sealed class NetworkResult<out T> {
 }
 
 /** Convert a [Result] to [NetworkResult], preserving error messages. */
-fun <T> Result<T>.toNetworkResult(label: String = ""): NetworkResult<T> =
-    fold(
-        onSuccess = { NetworkResult.Success(it) },
-        onFailure = { e ->
-            val prefix = if (label.isNotBlank()) "$label: " else ""
-            NetworkResult.Error("${prefix}${e.message ?: "Unknown error"}", e)
-        },
-    )
+fun <T> Result<T>.toNetworkResult(label: String = ""): NetworkResult<T> = fold(
+    onSuccess = { NetworkResult.Success(it) },
+    onFailure = { e ->
+        val prefix = if (label.isNotBlank()) "$label: " else ""
+        NetworkResult.Error("${prefix}${e.message ?: "Unknown error"}", e)
+    },
+)

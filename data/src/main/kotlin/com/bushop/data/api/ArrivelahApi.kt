@@ -1,6 +1,5 @@
 package com.bushop.data.api
 
-
 /**
  * ┌─ ArrivelahApi ───────────────────────────────────┐
  * │  data/ layer · Retrofit API interface            │

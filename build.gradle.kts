@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.detekt) apply false
-    alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.spotless)
 }
 
 // ── Dependency locking for reproducible builds ──
@@ -80,27 +80,15 @@ tasks.register("updateBadges") {
             throw GradleException("$failed/${allBadges.size} badge(s) failed")
         }
     }
-    apply(plugin = "com.diffplug.spotless")
-    spotless {
-        kotlin {
-            ktlint(libs.versions.ktlint.get())
-            target("src/**/*.kt")
-            trimTrailingWhitespace()
-            endWithNewline()
-        }
-        kotlinGradle {
-            ktlint(libs.versions.ktlint.get())
-            target("*.gradle.kts")
-        }
-    }
-subprojects {
-    apply(plugin = "io.gitlab.arturbosch.detekt")
-    detekt {
-        config.setFrom(rootProject.file("detekt.yml"))
-        buildUponDefaultConfig = true
-    }
-    dependencies {
-        detektPlugins(libs.detekt)
-    }
 }
+
+// ── Spotless: format root Gradle scripts ──
+spotless {
+
+    kotlinGradle {
+        ktlint(libs.versions.ktlint.get())
+        target("*.gradle.kts")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }

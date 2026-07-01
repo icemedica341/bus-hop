@@ -17,6 +17,7 @@
 !/gradle/**
 !/mcp/
 !/mcp/**
+!/detekt.yml
 !/*.gradle.kts
 !/gradle.properties
 !/gradlew

@@ -2,13 +2,36 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("jacoco")
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.spotless)
 }
-
 import java.io.File
 import java.util.zip.ZipFile
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
+import java.time.Instant
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+spotless {
+    kotlin {
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
+            mapOf("ktlint_standard_filename" to "disabled")
+        )
+        target("src/**/*.kt")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+detekt {
+    config.setFrom(rootProject.file("detekt.yml"))
+    buildUponDefaultConfig = true
+}
+
+
 
 abstract class CheckAndRenameDebugApk : DefaultTask() {
     @get:InputFiles
@@ -67,8 +90,8 @@ versionCode = 46
         }
 
         // ── Build provenance — trace any APK back to source ──
-        buildConfigField("String", "GIT_SHA", "\"${project.providers.exec("git rev-parse --short HEAD").standardOutput.asText.get().trim()}\"")
-        buildConfigField("String", "BUILD_TIME", "\"${java.time.Instant.now()}\"")
+        buildConfigField("String", "GIT_SHA", "\"${project.providers.exec { commandLine("git", "rev-parse", "--short", "HEAD") }.standardOutput.asText.get().trim()}\"")
+        buildConfigField("String", "BUILD_TIME", "\"${Instant.now()}\"")
         buildConfigField("String", "CI_RUN_ID", "\"${System.getenv("GITHUB_RUN_ID") ?: "local"}\"")
     }
 
@@ -161,4 +184,15 @@ dependencies {
 // ── Auto-run APK verification after every assembleDebug ──
 afterEvaluate {
     tasks.named("assembleDebug") { finalizedBy("checkAndRenameDebugApk") }
+}
+
+// ── JaCoCo coverage threshold ──
+tasks.withType<JacocoCoverageVerification> {
+    violationRules {
+        rule {
+            limit {
+                minimum = BigDecimal("0.60")
+            }
+        }
+    }
 }
