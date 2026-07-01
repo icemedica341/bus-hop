@@ -27,7 +27,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,15 +46,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BrightnessAuto
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,7 +59,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -92,99 +87,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.bushop.BuildConfig
-import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.ThemeMode
-import com.bushop.domain.model.UpdateInfo
 import com.bushop.ui.components.AddBusStopDialog
 import com.bushop.ui.components.BusStopCard
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-private val timeFormatter =
-    java.time.format.DateTimeFormatter
-        .ofPattern("HH:mm")
-
-private fun formatLastUpdated(timestamp: Long): String {
-    val zdt =
-        java.time.ZonedDateTime.ofInstant(
-            java.time.Instant.ofEpochMilli(timestamp),
-            java.time.ZoneId.systemDefault(),
-        )
-    return timeFormatter.format(zdt)
-}
-
-@Composable
-private fun ApiStatusBanner(
-    status: ApiStatus,
-    onDismiss: () -> Unit,
-) {
-    val visible = status != ApiStatus.Healthy
-    val bgColor: androidx.compose.ui.graphics.Color
-    val textColor: androidx.compose.ui.graphics.Color
-    val message: String
-    val showDismiss: Boolean
-    when (status) {
-        ApiStatus.Healthy -> {
-            bgColor = MaterialTheme.colorScheme.surface
-            textColor = MaterialTheme.colorScheme.onSurface
-            message = ""
-            showDismiss = false
-        }
-
-        ApiStatus.Degraded -> {
-            bgColor = MaterialTheme.colorScheme.tertiaryContainer
-            textColor = MaterialTheme.colorScheme.onTertiaryContainer
-            message = "Bus arrival data may be delayed"
-            showDismiss = false
-        }
-
-        ApiStatus.Down -> {
-            bgColor = MaterialTheme.colorScheme.errorContainer
-            textColor = MaterialTheme.colorScheme.onErrorContainer
-            message = "Bus arrival API is under maintenance. Some data may be unavailable."
-            showDismiss = true
-        }
-    }
-
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(),
-        exit = fadeOut(),
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = bgColor),
-            shape = RoundedCornerShape(8.dp),
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-        ) {
-            Row(
-                modifier = Modifier.padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textColor,
-                    modifier = Modifier.weight(1f),
-                )
-                if (showDismiss) {
-                    IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = "Dismiss",
-                            tint = textColor,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -709,140 +617,4 @@ fun MainScreen(viewModel: MainViewModel) {
             },
         )
     }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun SettingsSheet(
-    currentTheme: ThemeMode,
-    currentInterval: Int,
-    currentColorScheme: ColorSchemeOption,
-    onThemeChange: (ThemeMode) -> Unit,
-    onColorSchemeChange: (ColorSchemeOption) -> Unit,
-    onIntervalChange: (Int) -> Unit,
-    onCheckUpdate: () -> Unit,
-    isCheckingUpdate: Boolean,
-    isDownloadingUpdate: Boolean,
-    updateInfo: UpdateInfo?,
-    onDownloadUpdate: () -> Unit,
-    onDismiss: () -> Unit,
-    onOpenFeatureFlags: () -> Unit = {},
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Settings", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold) },
-        text = {
-            Column {
-                Text("Theme", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(4.dp))
-                ThemeMode.entries.forEach { mode ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().clickable { onThemeChange(mode) },
-                    ) {
-                        RadioButton(selected = currentTheme == mode, onClick = { onThemeChange(mode) })
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text =
-                            when (mode) {
-                                ThemeMode.SYSTEM -> "System"
-                                ThemeMode.LIGHT -> "Light"
-                                ThemeMode.DARK -> "Dark"
-                            },
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "Auto Refresh",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                val intervals = listOf(0 to "Off", 30 to "30s", 60 to "1m", 120 to "2m", 300 to "5m")
-                intervals.forEach { (seconds, label) ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().clickable { onIntervalChange(seconds) },
-                    ) {
-                        RadioButton(selected = currentInterval == seconds, onClick = { onIntervalChange(seconds) })
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(label)
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "Colour Scheme",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                ColorSchemeOption.entries.forEach { option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().clickable { onColorSchemeChange(option) },
-                    ) {
-                        RadioButton(selected = currentColorScheme == option, onClick = { onColorSchemeChange(option) })
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(option.displayName)
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    "Icon Legend",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(com.bushop.R.drawable.ic_accessibility),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Wheelchair accessible bus", style = MaterialTheme.typography.bodySmall)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(com.bushop.R.drawable.ic_directions_bus),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Operator badge logo", style = MaterialTheme.typography.bodySmall)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Updates", style = MaterialTheme.typography.titleSmall, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "v${BuildConfig.VERSION_NAME}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier =
-                    Modifier.combinedClickable(
-                        onClick = {},
-                        onLongClick = onOpenFeatureFlags,
-                    ),
-                )
-                TextButton(onClick = onCheckUpdate, enabled = !isCheckingUpdate) {
-                    Text(if (isCheckingUpdate) "Checking…" else "Check for updates")
-                }
-                if (updateInfo != null) {
-                    Text(
-                        "Update v${updateInfo.latestVersion} available",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    TextButton(onClick = onDownloadUpdate, enabled = !isDownloadingUpdate) {
-                        Text(if (isDownloadingUpdate) "Downloading…" else "Download & Install")
-                    }
-                }
-            }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
-    )
 }

@@ -179,7 +179,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockk)
+    implementation(libs.datastore.preferences)
 }
+
 
 // ── Auto-run APK verification after every assembleDebug ──
 afterEvaluate {

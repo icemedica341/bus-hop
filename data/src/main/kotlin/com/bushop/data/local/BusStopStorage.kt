@@ -41,6 +41,25 @@ class BusStopStorage(
         private const val CACHE_DISK_PERSISTENCE_MS = 24 * 60 * 60 * 1000L // Keep data on disk for 24h
         private const val MAX_SAVED_STOPS = 15
 
+        // All DataStore preference keys — single source of truth, no inline magic strings.
+        private object Keys {
+            val savedBusStops = stringPreferencesKey("saved_bus_stops")
+            val collapsedStopsSet = stringPreferencesKey("collapsed_stops_set")
+            val pinnedServices = stringPreferencesKey("pinned_services")
+            val pinnedStops = stringPreferencesKey("pinned_stops")
+            val autoRefreshInterval = intPreferencesKey("auto_refresh_interval")
+            val themeModeStr = stringPreferencesKey("theme_mode_str")
+            val colorSchemeOption = stringPreferencesKey("color_scheme_option")
+            val sortByEarliest = stringPreferencesKey("sort_by_earliest")
+            val hasSeenHint = booleanPreferencesKey("has_seen_hint")
+
+            /** Services data for a specific stop code. */
+            fun servicesData(code: String) = stringPreferencesKey("services_$code")
+
+            /** Services cache timestamp for a specific stop code. */
+            fun servicesTimestamp(code: String) = stringPreferencesKey("services_${code}_ts")
+        }
+
         // Use getParameterized() instead of anonymous TypeToken subclasses —
         // R8 cannot strip generic signatures from direct API calls.
         private val serviceListType = TypeToken.getParameterized(List::class.java, BusService::class.java).type
@@ -50,7 +69,7 @@ class BusStopStorage(
     }
 
     private val gson = GsonProvider.gson
-    private val busStopsKey = stringPreferencesKey("saved_bus_stops")
+    private val busStopsKey = Keys.savedBusStops
 
     val savedBusStops: Flow<List<BusStop>> =
         context.dataStore.data
@@ -110,29 +129,29 @@ class BusStopStorage(
             stops.removeAll { it.code == code }
             prefs[busStopsKey] = gson.toJson(stops)
 
-            val collapsedKey = stringPreferencesKey("collapsed_stops_set")
+            val collapsedKey = Keys.collapsedStopsSet
             val updatedCollapsed =
                 parseStringSet(prefs[collapsedKey]).toMutableSet().apply {
                     remove(code)
                 }
             prefs[collapsedKey] = gson.toJson(updatedCollapsed.toList())
 
-            val pinnedServicesKey = stringPreferencesKey("pinned_services")
+            val pinnedServicesKey = Keys.pinnedServices
             val updatedPinnedServices =
                 parsePinnedServices(prefs[pinnedServicesKey])
                     .filterNot { it.startsWith("$code:") }
                     .toSet()
             prefs[pinnedServicesKey] = gson.toJson(updatedPinnedServices.toList())
 
-            val pinnedStopsKey = stringPreferencesKey("pinned_stops")
+            val pinnedStopsKey = Keys.pinnedStops
             val updatedPinnedStops =
                 parseStringSet(prefs[pinnedStopsKey])
                     .toMutableSet()
                     .apply { remove(code) }
             prefs[pinnedStopsKey] = gson.toJson(updatedPinnedStops.toList())
 
-            prefs.remove(stringPreferencesKey("services_$code"))
-            prefs.remove(stringPreferencesKey("services_${code}_ts"))
+            prefs.remove(Keys.servicesData(code))
+            prefs.remove(Keys.servicesTimestamp(code))
         }
     }
 
@@ -156,10 +175,10 @@ class BusStopStorage(
                 prefs
                     .cachedStopServiceCodes()
                     .mapNotNull { code ->
-                        val tsKey = stringPreferencesKey("services_${code}_ts")
+                        val tsKey = Keys.servicesTimestamp(code)
                         val ts = prefs[tsKey]?.toLongOrNull() ?: 0L
                         if (now - ts > ttlMs) return@mapNotNull null
-                        val servicesKey = stringPreferencesKey("services_$code")
+                        val servicesKey = Keys.servicesData(code)
                         try {
                             val value = prefs[servicesKey] as? String ?: return@mapNotNull null
                             val services: List<BusService> = gson.fromJson(value, serviceListType) ?: emptyList()
@@ -178,7 +197,7 @@ class BusStopStorage(
                 prefs
                     .cachedStopServiceCodes()
                     .mapNotNull { code ->
-                        val tsKey = stringPreferencesKey("services_${code}_ts")
+                        val tsKey = Keys.servicesTimestamp(code)
                         val ts = prefs[tsKey]?.toLongOrNull() ?: return@mapNotNull null
                         code to ts
                     }.toMap()
@@ -188,8 +207,8 @@ class BusStopStorage(
         code: String,
         services: List<BusService>,
     ) {
-        val servicesKey = stringPreferencesKey("services_$code")
-        val timestampKey = stringPreferencesKey("services_${code}_ts")
+        val servicesKey = Keys.servicesData(code)
+        val timestampKey = Keys.servicesTimestamp(code)
         val now = System.currentTimeMillis()
         context.dataStore.edit { prefs ->
             prefs[servicesKey] = gson.toJson(services)
@@ -201,14 +220,14 @@ class BusStopStorage(
 
     val autoRefreshInterval: Flow<Int> =
         context.dataStore.data
-            .map { prefs -> prefs[intPreferencesKey("auto_refresh_interval")] ?: 30 }
+            .map { prefs -> prefs[Keys.autoRefreshInterval] ?: 30 }
             .distinctUntilChanged()
 
     suspend fun getAutoRefreshIntervalOnce(): Int = autoRefreshInterval.first()
 
     suspend fun saveAutoRefreshInterval(seconds: Int) {
         context.dataStore.edit { prefs ->
-            prefs[intPreferencesKey("auto_refresh_interval")] = seconds
+            prefs[Keys.autoRefreshInterval] = seconds
         }
     }
 
@@ -217,7 +236,7 @@ class BusStopStorage(
     val themeModeFlow: Flow<ThemeMode> =
         context.dataStore.data
             .map { prefs ->
-                val raw = prefs[stringPreferencesKey("theme_mode_str")] ?: "system"
+                val raw = prefs[Keys.themeModeStr] ?: "system"
                 when (raw) {
                     "light" -> ThemeMode.LIGHT
                     "dark" -> ThemeMode.DARK
@@ -233,7 +252,7 @@ class BusStopStorage(
                     ThemeMode.LIGHT -> "light"
                     ThemeMode.DARK -> "dark"
                 }
-            prefs[stringPreferencesKey("theme_mode_str")] = raw
+            prefs[Keys.themeModeStr] = raw
         }
     }
 
@@ -243,13 +262,13 @@ class BusStopStorage(
         context.dataStore.data
             .map { prefs ->
                 ColorSchemeOption.fromRawValue(
-                    prefs[stringPreferencesKey("color_scheme_option")],
+                    prefs[Keys.colorSchemeOption],
                 )
             }.distinctUntilChanged()
 
     suspend fun saveColorSchemeOption(option: ColorSchemeOption) {
         context.dataStore.edit { prefs ->
-            prefs[stringPreferencesKey("color_scheme_option")] = option.rawValue
+            prefs[Keys.colorSchemeOption] = option.rawValue
         }
     }
 
@@ -257,13 +276,13 @@ class BusStopStorage(
 
     val sortByEarliestFlow: Flow<Boolean> =
         context.dataStore.data
-            .map { prefs -> prefs[stringPreferencesKey("sort_by_earliest")] }
+            .map { prefs -> prefs[Keys.sortByEarliest] }
             .distinctUntilChanged()
             .map { raw -> raw?.toBooleanStrictOrNull() ?: false }
 
     suspend fun saveSortByEarliest(enabled: Boolean) {
         context.dataStore.edit { prefs ->
-            prefs[stringPreferencesKey("sort_by_earliest")] = enabled.toString()
+            prefs[Keys.sortByEarliest] = enabled.toString()
         }
     }
 
@@ -271,13 +290,13 @@ class BusStopStorage(
 
     val collapsedStopsFlow: Flow<Set<String>> =
         context.dataStore.data
-            .map { prefs -> prefs[stringPreferencesKey("collapsed_stops_set")] }
+            .map { prefs -> prefs[Keys.collapsedStopsSet] }
             .distinctUntilChanged()
             .map { raw -> parseStringSet(raw) }
 
     suspend fun saveCollapsedStops(stops: Set<String>) {
         context.dataStore.edit { prefs ->
-            prefs[stringPreferencesKey("collapsed_stops_set")] = gson.toJson(stops.toList())
+            prefs[Keys.collapsedStopsSet] = gson.toJson(stops.toList())
         }
     }
 
@@ -294,7 +313,7 @@ class BusStopStorage(
 
     val pinnedServices: Flow<Set<String>> =
         context.dataStore.data
-            .map { prefs -> prefs[stringPreferencesKey("pinned_services")] }
+            .map { prefs -> prefs[Keys.pinnedServices] }
             .distinctUntilChanged()
             .map { raw -> parsePinnedServices(raw) }
 
@@ -302,7 +321,7 @@ class BusStopStorage(
 
     suspend fun savePinnedServices(pinned: Set<String>) {
         context.dataStore.edit { prefs ->
-            prefs[stringPreferencesKey("pinned_services")] = gson.toJson(pinned.toList())
+            prefs[Keys.pinnedServices] = gson.toJson(pinned.toList())
         }
     }
 
@@ -310,13 +329,13 @@ class BusStopStorage(
 
     val pinnedStops: Flow<Set<String>> =
         context.dataStore.data
-            .map { prefs -> prefs[stringPreferencesKey("pinned_stops")] }
+            .map { prefs -> prefs[Keys.pinnedStops] }
             .distinctUntilChanged()
             .map { raw -> parseStringSet(raw) }
 
     suspend fun savePinnedStops(pinned: Set<String>) {
         context.dataStore.edit { prefs ->
-            prefs[stringPreferencesKey("pinned_stops")] = gson.toJson(pinned.toList())
+            prefs[Keys.pinnedStops] = gson.toJson(pinned.toList())
         }
     }
 
@@ -324,12 +343,12 @@ class BusStopStorage(
 
     suspend fun saveHintSeen(seen: Boolean) {
         context.dataStore.edit { prefs ->
-            prefs[booleanPreferencesKey("has_seen_hint")] = seen
+            prefs[Keys.hasSeenHint] = seen
         }
     }
 
     val hasSeenHint: Flow<Boolean> =
         context.dataStore.data
-            .map { prefs -> prefs[booleanPreferencesKey("has_seen_hint")] ?: false }
+            .map { prefs -> prefs[Keys.hasSeenHint] ?: false }
             .distinctUntilChanged()
 }
