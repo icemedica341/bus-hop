@@ -18,6 +18,10 @@
 !/mcp/
 !/mcp/**
 !/detekt.yml
+!/.githooks/
+!/.githooks/**
+!/scripts/
+!/scripts/**
 !/*.gradle.kts
 !/gradle.properties
 !/gradlew
