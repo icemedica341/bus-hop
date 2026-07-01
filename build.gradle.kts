@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.detekt) apply false
 }
 
 // ── Dependency locking for reproducible builds ──
@@ -78,4 +79,14 @@ tasks.register("updateBadges") {
             throw GradleException("$failed/${allBadges.size} badge(s) failed")
         }
     }
+subprojects {
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+    detekt {
+        config.setFrom(rootProject.file("detekt.yml"))
+        buildUponDefaultConfig = true
+    }
+    dependencies {
+        detektPlugins(libs.detekt)
+    }
+}
 }
