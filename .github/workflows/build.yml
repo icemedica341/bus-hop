@@ -54,3 +54,14 @@ jobs:
 
       - name: Verify debug build
         run: ./gradlew assembleDebug --no-daemon
+
+      - name: Update static badges from shields.io (main only)
+        if: github.ref_name == 'main'
+        run: ./gradlew updateBadges -PautoDetect --no-daemon
+
+      - name: Commit updated badge SVGs
+        if: github.ref_name == 'main'
+        uses: stefanzweifel/git-auto-commit-action@e3481035be8e5cfb5a8c3efb81c1e4e0be7e1121 # v5.1.0
+        with:
+          commit_message: chore: auto-update test count badge [skip ci]
+          file_pattern: docs/badges/*.svg
