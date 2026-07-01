@@ -86,7 +86,7 @@ tasks.register("updateBadges") {
 spotless {
 
     kotlinGradle {
-        ktlint(libs.versions.ktlint.get())
+        ktlint("1.5.0")
         target("*.gradle.kts")
         trimTrailingWhitespace()
         endWithNewline()
