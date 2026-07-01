@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 .enableDebugLogging()
         }
         val storage = BusStopStorage(applicationContext)
-        val dataSource = RetrofitBusArrivalDataSource()
+        val dataSource = RetrofitBusArrivalDataSource(com.bushop.data.api.ApiClient.api)
         val busStopIndex =
             BusStopIndex(applicationContext).also { idx ->
                 lifecycleScope.launch { idx.load() }

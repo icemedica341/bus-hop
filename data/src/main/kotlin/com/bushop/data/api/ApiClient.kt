@@ -51,4 +51,13 @@ object ApiClient {
             .build()
             .create(ArrivelahApi::class.java)
     }
+
+    /** Factory function to create a standalone ArrivelahApi instance (DI-friendly). */
+    fun create(): ArrivelahApi = Retrofit
+        .Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create(GsonProvider.gson))
+        .build()
+        .create(ArrivelahApi::class.java)
 }
