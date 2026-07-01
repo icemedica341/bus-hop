@@ -65,6 +65,11 @@ versionCode = 46
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // ── Build provenance — trace any APK back to source ──
+        buildConfigField("String", "GIT_SHA", "\"${project.providers.exec("git rev-parse --short HEAD").standardOutput.asText.get().trim()}\"")
+        buildConfigField("String", "BUILD_TIME", "\"${java.time.Instant.now()}\"")
+        buildConfigField("String", "CI_RUN_ID", "\"${System.getenv("GITHUB_RUN_ID") ?: "local"}\"")
     }
 
     signingConfigs {
