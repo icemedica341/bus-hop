@@ -78,7 +78,7 @@ class BusStopUpdater(
     private fun fetchRemoteVersion(): Int {
         val request = Request.Builder().url(versionUrl).get().build()
         val response = client.newCall(request).execute()
-        val body = response.body?.string() ?: return 0
+        val body = response.body.string()
         return body.trim().toIntOrNull() ?: 0
     }
 
@@ -86,7 +86,7 @@ class BusStopUpdater(
     private fun downloadFile(url: String, target: File) {
         val request = Request.Builder().url(url).get().build()
         val response = client.newCall(request).execute()
-        val body = response.body ?: throw Exception("Empty response body from $url")
+        val body = response.body
         target.outputStream().use { output ->
             body.byteStream().use { input ->
                 input.copyTo(output)

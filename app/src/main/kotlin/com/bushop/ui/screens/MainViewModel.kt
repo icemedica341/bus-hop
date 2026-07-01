@@ -65,8 +65,6 @@ class MainViewModel(
 
     companion object {
         private const val DEFAULT_AUTO_REFRESH_INTERVAL = 30
-        private const val DEGRADED_THRESHOLD = 3
-        private const val DOWN_THRESHOLD = 10
     }
 
     private val isAutoRefreshing = AtomicBoolean(false)
@@ -116,16 +114,15 @@ class MainViewModel(
 
     /** Manages saved stops list, refresh, collapse, sort. */
     val stopStateManager: StopStateManager = StopStateManager(
-        viewModelScope,
-        repository,
-        useCase,
-        refreshCoordinator,
-        pinManager.pinnedStops,
-        pinManager.pinnedServices,
-        _snackbarMessage,
+        viewModelScope = viewModelScope,
+        repository = repository,
+        useCase = useCase,
+        refreshCoordinator = refreshCoordinator,
+        pinnedStops = pinManager.pinnedStops,
+        pinnedServices = pinManager.pinnedServices,
         onApiStatusUpdate = { status -> _apiStatus.value = status },
-        consecutiveFailures,
-        isAutoRefreshing,
+        consecutiveFailures = consecutiveFailures,
+        isAutoRefreshing = isAutoRefreshing,
         onAdditionOrderChanged = { additionOrder = it },
     )
 

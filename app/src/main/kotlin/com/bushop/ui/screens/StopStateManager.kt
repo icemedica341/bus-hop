@@ -13,7 +13,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,9 +31,8 @@ class StopStateManager(
     private val repository: BusRepository,
     private val useCase: BusStopUseCase,
     private val refreshCoordinator: StopRefreshCoordinator,
-    private val _pinnedStops: StateFlow<Set<String>>,
-    private val _pinnedServices: StateFlow<Set<String>>,
-    private val snackbarMessage: MutableSharedFlow<String>,
+    private val pinnedStops: StateFlow<Set<String>>,
+    private val pinnedServices: StateFlow<Set<String>>,
     private val onApiStatusUpdate: (ApiStatus) -> Unit,
     private val consecutiveFailures: AtomicInteger,
     private val isAutoRefreshing: AtomicBoolean,
@@ -106,12 +104,12 @@ class StopStateManager(
                                 lastUpdated = existing?.lastUpdated ?: 0L,
                                 cachedAt = timestamps[stop.code] ?: 0L,
                                 isCollapsed = existing?.isCollapsed ?: false,
-                                isPinned = existing?.isPinned ?: (stop.code in _pinnedStops.value),
+                                isPinned = existing?.isPinned ?: (stop.code in pinnedStops.value),
                             )
                         }
                     useCase.applyPersistedCollapsedState(mergedStops, collapsedStops) to sortByEarliest
                 }
-            combine(baseFlow, _pinnedServices) { (stops, sortByEarliest), pinned ->
+            combine(baseFlow, pinnedServices) { (stops, sortByEarliest), pinned ->
                 stops.map { stopWithArrivals ->
                     val pinnedForStop = pinnedServiceNosForStop(stopWithArrivals.busStop.code)
                     stopWithArrivals.copy(
@@ -135,7 +133,7 @@ class StopStateManager(
         }
     }
 
-    private fun pinnedServiceNosForStop(stopCode: String): Set<String> = _pinnedServices.value
+    private fun pinnedServiceNosForStop(stopCode: String): Set<String> = pinnedServices.value
         .filter { it.startsWith("$stopCode:") }
         .map { it.substringAfter(":") }
         .toSet()
