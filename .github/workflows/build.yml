@@ -46,9 +46,24 @@ jobs:
       - name: Grant execute permission for Gradlew
         run: chmod +x gradlew
 
+      - name: Verify CHANGELOG.md has content (PRs)
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ ! -s CHANGELOG.md ]; then
+            echo "❌ CHANGELOG.md is empty or missing" && exit 1
+          fi
+          if git diff --name-only origin/main...HEAD | grep -q CHANGELOG.md; then
+            echo "✅ CHANGELOG.md was updated"
+          else
+            echo "⚠️  CHANGELOG.md was not modified — consider adding release notes"
+          fi
+      - name: Run static analysis (detekt)
+        run: ./gradlew detekt --no-daemon
       - name: Run all tests
         run: ./gradlew test --no-daemon --stacktrace
 
+      - name: Check code formatting (spotless + ktlint)
+        run: ./gradlew spotlessCheck --no-daemon
       - name: Run Android lint
         run: ./gradlew lint --no-daemon
 
@@ -65,3 +80,25 @@ jobs:
         with:
           commit_message: chore: auto-update test count badge [skip ci]
           file_pattern: docs/badges/*.svg
+
+  gitleaks:
+    name: secret-scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Run gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  commitlint:
+    name: pr-title-check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: amannn/action-semantic-pull-request@0723387faaf9b38adef4775cd42cfd5155ed6017 # v5.5.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

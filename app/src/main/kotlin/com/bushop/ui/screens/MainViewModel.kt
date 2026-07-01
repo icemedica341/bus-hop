@@ -1,6 +1,5 @@
 package com.bushop.ui.screens
 
-
 /**
  * ┌─ MainViewModel ──────────────────────────────────┐
  * │  app/ layer · MVVM ViewModel                     │
@@ -305,11 +304,11 @@ class MainViewModel(
                     val pinnedForStop = pinnedServiceNosForStop(stopWithArrivals.busStop.code)
                     stopWithArrivals.copy(
                         services =
-                            useCase.sortServicesWithPins(
-                                stopWithArrivals.services,
-                                pinnedForStop,
-                                sortByEarliest,
-                            ),
+                        useCase.sortServicesWithPins(
+                            stopWithArrivals.services,
+                            pinnedForStop,
+                            sortByEarliest,
+                        ),
                     )
                 }
             }.collect { list ->
@@ -424,14 +423,13 @@ class MainViewModel(
         }
     }
 
-    private suspend fun getBusArrivalsSafely(code: String): NetworkResult<List<com.bushop.domain.model.BusService>> =
-        try {
-            repository.getBusArrivals(code)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "Unexpected error", e)
-        }
+    private suspend fun getBusArrivalsSafely(code: String): NetworkResult<List<com.bushop.domain.model.BusService>> = try {
+        repository.getBusArrivals(code)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        NetworkResult.Error(e.message ?: "Unexpected error", e)
+    }
 
     fun removeBusStop(code: String) {
         // Update state immediately (don't wait for DataStore flow)
@@ -651,11 +649,10 @@ class MainViewModel(
     }
 
     /** Get service numbers pinned for a specific stop (strip the "$code:" prefix). */
-    private fun pinnedServiceNosForStop(stopCode: String): Set<String> =
-        _pinnedServices.value
-            .filter { it.startsWith("$stopCode:") }
-            .map { it.substringAfter(":") }
-            .toSet()
+    private fun pinnedServiceNosForStop(stopCode: String): Set<String> = _pinnedServices.value
+        .filter { it.startsWith("$stopCode:") }
+        .map { it.substringAfter(":") }
+        .toSet()
 
     fun isServicePinned(
         stopCode: String,
@@ -727,7 +724,6 @@ class MainViewModel(
         private val refreshCoordinator: StopRefreshCoordinator = StopRefreshCoordinator(),
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            MainViewModel(application, repository, busStopIndex, updateChecker, useCase, refreshCoordinator) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = MainViewModel(application, repository, busStopIndex, updateChecker, useCase, refreshCoordinator) as T
     }
 }

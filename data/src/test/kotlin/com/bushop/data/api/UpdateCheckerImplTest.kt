@@ -2,7 +2,6 @@ package com.bushop.data.api
 
 import android.content.Context
 import com.bushop.domain.model.NetworkResult
-import com.bushop.domain.model.UpdateInfo
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -29,11 +28,10 @@ class UpdateCheckerImplTest {
     }
 
     @Test
-    fun `checkForUpdate returns Success with UpdateInfo when newer release with APK exists`() =
-        runTest {
-            // GitHub API returns a release with a newer version and APK asset
-            val json =
-                """
+    fun `checkForUpdate returns Success with UpdateInfo when newer release with APK exists`() = runTest {
+        // GitHub API returns a release with a newer version and APK asset
+        val json =
+            """
                 {
                   "tag_name": "v1.1.0",
                   "body": "Bug fixes and improvements",
@@ -44,55 +42,53 @@ class UpdateCheckerImplTest {
                     }
                   ]
                 }
-                """.trimIndent()
+            """.trimIndent()
 
-            val body = mockk<ResponseBody>(relaxed = true)
-            every { body.string() } returns json
+        val body = mockk<ResponseBody>(relaxed = true)
+        every { body.string() } returns json
 
-            val call = mockk<Call>(relaxed = true)
-            every { call.execute() } returns buildResponse(body)
-            every { client.newCall(any()) } returns call
+        val call = mockk<Call>(relaxed = true)
+        every { call.execute() } returns buildResponse(body)
+        every { client.newCall(any()) } returns call
 
-            val result = checker.checkForUpdate()
+        val result = checker.checkForUpdate()
 
-            assertTrue("Expected Success, got $result", result is NetworkResult.Success)
-            val info = (result as NetworkResult.Success).data
-            assertTrue(info.hasUpdate)
-            assertTrue(info.latestVersion == "1.1.0")
-            assertTrue(info.downloadUrl.contains("bus-hop-v1.1.0.apk"))
-        }
+        assertTrue("Expected Success, got $result", result is NetworkResult.Success)
+        val info = (result as NetworkResult.Success).data
+        assertTrue(info.hasUpdate)
+        assertTrue(info.latestVersion == "1.1.0")
+        assertTrue(info.downloadUrl.contains("bus-hop-v1.1.0.apk"))
+    }
 
     @Test
-    fun `checkForUpdate returns Error when no APK asset in release`() =
-        runTest {
-            val json =
-                """
+    fun `checkForUpdate returns Error when no APK asset in release`() = runTest {
+        val json =
+            """
                 {
                   "tag_name": "v1.1.0",
                   "body": "No APK in this release",
                   "assets": []
                 }
-                """.trimIndent()
+            """.trimIndent()
 
-            val body = mockk<ResponseBody>(relaxed = true)
-            every { body.string() } returns json
+        val body = mockk<ResponseBody>(relaxed = true)
+        every { body.string() } returns json
 
-            val call = mockk<Call>(relaxed = true)
-            every { call.execute() } returns buildResponse(body)
-            every { client.newCall(any()) } returns call
+        val call = mockk<Call>(relaxed = true)
+        every { call.execute() } returns buildResponse(body)
+        every { client.newCall(any()) } returns call
 
-            val result = checker.checkForUpdate()
+        val result = checker.checkForUpdate()
 
-            assertTrue("Expected Error, got $result", result is NetworkResult.Error)
-            val msg = (result as NetworkResult.Error).message
-            assertTrue(msg.contains("No update available"))
-        }
+        assertTrue("Expected Error, got $result", result is NetworkResult.Error)
+        val msg = (result as NetworkResult.Error).message
+        assertTrue(msg.contains("No update available"))
+    }
 
     @Test
-    fun `checkForUpdate returns Error when current version is already latest`() =
-        runTest {
-            val json =
-                """
+    fun `checkForUpdate returns Error when current version is already latest`() = runTest {
+        val json =
+            """
                 {
                   "tag_name": "v1.0.0",
                   "body": "Same version",
@@ -103,68 +99,64 @@ class UpdateCheckerImplTest {
                     }
                   ]
                 }
-                """.trimIndent()
+            """.trimIndent()
 
-            val body = mockk<ResponseBody>(relaxed = true)
-            every { body.string() } returns json
+        val body = mockk<ResponseBody>(relaxed = true)
+        every { body.string() } returns json
 
-            val call = mockk<Call>(relaxed = true)
-            every { call.execute() } returns buildResponse(body)
-            every { client.newCall(any()) } returns call
+        val call = mockk<Call>(relaxed = true)
+        every { call.execute() } returns buildResponse(body)
+        every { client.newCall(any()) } returns call
 
-            val result = checker.checkForUpdate()
+        val result = checker.checkForUpdate()
 
-            assertTrue("Expected Error, got $result", result is NetworkResult.Error)
-            val msg = (result as NetworkResult.Error).message
-            assertTrue(msg.contains("No update available"))
-        }
-
-    @Test
-    fun `checkForUpdate returns Error when response is empty`() =
-        runTest {
-            val body = mockk<ResponseBody>(relaxed = true)
-            every { body.string() } returns ""
-
-            val call = mockk<Call>(relaxed = true)
-            every { call.execute() } returns buildResponse(body)
-            every { client.newCall(any()) } returns call
-
-            val result = checker.checkForUpdate()
-
-            assertTrue("Expected Error, got $result", result is NetworkResult.Error)
-        }
+        assertTrue("Expected Error, got $result", result is NetworkResult.Error)
+        val msg = (result as NetworkResult.Error).message
+        assertTrue(msg.contains("No update available"))
+    }
 
     @Test
-    fun `checkForUpdate returns Error on network exception`() =
-        runTest {
-            val call = mockk<Call>(relaxed = true)
-            every { call.execute() } throws java.io.IOException("Network error")
-            every { client.newCall(any()) } returns call
+    fun `checkForUpdate returns Error when response is empty`() = runTest {
+        val body = mockk<ResponseBody>(relaxed = true)
+        every { body.string() } returns ""
 
-            val result = checker.checkForUpdate()
+        val call = mockk<Call>(relaxed = true)
+        every { call.execute() } returns buildResponse(body)
+        every { client.newCall(any()) } returns call
 
-            assertTrue("Expected Error, got $result", result is NetworkResult.Error)
-            val msg = (result as NetworkResult.Error).message
-            assertTrue(msg.contains("Network error"))
-        }
+        val result = checker.checkForUpdate()
+
+        assertTrue("Expected Error, got $result", result is NetworkResult.Error)
+    }
 
     @Test
-    fun `downloadAndUpdateInstall returns Error when no prior checkForUpdate`() =
-        runTest {
-            val result = checker.downloadAndUpdateInstall()
+    fun `checkForUpdate returns Error on network exception`() = runTest {
+        val call = mockk<Call>(relaxed = true)
+        every { call.execute() } throws java.io.IOException("Network error")
+        every { client.newCall(any()) } returns call
 
-            assertTrue("Expected Error, got $result", result is NetworkResult.Error)
-            val msg = (result as NetworkResult.Error).message
-            assertTrue(msg.contains("No update info"))
-        }
+        val result = checker.checkForUpdate()
 
-    private fun buildResponse(body: ResponseBody): Response =
-        Response
-            .Builder()
-            .request(Request.Builder().url("https://api.github.com/repos/icemedica341/Bus-Hop/releases/latest").build())
-            .protocol(Protocol.HTTP_1_1)
-            .code(200)
-            .message("OK")
-            .body(body)
-            .build()
+        assertTrue("Expected Error, got $result", result is NetworkResult.Error)
+        val msg = (result as NetworkResult.Error).message
+        assertTrue(msg.contains("Network error"))
+    }
+
+    @Test
+    fun `downloadAndUpdateInstall returns Error when no prior checkForUpdate`() = runTest {
+        val result = checker.downloadAndUpdateInstall()
+
+        assertTrue("Expected Error, got $result", result is NetworkResult.Error)
+        val msg = (result as NetworkResult.Error).message
+        assertTrue(msg.contains("No update info"))
+    }
+
+    private fun buildResponse(body: ResponseBody): Response = Response
+        .Builder()
+        .request(Request.Builder().url("https://api.github.com/repos/icemedica341/Bus-Hop/releases/latest").build())
+        .protocol(Protocol.HTTP_1_1)
+        .code(200)
+        .message("OK")
+        .body(body)
+        .build()
 }

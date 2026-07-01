@@ -1,6 +1,5 @@
 package com.bushop.domain.usecase
 
-
 /**
  * ┌─ StopRefreshCoordinator ─────────────────────────┐
  * │  domain/ layer · Coordinated refresh logic       │

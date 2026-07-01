@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.spotless)
 }
 
 // ── Dependency locking for reproducible builds ──
@@ -77,5 +79,16 @@ tasks.register("updateBadges") {
         } else {
             throw GradleException("$failed/${allBadges.size} badge(s) failed")
         }
+    }
+}
+
+// ── Spotless: format root Gradle scripts ──
+spotless {
+
+    kotlinGradle {
+        ktlint(libs.versions.ktlint.get())
+        target("*.gradle.kts")
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }

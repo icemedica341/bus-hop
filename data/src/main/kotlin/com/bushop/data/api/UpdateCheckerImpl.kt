@@ -1,6 +1,5 @@
 package com.bushop.data.api
 
-
 /**
  * ┌─ UpdateCheckerImpl ──────────────────────────────┐
  * │  data/ layer · GitHub release checker            │
@@ -38,38 +37,37 @@ class UpdateCheckerImpl(
     private var latestUpdateInfo: UpdateInfo? = null
 
     /** Fetch latest release info from GitHub. */
-    override suspend fun checkForUpdate(): NetworkResult<UpdateInfo> =
-        withContext(Dispatchers.IO) {
-            try {
-                val request =
-                    Request
-                        .Builder()
-                        .url(apiUrl)
-                        .header("Accept", "application/vnd.github.v3+json")
-                        .build()
-                val response = client.newCall(request).execute()
-                val body = response.body?.string() ?: return@withContext NetworkResult.Error("Empty response")
-                val release = gson.fromJson(body, GitHubRelease::class.java)
-                val tag = release.tagName.removePrefix("v")
-                val apkAsset = release.assets?.find { it.name.endsWith(".apk") }
-                if (apkAsset == null || !isNewerVersion(tag, currentVersion)) {
-                    return@withContext NetworkResult.Error("No update available")
-                }
-                val info =
-                    UpdateInfo(
-                        latestVersion = tag,
-                        downloadUrl = apkAsset.browserDownloadUrl,
-                        releaseNotes = release.body?.take(500) ?: "",
-                        hasUpdate = true,
-                    )
-                latestUpdateInfo = info
-                NetworkResult.Success(info)
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                NetworkResult.Error(e.message ?: "Check update failed", e)
+    override suspend fun checkForUpdate(): NetworkResult<UpdateInfo> = withContext(Dispatchers.IO) {
+        try {
+            val request =
+                Request
+                    .Builder()
+                    .url(apiUrl)
+                    .header("Accept", "application/vnd.github.v3+json")
+                    .build()
+            val response = client.newCall(request).execute()
+            val body = response.body?.string() ?: return@withContext NetworkResult.Error("Empty response")
+            val release = gson.fromJson(body, GitHubRelease::class.java)
+            val tag = release.tagName.removePrefix("v")
+            val apkAsset = release.assets?.find { it.name.endsWith(".apk") }
+            if (apkAsset == null || !isNewerVersion(tag, currentVersion)) {
+                return@withContext NetworkResult.Error("No update available")
             }
+            val info =
+                UpdateInfo(
+                    latestVersion = tag,
+                    downloadUrl = apkAsset.browserDownloadUrl,
+                    releaseNotes = release.body?.take(500) ?: "",
+                    hasUpdate = true,
+                )
+            latestUpdateInfo = info
+            NetworkResult.Success(info)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "Check update failed", e)
         }
+    }
 
     /** Download APK to cache and launch the install intent via FileProvider. */
     override suspend fun downloadAndUpdateInstall(): NetworkResult<Unit> {

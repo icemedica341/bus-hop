@@ -45,13 +45,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -94,7 +93,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.bushop.BuildConfig
-import com.bushop.domain.model.BusStopEntry
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.ThemeMode
 import com.bushop.domain.model.UpdateInfo
@@ -159,9 +157,9 @@ private fun ApiStatusBanner(
             colors = CardDefaults.cardColors(containerColor = bgColor),
             shape = RoundedCornerShape(8.dp),
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             Row(
                 modifier = Modifier.padding(12.dp),
@@ -303,23 +301,23 @@ fun MainScreen(viewModel: MainViewModel) {
                     IconButton(onClick = onThemeClick) {
                         Icon(
                             imageVector =
-                                when (themeMode) {
-                                    ThemeMode.SYSTEM -> Icons.Default.BrightnessAuto
-                                    ThemeMode.LIGHT -> Icons.Default.LightMode
-                                    ThemeMode.DARK -> Icons.Default.DarkMode
-                                },
+                            when (themeMode) {
+                                ThemeMode.SYSTEM -> Icons.Default.BrightnessAuto
+                                ThemeMode.LIGHT -> Icons.Default.LightMode
+                                ThemeMode.DARK -> Icons.Default.DarkMode
+                            },
                             contentDescription =
-                                when (themeMode) {
-                                    ThemeMode.SYSTEM -> "Auto theme"
-                                    ThemeMode.LIGHT -> "Light mode"
-                                    ThemeMode.DARK -> "Dark mode"
-                                },
+                            when (themeMode) {
+                                ThemeMode.SYSTEM -> "Auto theme"
+                                ThemeMode.LIGHT -> "Light mode"
+                                ThemeMode.DARK -> "Dark mode"
+                            },
                             tint =
-                                when (themeMode) {
-                                    ThemeMode.SYSTEM -> MaterialTheme.colorScheme.onSurfaceVariant
-                                    ThemeMode.LIGHT -> MaterialTheme.colorScheme.onSurfaceVariant
-                                    ThemeMode.DARK -> MaterialTheme.colorScheme.primary
-                                },
+                            when (themeMode) {
+                                ThemeMode.SYSTEM -> MaterialTheme.colorScheme.onSurfaceVariant
+                                ThemeMode.LIGHT -> MaterialTheme.colorScheme.onSurfaceVariant
+                                ThemeMode.DARK -> MaterialTheme.colorScheme.primary
+                            },
                         )
                     }
                     IconButton(onClick = onRefreshClick) {
@@ -337,11 +335,11 @@ fun MainScreen(viewModel: MainViewModel) {
                     }
                 },
                 colors =
-                    TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.80f),
-                        titleContentColor = MaterialTheme.colorScheme.onBackground,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                    ),
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.80f),
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                ),
             )
         },
         floatingActionButton = {
@@ -359,14 +357,14 @@ fun MainScreen(viewModel: MainViewModel) {
     ) { paddingValues ->
         Box(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr),
-                        top = paddingValues.calculateTopPadding(),
-                        end = paddingValues.calculateRightPadding(LayoutDirection.Ltr),
-                        bottom = paddingValues.calculateBottomPadding(),
-                    ),
+            Modifier
+                .fillMaxSize()
+                .padding(
+                    start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr),
+                    top = paddingValues.calculateTopPadding(),
+                    end = paddingValues.calculateRightPadding(LayoutDirection.Ltr),
+                    bottom = paddingValues.calculateBottomPadding(),
+                ),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 ApiStatusBanner(
@@ -405,12 +403,12 @@ fun MainScreen(viewModel: MainViewModel) {
                                 state = listState,
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding =
-                                    PaddingValues(
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        top = 16.dp,
-                                        bottom = 40.dp,
-                                    ),
+                                PaddingValues(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    top = 16.dp,
+                                    bottom = 40.dp,
+                                ),
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
                             ) {
                                 items(
@@ -428,18 +426,18 @@ fun MainScreen(viewModel: MainViewModel) {
                                         onTogglePin = remember(stopCode) { { viewModel.togglePin(stopCode) } },
                                         onDelete = remember(stopCode) { { deleteTarget = stopCode } },
                                         onTogglePinService =
-                                            remember(stopCode) {
-                                                { serviceNo ->
-                                                    viewModel.togglePinService(stopCode, serviceNo)
-                                                }
-                                            },
+                                        remember(stopCode) {
+                                            { serviceNo ->
+                                                viewModel.togglePinService(stopCode, serviceNo)
+                                            }
+                                        },
                                         pinnedServiceNos =
-                                            remember(stopCode, pinnedServices) {
-                                                pinnedServices
-                                                    .filter { it.startsWith("$stopCode:") }
-                                                    .map { it.substringAfter(":") }
-                                                    .toSet()
-                                            },
+                                        remember(stopCode, pinnedServices) {
+                                            pinnedServices
+                                                .filter { it.startsWith("$stopCode:") }
+                                                .map { it.substringAfter(":") }
+                                                .toSet()
+                                        },
                                         onMoveStop = { delta ->
                                             viewModel.moveStop(stopWithArrivals.busStop.code, delta)
                                         },
@@ -508,13 +506,13 @@ fun MainScreen(viewModel: MainViewModel) {
             ) {
                 Box(
                     modifier =
-                        Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = 8.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .clickable { viewModel.dismissHint() }
-                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 8.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .clickable { viewModel.dismissHint() }
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
                 ) {
                     Text(
                         text = "Tip: Tap a bus stop to see arrival times",
@@ -527,36 +525,36 @@ fun MainScreen(viewModel: MainViewModel) {
             if (viewModel.lastUpdatedAll > 0) {
                 val pillBg by animateColorAsState(
                     targetValue =
-                        if (viewModel.isRefreshing) {
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
-                        } else {
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
-                        },
+                    if (viewModel.isRefreshing) {
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
+                    },
                     animationSpec = tween(durationMillis = 300),
                 )
                 Row(
                     modifier =
-                        Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 16.dp, bottom = 16.dp),
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 16.dp, bottom = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Box(
                         modifier =
-                            Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(pillBg)
-                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                        Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(pillBg)
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
                     ) {
                         Text(
                             text =
-                                buildString {
-                                    append("Updated: ${formatLastUpdated(viewModel.lastUpdatedAll)}")
-                                    if (savedStops.any { it.isStale }) {
-                                        append("  •  Some data may be stale")
-                                    }
-                                },
+                            buildString {
+                                append("Updated: ${formatLastUpdated(viewModel.lastUpdatedAll)}")
+                                if (savedStops.any { it.isStale }) {
+                                    append("  •  Some data may be stale")
+                                }
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -573,14 +571,14 @@ fun MainScreen(viewModel: MainViewModel) {
                     }
                 Box(
                     modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(80.dp)
-                            .onGloballyPositioned { coordinates ->
-                                deleteZoneTopPx = coordinates.positionInRoot().y
-                            }.background(deleteZoneColor)
-                            .padding(16.dp),
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .onGloballyPositioned { coordinates ->
+                            deleteZoneTopPx = coordinates.positionInRoot().y
+                        }.background(deleteZoneColor)
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Row(
@@ -746,11 +744,11 @@ private fun SettingsSheet(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text =
-                                when (mode) {
-                                    ThemeMode.SYSTEM -> "System"
-                                    ThemeMode.LIGHT -> "Light"
-                                    ThemeMode.DARK -> "Dark"
-                                },
+                            when (mode) {
+                                ThemeMode.SYSTEM -> "System"
+                                ThemeMode.LIGHT -> "Light"
+                                ThemeMode.DARK -> "Dark"
+                            },
                         )
                     }
                 }
@@ -824,10 +822,10 @@ private fun SettingsSheet(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier =
-                        Modifier.combinedClickable(
-                            onClick = {},
-                            onLongClick = onOpenFeatureFlags,
-                        ),
+                    Modifier.combinedClickable(
+                        onClick = {},
+                        onLongClick = onOpenFeatureFlags,
+                    ),
                 )
                 TextButton(onClick = onCheckUpdate, enabled = !isCheckingUpdate) {
                     Text(if (isCheckingUpdate) "Checking…" else "Check for updates")

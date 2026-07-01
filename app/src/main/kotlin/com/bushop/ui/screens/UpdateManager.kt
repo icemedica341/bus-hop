@@ -1,6 +1,5 @@
 package com.bushop.ui.screens
 
-
 /**
  * ┌─ UpdateManager ──────────────────────────────────┐
  * │  app/ layer · In-app update management           │

@@ -1,6 +1,5 @@
 package com.bushop.ui.components
 
-
 /**
  * ┌─ BusComponents ──────────────────────────────────┐
  * │  app/ layer · Reusable Compose UI components     │
@@ -36,7 +35,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,7 +49,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,7 +67,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -142,123 +138,123 @@ fun BusStopCard(
 
     Card(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    cardTopYInRoot = coordinates.positionInRoot().y
-                    cardHeightInRoot = coordinates.size.height.toFloat()
-                }.then(
-                    if (visuallyDragged) {
-                        Modifier
-                            .zIndex(1f)
-                            .graphicsLayer {
-                                translationY = effectiveOffset
-                                scaleX = dragScale
-                                scaleY = dragScale
-                                alpha = if (isDeleteTargeted) 0.92f else 1f
-                            }.shadow(12.dp, RoundedCornerShape(20.dp))
-                    } else {
-                        Modifier
-                    },
-                ),
+        modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { coordinates ->
+                cardTopYInRoot = coordinates.positionInRoot().y
+                cardHeightInRoot = coordinates.size.height.toFloat()
+            }.then(
+                if (visuallyDragged) {
+                    Modifier
+                        .zIndex(1f)
+                        .graphicsLayer {
+                            translationY = effectiveOffset
+                            scaleX = dragScale
+                            scaleY = dragScale
+                            alpha = if (isDeleteTargeted) 0.92f else 1f
+                        }.shadow(12.dp, RoundedCornerShape(20.dp))
+                } else {
+                    Modifier
+                },
+            ),
         shape = RoundedCornerShape(20.dp),
         colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (isPinned) {
-                        MaterialTheme.colorScheme.primaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    },
-            ),
+        CardDefaults.cardColors(
+            containerColor =
+            if (isPinned) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
+        ),
         border = if (isPinned) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
         elevation = CardDefaults.cardElevation(defaultElevation = if (visuallyDragged) 12.dp else 3.dp),
     ) {
         val pulseOverlayColor = MaterialTheme.colorScheme.primary
         Column(
             modifier =
-                Modifier.drawWithContent {
-                    drawContent()
-                    if (pulseAlpha > 0.001f) {
-                        drawRect(
-                            color = pulseOverlayColor.copy(alpha = pulseAlpha * 0.2f),
-                            size = size,
-                        )
-                    }
-                },
+            Modifier.drawWithContent {
+                drawContent()
+                if (pulseAlpha > 0.001f) {
+                    drawRect(
+                        color = pulseOverlayColor.copy(alpha = pulseAlpha * 0.2f),
+                        size = size,
+                    )
+                }
+            },
         ) {
             // ── Header background (pinned = blue pill, unpinned = none) ──
             Row(
                 modifier =
-                    (
-                        if (isPinned) {
-                            Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                        } else {
-                            Modifier.fillMaxWidth()
-                        }
+                (
+                    if (isPinned) {
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                    } else {
+                        Modifier.fillMaxWidth()
+                    }
                     ).padding(horizontal = 16.dp, vertical = 12.dp)
-                        .then(
-                            if (onMoveStop != null) {
-                                Modifier
-                                    .pointerInput(busStopCode) {
-                                        detectTapGestures(
-                                            onTap = { onToggleCollapse() },
-                                        )
-                                    }.pointerInput(busStopCode) {
-                                        var totalY = 0f
-                                        detectDragGesturesAfterLongPress(
-                                            onDragStart = {
-                                                totalY = 0f
-                                                isLocallyDragged = true
-                                                localDragOffset = 0f
-                                                if (!isCollapsed) collapsedForDrag = true
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                onDragStart?.invoke(busStopCode)
-                                            },
-                                            onDrag = { change, dragAmount ->
-                                                change.consume()
-                                                totalY += dragAmount.y
-                                                localDragOffset = totalY
-                                                // Use collapsed card center for delete zone detection
-                                                val cardCenter = cardTopYInRoot + (cardHeightInRoot / 2f)
-                                                onDragProgress?.invoke(
-                                                    busStopCode,
-                                                    totalY,
-                                                    cardCenter + totalY,
-                                                )
-                                            },
-                                            onDragEnd = {
-                                                onDragEnd?.invoke(busStopCode, totalY)
-                                                isLocallyDragged = false
-                                                localDragOffset = 0f
-                                                // Keep collapsed state after drag (toggle permanently if was expanded)
-                                                if (collapsedForDrag) {
-                                                    if (!isCollapsed) onToggleCollapse()
-                                                    // Don't clear collapsedForDrag yet — keep card visually
-                                                    // collapsed until isCollapsed propagates from ViewModel
-                                                } else {
-                                                    collapsedForDrag = false
-                                                }
-                                            },
-                                            onDragCancel = {
-                                                isLocallyDragged = false
-                                                localDragOffset = 0f
-                                                collapsedForDrag = false
-                                            },
-                                        )
-                                    }
-                            } else {
-                                Modifier.pointerInput(busStopCode) {
+                    .then(
+                        if (onMoveStop != null) {
+                            Modifier
+                                .pointerInput(busStopCode) {
                                     detectTapGestures(
                                         onTap = { onToggleCollapse() },
-                                        onLongPress = { onDelete() },
+                                    )
+                                }.pointerInput(busStopCode) {
+                                    var totalY = 0f
+                                    detectDragGesturesAfterLongPress(
+                                        onDragStart = {
+                                            totalY = 0f
+                                            isLocallyDragged = true
+                                            localDragOffset = 0f
+                                            if (!isCollapsed) collapsedForDrag = true
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            onDragStart?.invoke(busStopCode)
+                                        },
+                                        onDrag = { change, dragAmount ->
+                                            change.consume()
+                                            totalY += dragAmount.y
+                                            localDragOffset = totalY
+                                            // Use collapsed card center for delete zone detection
+                                            val cardCenter = cardTopYInRoot + (cardHeightInRoot / 2f)
+                                            onDragProgress?.invoke(
+                                                busStopCode,
+                                                totalY,
+                                                cardCenter + totalY,
+                                            )
+                                        },
+                                        onDragEnd = {
+                                            onDragEnd?.invoke(busStopCode, totalY)
+                                            isLocallyDragged = false
+                                            localDragOffset = 0f
+                                            // Keep collapsed state after drag (toggle permanently if was expanded)
+                                            if (collapsedForDrag) {
+                                                if (!isCollapsed) onToggleCollapse()
+                                                // Don't clear collapsedForDrag yet — keep card visually
+                                                // collapsed until isCollapsed propagates from ViewModel
+                                            } else {
+                                                collapsedForDrag = false
+                                            }
+                                        },
+                                        onDragCancel = {
+                                            isLocallyDragged = false
+                                            localDragOffset = 0f
+                                            collapsedForDrag = false
+                                        },
                                     )
                                 }
-                            },
-                        ),
+                        } else {
+                            Modifier.pointerInput(busStopCode) {
+                                detectTapGestures(
+                                    onTap = { onToggleCollapse() },
+                                    onLongPress = { onDelete() },
+                                )
+                            }
+                        },
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -272,22 +268,22 @@ fun BusStopCard(
                             }
                         Box(
                             modifier =
-                                Modifier
-                                    .widthIn(max = 130.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(namePillBg)
-                                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                            Modifier
+                                .widthIn(max = 130.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(namePillBg)
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
                         ) {
                             Text(
                                 text = busStopName,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color =
-                                    if (isPinned) {
-                                        MaterialTheme.colorScheme.onPrimary
-                                    } else {
-                                        MaterialTheme.colorScheme.onPrimaryContainer
-                                    },
+                                if (isPinned) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                },
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -304,10 +300,10 @@ fun BusStopCard(
                     if (busStopName.isNotBlank()) {
                         Box(
                             modifier =
-                                Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-                                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                            Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                                .padding(horizontal = 8.dp, vertical = 3.dp),
                         ) {
                             Text(
                                 text = busStopCode,
@@ -337,21 +333,21 @@ fun BusStopCard(
                     }
                     Box(
                         modifier =
-                            Modifier
-                                .size(32.dp)
-                                .clip(CircleShape)
-                                .clickable(onClick = onToggleCollapse),
+                        Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .clickable(onClick = onToggleCollapse),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             painter =
-                                if (effectiveCollapsed) {
-                                    painterResource(
-                                        com.bushop.R.drawable.ic_expand_more,
-                                    )
-                                } else {
-                                    painterResource(com.bushop.R.drawable.ic_expand_less)
-                                },
+                            if (effectiveCollapsed) {
+                                painterResource(
+                                    com.bushop.R.drawable.ic_expand_more,
+                                )
+                            } else {
+                                painterResource(com.bushop.R.drawable.ic_expand_less)
+                            },
                             contentDescription = if (effectiveCollapsed) "Expand" else "Collapse",
                             modifier = Modifier.size(18.dp),
                         )
@@ -365,9 +361,9 @@ fun BusStopCard(
             if (showCollapsed) {
                 FlowRow(
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
@@ -387,11 +383,11 @@ fun BusStopCard(
             AnimatedVisibility(
                 visible = showExpanded,
                 enter =
-                    fadeIn(animationSpec = tween(durationMillis = enterDuration, easing = easing)) +
-                        expandVertically(animationSpec = tween(durationMillis = enterDuration, easing = easing)),
+                fadeIn(animationSpec = tween(durationMillis = enterDuration, easing = easing)) +
+                    expandVertically(animationSpec = tween(durationMillis = enterDuration, easing = easing)),
                 exit =
-                    fadeOut(animationSpec = tween(durationMillis = exitDuration, easing = easing)) +
-                        shrinkVertically(animationSpec = tween(durationMillis = exitDuration, easing = easing)),
+                fadeOut(animationSpec = tween(durationMillis = exitDuration, easing = easing)) +
+                    shrinkVertically(animationSpec = tween(durationMillis = exitDuration, easing = easing)),
             ) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -418,11 +414,11 @@ fun BusStopCard(
                             val hour = now.get(java.util.Calendar.HOUR_OF_DAY)
                             Text(
                                 text =
-                                    if (hour >= 23 || hour < 6) {
-                                        "All buses have stopped running for the night"
-                                    } else {
-                                        "No upcoming buses at this stop"
-                                    },
+                                if (hour >= 23 || hour < 6) {
+                                    "All buses have stopped running for the night"
+                                } else {
+                                    "No upcoming buses at this stop"
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -465,9 +461,9 @@ private fun CollapsedBusChip(service: BusService) {
 
     Box(
         modifier =
-            Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+        Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -479,10 +475,10 @@ private fun CollapsedBusChip(service: BusService) {
             )
             Box(
                 modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isArriving) Color(0xFF34C759) else MaterialTheme.colorScheme.primary)
-                        .padding(horizontal = 8.dp, vertical = 5.dp),
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (isArriving) Color(0xFF34C759) else MaterialTheme.colorScheme.primary)
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
             ) {
                 Text(
                     text = eta,
@@ -499,11 +495,11 @@ private fun CollapsedBusChip(service: BusService) {
 private fun OfflineBanner(onRetry: () -> Unit) {
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.tertiaryContainer)
-                .padding(16.dp),
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -529,11 +525,11 @@ private fun ErrorBanner(
 ) {
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.errorContainer)
-                .padding(16.dp),
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -554,39 +550,39 @@ fun BusServiceRow(
 ) {
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    if (isPinned) {
-                        MaterialTheme.colorScheme.primaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                    },
-                ).then(
-                    if (isPinned) {
-                        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
-                    } else {
-                        Modifier
-                    },
-                ).then(
-                    if (onTogglePinService != null) {
-                        Modifier.combinedClickable(
-                            onClick = {},
-                            onLongClick = onTogglePinService,
-                        )
-                    } else {
-                        Modifier
-                    },
-                ).padding(12.dp),
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                if (isPinned) {
+                    MaterialTheme.colorScheme.primaryContainer
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                },
+            ).then(
+                if (isPinned) {
+                    Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                } else {
+                    Modifier
+                },
+            ).then(
+                if (onTogglePinService != null) {
+                    Modifier.combinedClickable(
+                        onClick = {},
+                        onLongClick = onTogglePinService,
+                    )
+                } else {
+                    Modifier
+                },
+            ).padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier =
-                Modifier
-                    .size(width = 56.dp, height = 44.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primary),
+            Modifier
+                .size(width = 56.dp, height = 44.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -637,18 +633,18 @@ fun BusServiceRow(
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(
                         painter =
-                            when {
-                                arrival.load.contains("Seats") -> painterResource(com.bushop.R.drawable.ic_chair)
-                                arrival.load.contains("Standing") -> painterResource(com.bushop.R.drawable.ic_directions_walk)
-                                else -> painterResource(com.bushop.R.drawable.ic_warning)
-                            },
+                        when {
+                            arrival.load.contains("Seats") -> painterResource(com.bushop.R.drawable.ic_chair)
+                            arrival.load.contains("Standing") -> painterResource(com.bushop.R.drawable.ic_directions_walk)
+                            else -> painterResource(com.bushop.R.drawable.ic_warning)
+                        },
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint =
-                            when {
-                                arrival.load.contains("Limited") -> Color(0xFFFF9800)
-                                else -> MaterialTheme.colorScheme.onSurfaceVariant
-                            },
+                        when {
+                            arrival.load.contains("Limited") -> Color(0xFFFF9800)
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     )
                     Text(
                         text = arrival.load,
@@ -670,27 +666,27 @@ fun BusServiceRow(
             val isArriving = nextArrival?.eta == "Arr." || nextArrival?.eta == "Arr"
             Box(
                 modifier =
-                    Modifier
-                        .widthIn(max = 88.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            if (isArriving) {
-                                Color(0xFF34C759)
-                            } else {
-                                MaterialTheme.colorScheme.primaryContainer
-                            },
-                        ).padding(horizontal = 8.dp, vertical = 2.dp),
+                Modifier
+                    .widthIn(max = 88.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (isArriving) {
+                            Color(0xFF34C759)
+                        } else {
+                            MaterialTheme.colorScheme.primaryContainer
+                        },
+                    ).padding(horizontal = 8.dp, vertical = 2.dp),
             ) {
                 Text(
                     text = nextArrival?.eta ?: "--",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color =
-                        if (isArriving) {
-                            Color.White
-                        } else {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        },
+                    if (isArriving) {
+                        Color.White
+                    } else {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    },
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -737,10 +733,10 @@ private fun OperatorBadge(operator: String) {
 
     Box(
         modifier =
-            Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(color)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
+        Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(color)
+            .padding(horizontal = 6.dp, vertical = 2.dp),
     ) {
         Text(
             text = label,

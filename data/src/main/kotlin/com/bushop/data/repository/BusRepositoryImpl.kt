@@ -1,6 +1,5 @@
 package com.bushop.data.repository
 
-
 /**
  * ┌─ BusRepositoryImpl ──────────────────────────────┐
  * │  data/ layer · Adapter between domain + data     │

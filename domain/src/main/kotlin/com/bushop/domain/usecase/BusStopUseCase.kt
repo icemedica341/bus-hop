@@ -1,6 +1,5 @@
 package com.bushop.domain.usecase
 
-
 /**
  * ┌─ BusStopUseCase ─────────────────────────────────┐
  * │  domain/ layer · Core business logic             │
@@ -105,12 +104,11 @@ class BusStopUseCase {
     fun applyPersistedCollapsedState(
         stops: List<BusStopWithArrivals>,
         collapsedStops: Set<String>,
-    ): List<BusStopWithArrivals> =
-        stops.map { stop ->
-            stop.copy(
-                isCollapsed = if (stop.busStop.code in collapsedStops) true else stop.isCollapsed,
-            )
-        }
+    ): List<BusStopWithArrivals> = stops.map { stop ->
+        stop.copy(
+            isCollapsed = if (stop.busStop.code in collapsedStops) true else stop.isCollapsed,
+        )
+    }
 
     fun collectCollapsedCodes(stops: List<BusStopWithArrivals>): List<String> = stops.filter { it.isCollapsed }.map { it.busStop.code }
 }

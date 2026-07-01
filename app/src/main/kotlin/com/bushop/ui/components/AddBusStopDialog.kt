@@ -1,6 +1,5 @@
 package com.bushop.ui.components
 
-
 /**
  * ┌─ AddBusStopDialog ───────────────────────────────┐
  * │  app/ layer · Search + add bus stop dialog       │
@@ -12,10 +11,8 @@ package com.bushop.ui.components
  * └───────────────────────────────────────────────────┘
  */
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -131,13 +127,13 @@ fun AddBusStopDialog(
 
                     Text(
                         text =
-                            if (selectedEntry != null) {
-                                "Bus stop selected"
-                            } else if (showNearbyHeader) {
-                                "Nearby stops — tap to add"
-                            } else {
-                                "Search by code or name"
-                            },
+                        if (selectedEntry != null) {
+                            "Bus stop selected"
+                        } else if (showNearbyHeader) {
+                            "Nearby stops — tap to add"
+                        } else {
+                            "Search by code or name"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -167,7 +163,11 @@ fun AddBusStopDialog(
                     if (!showNearbyHeader && searchQuery.length < 1) {
                         Spacer(Modifier.height(8.dp))
                         TextButton(onClick = onFindNearby, enabled = !isLoadingNearby) {
-                            Icon(painterResource(com.bushop.R.drawable.ic_my_location), contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(
+                                painterResource(com.bushop.R.drawable.ic_my_location),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
                             Spacer(Modifier.width(6.dp))
                             Text(if (isLoadingNearby) "Locating…" else "Find nearby stops")
                         }
@@ -205,12 +205,12 @@ fun AddBusStopDialog(
                             items(activeResults, key = { it.code }) { entry ->
                                 Row(
                                     modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                selectedEntry = entry
-                                                searchQuery = "${entry.code} - ${entry.name}"
-                                            }.padding(horizontal = 8.dp, vertical = 8.dp),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            selectedEntry = entry
+                                            searchQuery = "${entry.code} - ${entry.name}"
+                                        }.padding(horizontal = 8.dp, vertical = 8.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
@@ -267,14 +267,16 @@ fun AddBusStopDialog(
                                 }
                             },
                             enabled =
-                                !isLoading && (
-                                    selectedEntry != null || (
-                                        searchQuery.length == 5 &&
-                                            searchQuery.all {
-                                                it.isDigit()
-                                            }
-                                    )
-                                ),
+                            !isLoading &&
+                                (
+                                    selectedEntry != null ||
+                                        (
+                                            searchQuery.length == 5 &&
+                                                searchQuery.all {
+                                                    it.isDigit()
+                                                }
+                                            )
+                                    ),
                         ) {
                             if (isLoading) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {

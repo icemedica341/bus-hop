@@ -1,6 +1,5 @@
 package com.bushop.data.local
 
-
 /**
  * ┌─ BusStopIndex ───────────────────────────────────┐
  * │  data/ layer · In-memory search engine           │
@@ -312,11 +311,10 @@ class BusStopIndex(
         val expandedSubs: List<String>,
     )
 
-    private fun prepareQueryTokens(q: String): List<QueryToken> =
-        q.split(Regex("""\s+""")).filter { it.isNotEmpty() }.map { t ->
-            val exp = expandAbbrev(t)
-            QueryToken(t, exp, if (exp.contains(' ')) tokenise(exp) else listOf(exp))
-        }
+    private fun prepareQueryTokens(q: String): List<QueryToken> = q.split(Regex("""\s+""")).filter { it.isNotEmpty() }.map { t ->
+        val exp = expandAbbrev(t)
+        QueryToken(t, exp, if (exp.contains(' ')) tokenise(exp) else listOf(exp))
+    }
 
     // ── Token matching ──
 
@@ -367,14 +365,13 @@ class BusStopIndex(
     private fun matchTokenScore(
         qt: QueryToken,
         t: String,
-    ): Int =
-        when {
-            t.startsWith(qt.raw) || t.startsWith(qt.expanded) -> 800
-            qt.raw.startsWith(t) && t.length >= 2 -> 600
-            t.contains(qt.raw) || t.contains(qt.expanded) -> 400
-            qt.raw.contains(t) && t.length >= 2 -> 300
-            else -> 0
-        }
+    ): Int = when {
+        t.startsWith(qt.raw) || t.startsWith(qt.expanded) -> 800
+        qt.raw.startsWith(t) && t.length >= 2 -> 600
+        t.contains(qt.raw) || t.contains(qt.expanded) -> 400
+        qt.raw.contains(t) && t.length >= 2 -> 300
+        else -> 0
+    }
 
     /** Fuzzy (Levenshtein) match for a single token — returns 0 if no match. */
     private fun matchTokenFuzzy(
@@ -429,8 +426,10 @@ class BusStopIndex(
         nameTokens: List<String>,
     ): Boolean {
         for (t in nameTokens) {
-            if (t.startsWith(qt.raw) || t.contains(qt.raw) ||
-                t.startsWith(qt.expanded) || t.contains(qt.expanded) ||
+            if (t.startsWith(qt.raw) ||
+                t.contains(qt.raw) ||
+                t.startsWith(qt.expanded) ||
+                t.contains(qt.expanded) ||
                 (qt.raw.contains(t) && t.length >= 2)
             ) {
                 return true
