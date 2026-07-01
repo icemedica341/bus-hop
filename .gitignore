@@ -1,63 +1,83 @@
-# Built application files
+# gitaccept: block everything by default, whitelist explicitly
+# Prevents accidentally tracking stray files (build artifacts, IDE files, temp files)
+/*
+!/.gitignore
+!/.editorconfig
+!.github/
+!.github/**
+!/app/
+!/app/**
+!/data/
+!/data/**
+!/docs/
+!/docs/**
+!/domain/
+!/domain/**
+!/gradle/
+!/gradle/**
+!/mcp/
+!/mcp/**
+!/*.gradle.kts
+!/gradle.properties
+!/gradlew
+!/gradlew.bat
+!/lint.xml
+!/*.lockfile
+!/*.md
+!/LICENSE
+!/CREDITS.md
+!/settings.gradle.kts
+
+# Sub-blacklists — re-block specific paths within whitelisted directories
+
+# Build artifacts
+.gradle/
+build/
 *.apk
 *.ap_
 *.aab
-
-# Files for the ART/Dalvik VM
 *.dex
-
-# Java class files
 *.class
-
-# Generated files
 bin/
 gen/
 out/
-
-# Gradle files
-.gradle/
-build/
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# IntelliJ
-*.iml
-.idea/
-
-# Eclipse
-.classpath
-.project
-
-# Local development scripts (not used in CI)
-/scripts/
-
-# Release signing keystore (contains credentials)
-app/keystore.jks
-.settings/
-
-# Android Studio
 captures/
 .externalNativeBuild
 .cxx
+.kotlin/
+local.properties
 *.log
 
-# OS-specific files
+# IDE files
+*.iml
+.idea/
+.settings/
+*.user
+*.suo
+*.DotSettings.user
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Keystore files
+# Secrets
 *.jks
 *.keystore
+app/keystore.jks
+keystore.jks
 
-# Proguard
+# Proguard artifacts
 proguard/
 proguard/*.pro
+
+# Local dev scripts (not used in CI)
+/scripts/
 
 # AI / workspace meta (not part of the Android project)
 .claude/
 .codex/
 .opencode/
+.omo/
 .pi/
 CLAUDE.md
 AGENTS.md
@@ -77,14 +97,11 @@ opencode-agent-system.md
 opencode.json
 meta/
 build.bat
-
-# Project subdir (synced to root, keep root as source of truth)
-bus-hop-content/.git-hooks/
-
-.git-hooks/
-keystore.jks
-.kotlin/
 HANDOVER.md
 
-# Node modules (MCP server dependencies — not part of Android project)
+# Project subdir hooks
+bus-hop-content/.git-hooks/
+.git-hooks/
+
+# Node modules (MCP server dependencies)
 mcp/node_modules/
