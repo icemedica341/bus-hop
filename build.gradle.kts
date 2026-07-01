@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.spotless) apply false
 }
 
 // ── Dependency locking for reproducible builds ──
@@ -77,6 +78,19 @@ tasks.register("updateBadges") {
             logger.lifecycle("\n✅ All ${allBadges.size} badges updated")
         } else {
             throw GradleException("$failed/${allBadges.size} badge(s) failed")
+        }
+    }
+    apply(plugin = "com.diffplug.spotless")
+    spotless {
+        kotlin {
+            ktlint(libs.versions.ktlint.get())
+            target("src/**/*.kt")
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+        kotlinGradle {
+            ktlint(libs.versions.ktlint.get())
+            target("*.gradle.kts")
         }
     }
 subprojects {
