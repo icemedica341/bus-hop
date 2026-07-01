@@ -6,7 +6,7 @@ plugins {
 
 spotless {
     kotlin {
-        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
+        ktlint("1.5.0").editorConfigOverride(
             mapOf("ktlint_standard_filename" to "disabled")
         )
         target("src/**/*.kt")

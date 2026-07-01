@@ -196,8 +196,12 @@ class ArchitectureTest {
                     val domainFile = File(projectRoot, "domain/src/main/kotlin/$packagePart.kt")
                     val dataFile = File(projectRoot, "data/src/main/kotlin/$packagePart.kt")
                     val appFile = File(projectRoot, "app/src/main/kotlin/$packagePart.kt")
-                    if (!domainDir.exists() && !dataDir.exists() && !appDir.exists() &&
-                        !domainFile.exists() && !dataFile.exists() && !appFile.exists()
+                    if (!domainDir.exists() &&
+                        !dataDir.exists() &&
+                        !appDir.exists() &&
+                        !domainFile.exists() &&
+                        !dataFile.exists() &&
+                        !appFile.exists()
                     ) {
                         violations.add("'$trimmed' — '$outerClass' not found in any module")
                     }
@@ -225,8 +229,10 @@ class ArchitectureTest {
             listOf("androidx.", "android.", "com.android.", "com.google.android.")
         for (line in lines) {
             val trimmed = line.trim()
-            if (trimmed.startsWith("implementation") || trimmed.startsWith("api") ||
-                trimmed.startsWith("compileOnly") || trimmed.startsWith("runtimeOnly")
+            if (trimmed.startsWith("implementation") ||
+                trimmed.startsWith("api") ||
+                trimmed.startsWith("compileOnly") ||
+                trimmed.startsWith("runtimeOnly")
             ) {
                 for (pattern in androidPatterns) {
                     if (trimmed.contains(pattern)) {
