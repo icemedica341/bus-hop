@@ -83,11 +83,21 @@ jobs:
           echo "path=$apk" >> "$GITHUB_OUTPUT"
           echo "name=$(basename "$apk")" >> "$GITHUB_OUTPUT"
 
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          awk "/^## \\[${VER}\]/{flag=1; next} /^## \\[/{flag=0} flag" CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "⚠️ No release notes found for ${VER} — using full CHANGELOG"
+            cp CHANGELOG.md release-notes.md
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@c95fe605939cb35d87cddd99dba51fb7c8170c71 # v2.1.0
         with:
           name: BusHop ${{ github.ref_name }}
-          body_path: CHANGELOG.md
+          body_path: release-notes.md
           files: ${{ steps.apk.outputs.path }}
           fail_on_unmatched_files: false
           draft: true

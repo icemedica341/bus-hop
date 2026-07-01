@@ -1,0 +1,21 @@
+#!/bin/sh
+# Pre-commit hook — auto-format staged Kotlin files via spotless
+# Installed by: git config core.hooksPath .githooks
+
+echo "🔍 Running pre-commit checks..."
+
+# Get staged Kotlin files
+staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.kt$|\.kts$' || true)
+
+if [ -z "$staged" ]; then
+  echo "   (no Kotlin files staged — skipping)"
+  exit 0
+fi
+
+# Run spotless on staged files (applies formatting)
+./gradlew spotlessApply --no-daemon -q 2>/dev/null || true
+
+# Re-stage any files that spotless modified
+echo "$staged" | xargs git add 2>/dev/null || true
+
+echo "✅ pre-commit formatting applied"
