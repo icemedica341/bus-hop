@@ -28,80 +28,20 @@
 !/CREDITS.md
 !/settings.gradle.kts
 
-# Sub-blacklists — re-block specific paths within whitelisted directories
-
-# Build artifacts
-.gradle/
+# Sub-blacklists — within whitelisted dirs, re-block what we don't want
 build/
 *.apk
 *.ap_
 *.aab
 *.dex
 *.class
-bin/
-gen/
-out/
-captures/
-.externalNativeBuild
-.cxx
-.kotlin/
 local.properties
 *.log
-
-# IDE files
 *.iml
-.idea/
-.settings/
-*.user
-*.suo
-*.DotSettings.user
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# Secrets
 *.jks
 *.keystore
 app/keystore.jks
-keystore.jks
-
-# Proguard artifacts
-proguard/
-proguard/*.pro
-
-# Local dev scripts (not used in CI)
-/scripts/
-
-# AI / workspace meta (not part of the Android project)
-.claude/
-.codex/
-.opencode/
-.omo/
-.pi/
-CLAUDE.md
-AGENTS.md
-session-state.json
-buglog.json
-topic-insights.md
-workflow-state.json
-workflow.d/
-archive/
-commands/
-propagated/
 docs/index.html
-~/
-sync-from-hub.ps1
-audit-folder-quality.ps1
-opencode-agent-system.md
-opencode.json
-meta/
-build.bat
-HANDOVER.md
-
-# Project subdir hooks
-bus-hop-content/.git-hooks/
-.git-hooks/
-
-# Node modules (MCP server dependencies)
 mcp/node_modules/
