@@ -124,8 +124,10 @@ class UpdateCheckerImpl(
         tag: String,
         current: String,
     ): Boolean {
-        val tParts = tag.split(".").mapNotNull { it.toIntOrNull() }
-        val cParts = current.split(".").mapNotNull { it.toIntOrNull() }
+        // Strip pre-release suffix (e.g. "1.0.3-rc1" → "1.0.3")
+        val normalize = { v: String -> v.split("-").first() }
+        val tParts = normalize(tag).split(".").mapNotNull { it.toIntOrNull() }
+        val cParts = normalize(current).split(".").mapNotNull { it.toIntOrNull() }
         for (i in 0 until maxOf(tParts.size, cParts.size)) {
             val t = tParts.getOrElse(i) { 0 }
             val c = cParts.getOrElse(i) { 0 }
