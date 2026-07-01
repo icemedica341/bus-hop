@@ -1,6 +1,5 @@
 package com.bushop.ui.screens
 
-
 /**
  * ┌─ ThemeManager ───────────────────────────────────┐
  * │  app/ layer · Theme state management             │
@@ -12,7 +11,6 @@ package com.bushop.ui.screens
  * └───────────────────────────────────────────────────┘
  */
 
-import androidx.lifecycle.viewModelScope
 import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.ThemeMode
 import com.bushop.domain.repository.BusRepository

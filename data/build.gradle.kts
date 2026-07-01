@@ -1,5 +1,22 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.spotless)
+}
+
+spotless {
+    kotlin {
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
+            mapOf("ktlint_standard_filename" to "disabled")
+        )
+        target("src/**/*.kt")
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+detekt {
+    config.setFrom(rootProject.file("detekt.yml"))
+    buildUponDefaultConfig = true
 }
 
 android {

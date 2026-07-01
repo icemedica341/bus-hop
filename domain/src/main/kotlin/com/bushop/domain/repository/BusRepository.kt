@@ -1,6 +1,5 @@
 package com.bushop.domain.repository
 
-
 /**
  * ┌─ BusRepository ──────────────────────────────────┐
  * │  domain/ layer · Repository interface            │

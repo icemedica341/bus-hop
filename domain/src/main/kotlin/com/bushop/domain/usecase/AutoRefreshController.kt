@@ -1,6 +1,5 @@
 package com.bushop.domain.usecase
 
-
 /**
  * ┌─ AutoRefreshController ──────────────────────────┐
  * │  domain/ layer · Periodic refresh scheduler      │

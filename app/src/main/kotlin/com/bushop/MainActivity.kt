@@ -1,6 +1,5 @@
 package com.bushop
 
-
 /**
  * ┌─ MainActivity ───────────────────────────────────┐
  * │  app/ layer · Entry point                        │
@@ -31,12 +30,10 @@ import com.bushop.data.api.UpdateCheckerImpl
 import com.bushop.data.local.BusStopIndex
 import com.bushop.data.local.BusStopStorage
 import com.bushop.data.repository.BusRepositoryImpl
-import com.bushop.domain.model.ColorSchemeOption
 import com.bushop.domain.model.ThemeMode
 import com.bushop.ui.screens.MainScreen
 import com.bushop.ui.screens.MainViewModel
 import com.bushop.ui.theme.BusHopTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {

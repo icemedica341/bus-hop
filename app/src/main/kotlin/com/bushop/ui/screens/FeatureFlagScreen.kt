@@ -1,6 +1,5 @@
 package com.bushop.ui.screens
 
-
 /**
  * ┌─ FeatureFlagDialog ──────────────────────────────┐
  * │  app/ layer · Debug UI for runtime flag toggles  │
@@ -12,7 +11,6 @@ package com.bushop.ui.screens
  * └───────────────────────────────────────────────────┘
  */
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
