@@ -41,6 +41,45 @@ class BusStopIndex(
 ) {
     companion object {
         private const val MAX_RESULTS = 20
+
+        // ── Scoring constants ──
+        private object Scoring {
+            /** Token matches query exactly (e.g. "jurong" == "jurong"). */
+            const val EXACT_MATCH = 1000
+
+            /** Token starts with the query text. */
+            const val PREFIX_MATCH = 800
+
+            /** Query text starts with the token (shorter token fully embedded). */
+            const val QUERY_PREFIX_OF_TOKEN = 600
+
+            /** Token contains the query text somewhere. */
+            const val CONTAINS = 400
+
+            /** Query text contains the token. */
+            const val TOKEN_INSIDE_QUERY = 300
+
+            /** Fuzzy Levenshtein match for raw query against token. */
+            const val FUZZY_RAW = 250
+
+            /** Fuzzy Levenshtein match for expanded query against token. */
+            const val FUZZY_EXPANDED = 220
+
+            /** Code field matches the search query exactly. */
+            const val CODE_EXACT = 50
+
+            /** Code field starts with the search query. */
+            const val CODE_PREFIX = 35
+
+            /** Code field contains the search query. */
+            const val CODE_CONTAINS = 10
+
+            /** Bonus when all query tokens match the stop name. */
+            const val ALL_TOKENS_BONUS = 500
+
+            /** Road match scores are divided by this to deprioritize vs name matches. */
+            const val ROAD_SCORE_DIVISOR = 3
+        }
     }
 
     private val gson = GsonProvider.gson
@@ -235,21 +274,27 @@ class BusStopIndex(
         // Stage 2b: character frequency quick-check
         if (!charFilter(s1, s2)) return limit + 1
 
-        // Stage 3: full DP matrix with row-min early exit
-        val dp = Array(s1.length + 1) { IntArray(s2.length + 1) }
-        for (i in 0..s1.length) dp[i][0] = i
-        for (j in 0..s2.length) dp[0][j] = j
+        // Stage 3: rolling 1D array DP with row-min early exit
+        val prev = IntArray(s2.length + 1) { it }
+        val curr = IntArray(s2.length + 1)
         for (i in 1..s1.length) {
+            curr[0] = i
             var rowMin = Int.MAX_VALUE
             val si = s1[i - 1]
             for (j in 1..s2.length) {
                 val cost = if (si == s2[j - 1]) 0 else 1
-                dp[i][j] = minOf(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
-                if (dp[i][j] < rowMin) rowMin = dp[i][j]
+                curr[j] = minOf(
+                    prev[j] + 1,
+                    curr[j - 1] + 1,
+                    prev[j - 1] + cost,
+                )
+                if (curr[j] < rowMin) rowMin = curr[j]
             }
             if (rowMin > limit) return limit + 1
+            // Swap rows: copy curr into prev for next iteration
+            System.arraycopy(curr, 0, prev, 0, s2.length + 1)
         }
-        return dp[s1.length][s2.length]
+        return prev[s2.length]
     }
 
     // ── Query preparation ──
@@ -272,7 +317,7 @@ class BusStopIndex(
         rawTokens: List<String>,
         expandedTokens: List<String>,
     ): Int {
-        if (qt.raw in rawTokens || qt.expanded in expandedTokens) return 1000
+        if (qt.raw in rawTokens || qt.expanded in expandedTokens) return Scoring.EXACT_MATCH
 
         // Iterate both lists separately to avoid allocating a merged list
         for (t in rawTokens) {
@@ -289,10 +334,10 @@ class BusStopIndex(
             for (sub in qt.expandedSubs) {
                 if (sub.length < 2) continue
                 for (t in rawTokens) {
-                    if (t.length >= 2 && (t == sub || t.startsWith(sub) || sub.startsWith(t))) return 400
+                    if (t.length >= 2 && (t == sub || t.startsWith(sub) || sub.startsWith(t))) return Scoring.CONTAINS
                 }
                 for (t in expandedTokens) {
-                    if (t.length >= 2 && (t == sub || t.startsWith(sub) || sub.startsWith(t))) return 400
+                    if (t.length >= 2 && (t == sub || t.startsWith(sub) || sub.startsWith(t))) return Scoring.CONTAINS
                 }
             }
         }
@@ -315,10 +360,10 @@ class BusStopIndex(
         qt: QueryToken,
         t: String,
     ): Int = when {
-        t.startsWith(qt.raw) || t.startsWith(qt.expanded) -> 800
-        qt.raw.startsWith(t) && t.length >= 2 -> 600
-        t.contains(qt.raw) || t.contains(qt.expanded) -> 400
-        qt.raw.contains(t) && t.length >= 2 -> 300
+        t.startsWith(qt.raw) || t.startsWith(qt.expanded) -> Scoring.PREFIX_MATCH
+        qt.raw.startsWith(t) && t.length >= 2 -> Scoring.QUERY_PREFIX_OF_TOKEN
+        t.contains(qt.raw) || t.contains(qt.expanded) -> Scoring.CONTAINS
+        qt.raw.contains(t) && t.length >= 2 -> Scoring.TOKEN_INSIDE_QUERY
         else -> 0
     }
 
@@ -328,8 +373,8 @@ class BusStopIndex(
         t: String,
     ): Int {
         val limit = if (t.length >= 6) 2 else 1
-        if (qt.raw.length >= 3 && levenshtein(t, qt.raw, limit) <= limit) return 250
-        if (qt.expanded.length >= 3 && levenshtein(t, qt.expanded, limit) <= limit) return 220
+        if (qt.raw.length >= 3 && levenshtein(t, qt.raw, limit) <= limit) return Scoring.FUZZY_RAW
+        if (qt.expanded.length >= 3 && levenshtein(t, qt.expanded, limit) <= limit) return Scoring.FUZZY_EXPANDED
         return 0
     }
 
@@ -426,15 +471,15 @@ class BusStopIndex(
 
                 if (best == 0 && idx.roadTokens.isNotEmpty()) {
                     val rs = matchToken(qt, idx.roadTokens, idx.expandedRoadTokens)
-                    if (rs > 0) best = rs / 3
+                    if (rs > 0) best = rs / Scoring.ROAD_SCORE_DIVISOR
                 }
 
                 if (best == 0 && qt.raw.length >= 2) {
                     best =
                         when {
-                            idx.codeLower == qt.raw -> 50
-                            idx.codeLower.startsWith(qt.raw) -> 35
-                            idx.codeLower.contains(qt.raw) -> 10
+                            idx.codeLower == qt.raw -> Scoring.CODE_EXACT
+                            idx.codeLower.startsWith(qt.raw) -> Scoring.CODE_PREFIX
+                            idx.codeLower.contains(qt.raw) -> Scoring.CODE_CONTAINS
                             else -> 0
                         }
                 }
@@ -448,7 +493,7 @@ class BusStopIndex(
             if (!matchedAny) continue
 
             // All-tokens-match bonus (only for name matches, not road-only)
-            if (queryTokens.all { qtInName(it, idx.nameTokens) }) score += 500
+            if (queryTokens.all { qtInName(it, idx.nameTokens) }) score += Scoring.ALL_TOKENS_BONUS
 
             results.add(idx.entry to score)
         }
