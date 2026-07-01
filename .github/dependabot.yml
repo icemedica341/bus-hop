@@ -1,0 +1,26 @@
+# dependabot.yml — automated dependency updates
+#
+# Checks for outdated/malicious dependencies weekly.
+# Configures: Gradle (for Android + Kotlin deps) and GitHub Actions (for CI workflows).
+
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-limit: 5
+    labels:
+      - "dependencies"
+      - "automerge"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-limit: 3
+    labels:
+      - "ci"
+      - "dependencies"

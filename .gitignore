@@ -85,3 +85,6 @@ bus-hop-content/.git-hooks/
 keystore.jks
 .kotlin/
 HANDOVER.md
+
+# Node modules (MCP server dependencies — not part of Android project)
+mcp/node_modules/

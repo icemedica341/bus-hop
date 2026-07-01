@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
 }
 
+// ── Dependency locking for reproducible builds ──
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 // ── Badge update task ──
 // Refreshes static SVGs in docs/badges/ from shields.io.
 // Usage: ./gradlew updateBadges -PtestCount=NNN   (specify test count)
