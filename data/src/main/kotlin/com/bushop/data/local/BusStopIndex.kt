@@ -18,10 +18,13 @@ import com.bushop.data.api.GsonProvider
 import com.bushop.domain.model.BusStopEntry
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -145,6 +148,10 @@ class BusStopIndex(
     private val _isReady = MutableStateFlow(false)
     val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
 
+    /** True when the current data was loaded from internal storage rather than bundled assets. */
+    @Volatile
+    private var loadedFromInternal = false
+
     fun setTestData(testStops: List<BusStopEntry>) {
         stops = testStops.associateBy { it.code }
         indexedStops = testStops.map { it.toIndexed() }
@@ -197,10 +204,17 @@ class BusStopIndex(
         withContext(Dispatchers.IO) {
             val json =
                 try {
-                    context.assets
-                        .open("bus_stops.json")
-                        .bufferedReader()
-                        .use { it.readText() }
+                    val internalFile = File(context.filesDir, "bus_stops.json")
+                    if (internalFile.exists()) {
+                        loadedFromInternal = true
+                        internalFile.readText()
+                    } else {
+                        loadedFromInternal = false
+                        context.assets
+                            .open("bus_stops.json")
+                            .bufferedReader()
+                            .use { it.readText() }
+                    }
                 } catch (e: Exception) {
                     "{}"
                 }
@@ -238,6 +252,22 @@ class BusStopIndex(
             roadTrie = buildTrie { it.roadTokens }
         }
         _isReady.value = true
+    }
+
+    /**
+     * Check whether an updated bus_stops.json exists in internal storage and reload if so.
+     *
+     * This is a non-suspending trigger — the actual reload happens asynchronously
+     * via [GlobalScope.launch]. Callers can observe completion via [isReady].
+     */
+    fun reloadIfUpdated() {
+        val internalFile = File(context.filesDir, "bus_stops.json")
+        if (internalFile.exists() && !loadedFromInternal) {
+            loadedFromInternal = true
+            GlobalScope.launch(Dispatchers.IO) {
+                load()
+            }
+        }
     }
 
     // ── Stage 2 filters (pre-Levenshtein) ──
