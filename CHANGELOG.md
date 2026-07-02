@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.5] — 2026-07-09
+
+### Fixed
+- Fix 4 icons with wrong Material icon path data (compaction AI used ChairAlt, wrong push_pin, garbled directions_walk, incorrect cloud_off)
+- ic_chair.xml: replace ChairAlt armchair path with correct Chair icon
+- ic_directions_walk.xml: replace garbled path with correct walking person icon
+- ic_push_pin.xml: replace classic PinDrop with correct Material PushPin (fillType=evenOdd)
+- ic_cloud_off.xml: replace incorrect multi-subpath blob with correct cloud-off icon
+
 ## [Unreleased]
 
 ### Infrastructure
