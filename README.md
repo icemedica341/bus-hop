@@ -1,15 +1,15 @@
 <div align="center">
-  <img src="docs/icon.svg" alt="BusHop" width="96" height="96">
+  <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/icon.svg" alt="BusHop" width="96" height="96">
   <h1>BusHop</h1>
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search. No ads, no accounts, no tracking.</p>
   <p>
-    <img src="docs/badges/kotlin.svg" alt="Kotlin">
-    <img src="docs/badges/compose.svg" alt="Jetpack Compose">
-    <img src="docs/badges/minsdk.svg" alt="Min SDK 26">
-    <img src="docs/badges/targetsdk.svg" alt="Target SDK 37">
-    <img src="docs/badges/license.svg" alt="MIT License">
-    <img src="docs/badges/tests.svg" alt="161 tests">
+    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/kotlin.svg" alt="Kotlin">
+    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/compose.svg" alt="Jetpack Compose">
+    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/minsdk.svg" alt="Min SDK 26">
+    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/targetsdk.svg" alt="Target SDK 37">
+    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/license.svg" alt="MIT License">
+    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/tests.svg" alt="161 tests">
   </p>
 </div>
 
@@ -18,8 +18,8 @@
 <p align="center">
   <sub>Built with AI assistance — see <a href="./CREDITS.md">CREDITS.md</a></sub>
   <br>
-  <a href="./CREDITS.md"><img src="docs/badges/gpt5.4.svg" alt="GPT 5.4"></a>
-  <a href="./CREDITS.md"><img src="docs/badges/deepseek.svg" alt="DeepSeek V4 Flash"></a>
+  <a href="./CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/gpt5.4.svg" alt="GPT 5.4"></a>
+  <a href="./CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/deepseek.svg" alt="DeepSeek V4 Flash"></a>
 </p>
 
 ## Screenshots

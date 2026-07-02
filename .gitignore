@@ -15,8 +15,6 @@
 !/domain/**
 !/gradle/
 !/gradle/**
-!/mcp/
-!/mcp/**
 !/detekt.yml
 !/.githooks/
 !/.githooks/**
@@ -49,4 +47,3 @@ Thumbs.db
 *.keystore
 app/keystore.jks
 docs/index.html
-mcp/node_modules/
