@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * Manages the saved stops list, refresh logic, collapse state, and sort preference.
  * Owns the main combine flow that drives the UI's saved stops list.
  */
-class StopStateManager(
+internal class StopStateManager(
     private val viewModelScope: CoroutineScope,
     private val repository: BusRepository,
     private val useCase: BusStopUseCase,

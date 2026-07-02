@@ -160,9 +160,9 @@ fun MainScreen(viewModel: MainViewModel) {
         }
     }
 
-    val onSortClick = remember { { viewModel.toggleSortOrder() } }
+    val onSortClick: () -> Unit = remember { { viewModel.toggleSortOrder() } }
     val onThemeClick = remember { { viewModel.toggleThemeMode() } }
-    val onRefreshClick = remember { { viewModel.refreshAll() } }
+    val onRefreshClick: () -> Unit = remember { { viewModel.refreshAll() } }
     val onSettingsClick = remember { { showSettings = true } }
 
     // ── Nearby stops permission launcher ──

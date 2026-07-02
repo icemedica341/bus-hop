@@ -6,27 +6,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
-import java.util.concurrent.atomic.AtomicBoolean
-
-/**
- * ┌─ FeatureFlag ────────────────────────────────────┐
- * │  app/ layer · Runtime toggles                    │
- * │                                                   │
- * │  NEW_BUS_TIMELINE ─→ new arrival timeline UI      │
- * │  NEARBY_STOPS_V2  ─→ enhanced nearby stops       │
- * │  PINNED_REORDER   ─→ pinned reorder gestures     │
- * │                                                   │
- * │  isEnabled(ctx) ─→ read DataStore Preferences    │
- * │  setOverride()  ─→ toggle at runtime             │
- * │  resetAll()     ─→ clear all overrides           │
- * │  Backed by DataStore Preferences, dark by default │
- * └───────────────────────────────────────────────────┘
- */
+import kotlinx.coroutines.launch
 
 /**
  * Feature flags for gradual rollout and instant kill-switch.
@@ -38,6 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * Toggle at runtime via the debug menu (long-press version in settings).
  * All flags default to false (dark by default). Enable gradually.
+ *
+ * Reads are synchronous (backed by an in-memory cache refreshed from DataStore).
+ * Writes are fire-and-forget coroutines on Dispatchers.IO.
  */
 enum class FeatureFlag(
     val key: String,
@@ -69,18 +57,39 @@ enum class FeatureFlag(
         private val Context.featureFlagsDataStore: DataStore<Preferences> by
             preferencesDataStore(name = PREFS_NAME)
 
-        private val migrationNeeded = AtomicBoolean(true)
+        // Background scope for DataStore writes (never blocks the calling thread).
+        private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+        // In-memory cache: [key] -> [override value] or absent if using default.
+        // Updated reactively by collecting overridesFlow. Synchronous reads never touch DataStore.
+        @Volatile
+        private var overrideCache: Map<String, Boolean> = emptyMap()
+
+        // Ensure the cache collection is started exactly once.
+        @Volatile
+        private var cacheInitialized = false
 
         /**
-         * One-time migration from old SharedPreferences to DataStore Preferences.
-         * Reads any existing overrides from SharedPreferences, writes them into
-         * DataStore, then clears the legacy SharedPreferences file.
+         * Start collecting overrides into the in-memory cache.
+         * Safe to call multiple times — only the first call starts the collection.
          */
+        private fun ensureCache(context: Context) {
+            if (cacheInitialized) return
+            cacheInitialized = true
+            // One-time migration from old SharedPreferences to DataStore
+            migrateFromSharedPreferences(context)
+            ioScope.launch {
+                overridesFlow(context).collect { overrides ->
+                    overrideCache = overrides
+                }
+            }
+        }
+
+        /** One-time migration from old SharedPreferences to DataStore Preferences. */
         private fun migrateFromSharedPreferences(context: Context) {
-            if (!migrationNeeded.getAndSet(false)) return
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             if (prefs.all.isEmpty()) return
-            runBlocking(Dispatchers.IO) {
+            ioScope.launch {
                 context.featureFlagsDataStore.edit { store ->
                     entries.forEach { flag ->
                         if (prefs.contains(flag.key)) {
@@ -94,33 +103,27 @@ enum class FeatureFlag(
         }
 
         /**
-         * Returns a map of flag-key → boolean for every flag that has an explicit
-         * override set (i.e. excludes flags still using their default value).
-         * Synchronous — safe to call from Compose.
+         * Returns a map of flag-key -> boolean for every flag that has an explicit
+         * override set. Synchronous — backed by the in-memory cache.
          */
         fun getOverrides(context: Context): Map<String, Boolean> {
-            migrateFromSharedPreferences(context)
-            return runBlocking(Dispatchers.IO) {
-                context.featureFlagsDataStore.data.first().let { prefs ->
-                    entries.mapNotNull { flag ->
-                        val value = prefs[booleanPreferencesKey(flag.key)]
-                        if (value != null) flag.key to value else null
-                    }.toMap()
-                }
-            }
+            ensureCache(context)
+            return overrideCache
         }
 
         /**
          * Persist a runtime override for the given flag [key].
-         * Synchronous — safe to call from Compose.
+         * Writes are fire-and-forget on Dispatchers.IO — never blocks.
          */
         fun setOverride(
             context: Context,
             key: String,
             enabled: Boolean,
         ) {
-            migrateFromSharedPreferences(context)
-            runBlocking(Dispatchers.IO) {
+            ensureCache(context)
+            // Optimistically update cache
+            overrideCache = overrideCache + (key to enabled)
+            ioScope.launch {
                 context.featureFlagsDataStore.edit { prefs ->
                     prefs[booleanPreferencesKey(key)] = enabled
                 }
@@ -129,14 +132,15 @@ enum class FeatureFlag(
 
         /**
          * Remove any persisted override for [key], reverting to the flag's default.
-         * Synchronous — safe to call from Compose.
+         * Writes are fire-and-forget — never blocks.
          */
         fun clearOverride(
             context: Context,
             key: String,
         ) {
-            migrateFromSharedPreferences(context)
-            runBlocking(Dispatchers.IO) {
+            ensureCache(context)
+            overrideCache = overrideCache - key
+            ioScope.launch {
                 context.featureFlagsDataStore.edit { prefs ->
                     prefs.remove(booleanPreferencesKey(key))
                 }
@@ -145,11 +149,12 @@ enum class FeatureFlag(
 
         /**
          * Remove ALL overrides, reverting every flag to its default.
-         * Synchronous — safe to call from Compose.
+         * Writes are fire-and-forget — never blocks.
          */
         fun resetAll(context: Context) {
-            migrateFromSharedPreferences(context)
-            runBlocking(Dispatchers.IO) {
+            ensureCache(context)
+            overrideCache = emptyMap()
+            ioScope.launch {
                 context.featureFlagsDataStore.edit { prefs ->
                     entries.forEach { flag ->
                         prefs.remove(booleanPreferencesKey(flag.key))
@@ -160,30 +165,23 @@ enum class FeatureFlag(
 
         /**
          * Reactive [Flow] that emits the current overrides map every time
-         * DataStore changes. Useful for observing flag toggles reactively
-         * (e.g. in ViewModels).
+         * DataStore changes. Useful for observing flag toggles reactively.
          */
-        fun overridesFlow(context: Context): Flow<Map<String, Boolean>> {
-            migrateFromSharedPreferences(context)
-            return context.featureFlagsDataStore.data.map { prefs ->
-                entries.mapNotNull { flag ->
-                    val value = prefs[booleanPreferencesKey(flag.key)]
-                    if (value != null) flag.key to value else null
-                }.toMap()
-            }
+        fun overridesFlow(context: Context): Flow<Map<String, Boolean>> = context.featureFlagsDataStore.data.map { prefs ->
+            entries.mapNotNull { flag ->
+                val value = prefs[booleanPreferencesKey(flag.key)]
+                if (value != null) flag.key to value else null
+            }.toMap()
         }
     }
 
     /**
      * Check whether this flag is currently enabled.
      * Returns the persisted override if one exists, otherwise the [default].
-     * Synchronous — safe to call from Compose.
+     * Synchronous — backed by the in-memory cache, never blocks.
      */
     fun isEnabled(context: Context): Boolean {
-        migrateFromSharedPreferences(context)
-        return runBlocking(Dispatchers.IO) {
-            context.featureFlagsDataStore.data.first()
-                .let { prefs -> prefs[booleanPreferencesKey(key)] ?: default }
-        }
+        ensureCache(context)
+        return overrideCache[key] ?: default
     }
 }
