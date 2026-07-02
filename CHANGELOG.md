@@ -7,12 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+
+## [1.0.4] — 2026-07-02
+
 ### Fixed
+- Fix OkHttp connection pool leak (close idle connections on app background)
+- Fix FeatureFlags ANR (migrate SharedPreferences to DataStore, background writes)
+- Fix access modifier violations flagged by detekt/ktlint review
+- Add ACCESS_COARSE_LOCATION for lint compliance
+- Resolve ktlint version catalog test failure (alignment with Gradle 9.x)
+- Update stale GitHub Action SHA pins to latest versions
+- Resolve detekt issues and clean up unused parameters
 - Fix download link from icemedica341 to icemedica341 org
 
 ### Infrastructure
+- Remove unused pr-title-check CI job (no PRs accepted)
+- Remove PR template (no PRs accepted)
 - Refresh contributor widget cache
 - Trigger stat regeneration after visibility toggle
+- Mark STANDARDS.md as retrospective (applied after the fact)
 
 ## [1.0.3] — 2026-06-18
 
@@ -414,7 +427,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Subtle header press feedback:** Touch ripple animation via Compose indication modifier — provides tactile confirmation when tapping the header area for pull-to-refresh or navigation actions.
 - **Combined collapsed pill design:** Unified compact pill showing both bus service number and next arrival time in a single horizontally-constrained element when a card is collapsed. Reduces vertical footprint while preserving the two most critical data points.
 
-[Unreleased]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.1...v1.0.3
 [1.0.1]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/icemedica341/Bus-Hop/compare/v0.9.7...v1.0.0
