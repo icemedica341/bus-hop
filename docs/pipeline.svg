@@ -11,7 +11,7 @@ rect.bx{fill:#e8f4f8;stroke:#4a90d9;stroke-width:1.5;rx:5}rect.i{fill:#d4e8f0;st
 <rect x="34" y="169" width="210" height="28" class="gr"/><text x="139" y="187" class="l">ThemeManager + UpdateManager</text>
 
 <rect x="278" y="30" width="170" height="185" class="bx"/><text x="363" y="50" class="t">Build</text>
-<rect x="288" y="65" width="150" height="28" class="i"/><text x="363" y="83" class="l">Gradle 9.5.1 + AGP 9.2.1</text>
+<rect x="288" y="65" width="150" height="28" class="i"/><text x="363" y="83" class="l">Gradle 9.5.1 + AGP 9.1.0</text>
 <path d="M363,93 L363,117" class="e"/>
 <rect x="288" y="117" width="150" height="28" class="i"/><text x="363" y="135" class="l">R8 + shrinkResources</text>
 <path d="M363,145 L363,169" class="e"/>

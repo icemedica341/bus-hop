@@ -107,7 +107,7 @@ Flags are backed by `SharedPreferences` and can be toggled without a rebuild. Re
 | Search        | Inverted index + TokenTrie (prefix) + Levenshtein (fuzzy) |
 | Testing       | JUnit 4, MockK, Coroutines Test                           |
 | Minification  | R8 + ProGuard (release builds)                            |
-| Gradle        | 9.5.1, AGP 9.2.1                                          |
+| Gradle        | 9.4.1, AGP 9.1.0                                          |
 | Target        | SDK 37, minSdk 26                                         |
 
 ## Build from Source
