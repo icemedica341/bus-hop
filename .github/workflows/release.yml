@@ -31,16 +31,16 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@b963242bf64c6535d5d8b5b940eaa731d0d2d4e3 # v4.8.0
+        uses: actions/setup-java@v4 # v4.8.0
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@89af20f47afc6939245cf28647b0f41aa8e77309 # v3.4.2
+        uses: android-actions/setup-android@v3 # v3.4.2
 
       - name: Cache Gradle
-        uses: actions/cache@1bd1e32a3bae45390e01e0fcc73a7e2bdfe18e6c # v4.2.1
+        uses: actions/cache@v4 # v4.2.1
         with:
           path: |
             ~/.gradle/caches
@@ -94,7 +94,7 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@c95fe605939cb35d87cddd99dba51fb7c8170c71 # v2.1.0
+        uses: softprops/action-gh-release@v2 # v2.1.0
         with:
           name: BusHop ${{ github.ref_name }}
           body_path: release-notes.md
