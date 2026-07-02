@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 /**
  * Manages the add-bus-stop dialog state, search results, and stop addition logic.
  */
-class SearchManager(
+internal class SearchManager(
     private val viewModelScope: CoroutineScope,
     private val repository: BusRepository,
     private val busStopIndex: BusStopIndex,
