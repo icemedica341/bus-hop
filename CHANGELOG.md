@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Infrastructure
+- Remove stale docs (STANDARDS.md, github-topics, gitignore-standard, svg-standards, architecture-plan.txt)
+- README badges migrated to jsDelivr CDN for reliable rendering
+- Add RETROSPECTIVE_SPEC.md with recursive spec-driven retrospective plan
 
 ## [1.0.4] — 2026-07-02
 
