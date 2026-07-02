@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  * Manages pinned services and pinned stops state.
  * Receives pin state from repository flows and provides mutation methods.
  */
-class PinManager(
+internal class PinManager(
     private val viewModelScope: CoroutineScope,
     private val repository: BusRepository,
     private val snackbarMessage: MutableSharedFlow<String>,

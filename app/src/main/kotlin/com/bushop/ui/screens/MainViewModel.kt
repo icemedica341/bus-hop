@@ -93,27 +93,15 @@ class MainViewModel(
 
     // ── Delegated state managers ──
 
-    /** Manages add-stop dialog, search, and stop addition. */
-    val searchManager: SearchManager = SearchManager(
-        viewModelScope,
-        repository,
-        busStopIndex,
-        onApiHealthy = {
-            consecutiveFailures.set(0)
-            _apiStatus.value = ApiStatus.Healthy
-        },
-        onStopAdded = { code -> stopStateManager.collapseStop(code) },
-    )
-
     /** Manages pinned services and pinned stops. */
-    val pinManager: PinManager = PinManager(
+    internal val pinManager: PinManager = PinManager(
         viewModelScope,
         repository,
         _snackbarMessage,
     )
 
     /** Manages saved stops list, refresh, collapse, sort. */
-    val stopStateManager: StopStateManager = StopStateManager(
+    internal val stopStateManager: StopStateManager = StopStateManager(
         viewModelScope = viewModelScope,
         repository = repository,
         useCase = useCase,
@@ -124,6 +112,18 @@ class MainViewModel(
         consecutiveFailures = consecutiveFailures,
         isAutoRefreshing = isAutoRefreshing,
         onAdditionOrderChanged = { additionOrder = it },
+    )
+
+    /** Manages add-stop dialog, search, and stop addition. */
+    internal val searchManager: SearchManager = SearchManager(
+        viewModelScope,
+        repository,
+        busStopIndex,
+        onApiHealthy = {
+            consecutiveFailures.set(0)
+            _apiStatus.value = ApiStatus.Healthy
+        },
+        onStopAdded = { code -> stopStateManager.collapseStop(code) },
     )
 
     // ── Theme (delegated to ThemeManager) ──

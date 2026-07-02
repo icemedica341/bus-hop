@@ -1,17 +1,5 @@
 package com.bushop.data.local
 
-/**
- * ┌─ BusStopUpdater ──────────────────────────────────┐
- * │  data/ layer · Remote bus stop data updater       │
- * │                                                     │
- * │  Reads current version from bundled assets         │
- * │  Checks a remote version URL for a newer version   │
- * │  Downloads updated bus_stops.json to internal      │
- * │  storage when a newer version is found             │
- * │  Graceful fallback on network failures             │
- * └─────────────────────────────────────────────────────┘
- */
-
 import android.content.Context
 import android.util.Log
 import com.bushop.data.api.ApiClient
@@ -77,19 +65,20 @@ class BusStopUpdater(
     /** Fetch the remote version string and parse it as an integer. Returns 0 on failure. */
     private fun fetchRemoteVersion(): Int {
         val request = Request.Builder().url(versionUrl).get().build()
-        val response = client.newCall(request).execute()
-        val body = response.body.string()
-        return body.trim().toIntOrNull() ?: 0
+        return client.newCall(request).execute().use { response ->
+            response.body.string().trim().toIntOrNull() ?: 0
+        }
     }
 
     /** Download a file from [url] and save it to [target]. */
     private fun downloadFile(url: String, target: File) {
         val request = Request.Builder().url(url).get().build()
-        val response = client.newCall(request).execute()
-        val body = response.body
-        target.outputStream().use { output ->
-            body.byteStream().use { input ->
-                input.copyTo(output)
+        client.newCall(request).execute().use { response ->
+            val body = response.body
+            target.outputStream().use { output ->
+                body.byteStream().use { input ->
+                    input.copyTo(output)
+                }
             }
         }
     }
