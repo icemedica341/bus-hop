@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/icon.svg" alt="BusHop" width="96" height="96">
+  <img src="docs/icon.svg" alt="BusHop" width="96" height="96">
   <h1>BusHop</h1>
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search. No ads, no accounts, no tracking.</p>
@@ -58,7 +58,7 @@
 
 ## Download
 
-> **Latest release:** [v1.0.3](https://github.com/icemedica341/Bus-Hop/releases/latest) — `bus-hop.apk` (**1.8 MB**, R8-minified, shrinkResources, signed)
+> **Latest release:** [v1.0.5](https://github.com/icemedica341/Bus-Hop/releases/latest) — `bus-hop.apk` (**1.8 MB**, R8-minified, shrinkResources, signed)
 
 Or [build from source](#build-from-source) for a debug APK.
 
@@ -107,7 +107,7 @@ Flags are backed by `SharedPreferences` and can be toggled without a rebuild. Re
 | Search        | Inverted index + TokenTrie (prefix) + Levenshtein (fuzzy) |
 | Testing       | JUnit 4, MockK, Coroutines Test                           |
 | Minification  | R8 + ProGuard (release builds)                            |
-| Gradle        | 9.5.1, AGP 9.2.1                                          |
+| Gradle        | 9.4.1, AGP 9.1.0                                          |
 | Target        | SDK 37, minSdk 26                                         |
 
 ## Build from Source
