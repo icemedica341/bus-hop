@@ -54,9 +54,11 @@ jobs:
 
       - name: Decode signing keystore (if secrets present)
         id: signing
+        env:
+          KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
         run: |
-          if [ -n "${{ secrets.SIGNING_KEYSTORE_B64 }}" ]; then
-            echo "${{ secrets.SIGNING_KEYSTORE_B64 }}" | base64 -d > app/keystore-ci.jks
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > app/keystore-ci.jks
             echo "keystore=app/keystore-ci.jks" >> "$GITHUB_OUTPUT"
             echo "has_signing=true" >> "$GITHUB_OUTPUT"
           else
@@ -64,14 +66,13 @@ jobs:
           fi
 
       - name: Build APK
+        env:
+          STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
         run: |
           if [ "${{ steps.signing.outputs.has_signing }}" = "true" ]; then
-            ./gradlew assembleRelease \
-              -Pandroid.injected.signing.store.file=app/keystore-ci.jks \
-              -Pandroid.injected.signing.store.password=${{ secrets.SIGNING_STORE_PASSWORD }} \
-              -Pandroid.injected.signing.key.alias=${{ secrets.SIGNING_KEY_ALIAS }} \
-              -Pandroid.injected.signing.key.password=${{ secrets.SIGNING_KEY_PASSWORD }} \
-              --no-daemon --stacktrace
+            ./gradlew assembleRelease               -Pandroid.injected.signing.store.file=app/keystore-ci.jks               -Pandroid.injected.signing.store.password="${STORE_PASSWORD}"               -Pandroid.injected.signing.key.alias="${KEY_ALIAS}"               -Pandroid.injected.signing.key.password="${KEY_PASSWORD}"               --no-daemon --stacktrace
           else
             ./gradlew assembleDebug --no-daemon --stacktrace
           fi
@@ -87,7 +88,7 @@ jobs:
         id: notes
         run: |
           VER="${GITHUB_REF_NAME#v}"
-          awk "/^## \\[${VER}\]/{flag=1; next} /^## \\[/{flag=0} flag" CHANGELOG.md > release-notes.md
+          awk "/^## \[\${VER}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md > release-notes.md
           if [ ! -s release-notes.md ]; then
             echo "⚠️ No release notes found for ${VER} — using full CHANGELOG"
             cp CHANGELOG.md release-notes.md
