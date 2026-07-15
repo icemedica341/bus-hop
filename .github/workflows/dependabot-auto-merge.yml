@@ -1,7 +1,7 @@
 # dependabot-auto-merge.yml — Auto-merge Dependabot PRs when CI passes
 #
 # Patch and minor updates are merged automatically.
-# Major updates require manual review (but the approve button is pressed).
+# Major updates are approved and flagged for manual review.
 # Uses pull_request_target so the token has full permissions.
 
 name: dependabot-auto-merge
@@ -42,11 +42,10 @@ jobs:
                   PR_URL: ${{ github.event.pull_request.html_url }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Flag major updates for manual review
+            - name: Approve and flag major updates for manual review
               if: steps.metadata.outputs.update-type == 'version-update:semver-major'
               run: |
-                  gh pr review --approve --body "⚠️ **Major version bump** — please review changelog manually before merge." "$PR_URL"
-                  gh pr merge --auto --squash "$PR_URL"
+                  gh pr review --approve --body "⚠️ **Major version bump** — CI passed but please review changelog manually before merge." "$PR_URL"
               env:
                   PR_URL: ${{ github.event.pull_request.html_url }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

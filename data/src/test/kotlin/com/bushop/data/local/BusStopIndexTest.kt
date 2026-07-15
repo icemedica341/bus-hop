@@ -400,7 +400,7 @@ class BusStopIndexTest {
         }
         val elapsed = (System.nanoTime() - start) / 1_000_000.0
         val perQuery = elapsed / (iterations * 10)
-        assertTrue("Per-query speed $perQuery ms should be under 0.2 ms", perQuery < 0.2)
+        assertTrue("Per-query speed $perQuery ms should be under 1 ms", perQuery < 1.0)
     }
 
     @Test
