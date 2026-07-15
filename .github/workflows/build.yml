@@ -58,7 +58,13 @@ jobs:
             echo "⚠️  CHANGELOG.md was not modified — consider adding release notes"
           fi
       - name: Run checks, tests, and build
-        run: ./gradlew detekt spotlessCheck lint test assembleDebug --stacktrace
+        run: |
+          TASKS="detekt spotlessCheck test assembleDebug"
+          # Skip lint for Dependabot PRs (90s+ for zero value on version bumps)
+          if [ "${{ github.event_name }}" != "pull_request" ] || [ "${{ github.event.pull_request.user.login }}" != "dependabot[bot]" ]; then
+            TASKS="$TASKS lint"
+          fi
+          ./gradlew $TASKS --stacktrace
 
       - name: Update static badges from shields.io (main only)
         if: github.ref_name == 'main'
