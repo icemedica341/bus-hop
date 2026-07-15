@@ -1,9 +1,9 @@
 # build.yml — CI for BusHop
 #
-# Runs on every push/PR to main:
-#   - ./gradlew test (unit + architecture tests)
-#   - ./gradlew lint (Android lint with warnings-as-errors)
-#   - ./gradlew assembleDebug (verifies compilation)
+#   - Static analysis (detekt + spotlessCheck + Android lint)
+#   - Unit tests (with stacktrace)
+#   - Debug APK build
+#   - Badge generation (main only)
 
 name: build
 
@@ -18,7 +18,7 @@ jobs:
   build-test:
     name: build-test-lint
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -57,22 +57,12 @@ jobs:
           else
             echo "⚠️  CHANGELOG.md was not modified — consider adding release notes"
           fi
-      - name: Run static analysis (detekt)
-        run: ./gradlew detekt --no-daemon
-      - name: Run all tests
-        run: ./gradlew test --no-daemon --stacktrace
-
-      - name: Check code formatting (spotless + ktlint)
-        run: ./gradlew spotlessCheck --no-daemon
-      - name: Run Android lint
-        run: ./gradlew lint --no-daemon
-
-      - name: Verify debug build
-        run: ./gradlew assembleDebug --no-daemon
+      - name: Run checks, tests, and build
+        run: ./gradlew detekt spotlessCheck lint test assembleDebug --stacktrace
 
       - name: Update static badges from shields.io (main only)
         if: github.ref_name == 'main'
-        run: ./gradlew updateBadges -PautoDetect --no-daemon
+        run: ./gradlew updateBadges -PautoDetect
 
       - name: Commit updated badge SVGs
         if: github.ref_name == 'main'
