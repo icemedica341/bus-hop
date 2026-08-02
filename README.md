@@ -4,12 +4,12 @@
   <p><strong>Lightweight Singapore bus timing app</strong></p>
   <p>Material 3 Compose UI with real-time arrivals, drag-to-reorder, pinning, and smart search. No ads, no accounts, no tracking.</p>
   <p>
-    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/kotlin.svg" alt="Kotlin">
-    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/compose.svg" alt="Jetpack Compose">
-    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/minsdk.svg" alt="Min SDK 26">
-    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/targetsdk.svg" alt="Target SDK 37">
-    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/license.svg" alt="MIT License">
-    <img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/tests.svg" alt="161 tests">
+    <img src="https://img.shields.io/badge/Kotlin-2.4.0-7F52FF" alt="Kotlin">
+    <img src="https://img.shields.io/badge/Jetpack%20Compose-BOM%202026.05.01-4285F4" alt="Jetpack Compose">
+    <img src="https://img.shields.io/badge/minSdk-26-3DDC84" alt="Min SDK 26">
+    <img src="https://img.shields.io/badge/targetSdk-37-3DDC84" alt="Target SDK 37">
+    <img src="https://img.shields.io/badge/license-MIT-97CA00" alt="MIT License">
+    <img src="https://img.shields.io/badge/tests-161-2EA043" alt="161 tests">
   </p>
 </div>
 
@@ -18,8 +18,8 @@
 <p align="center">
   <sub>Built with AI assistance — see <a href="./CREDITS.md">CREDITS.md</a></sub>
   <br>
-  <a href="./CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/gpt5.4.svg" alt="GPT 5.4"></a>
-  <a href="./CREDITS.md"><img src="https://cdn.jsdelivr.net/gh/icemedica341/Bus-Hop@main/docs/badges/deepseek.svg" alt="DeepSeek V4 Flash"></a>
+  <a href="./CREDITS.md"><img src="https://img.shields.io/badge/GPT-5.4-000000" alt="GPT 5.4"></a>
+  <a href="./CREDITS.md"><img src="https://img.shields.io/badge/DeepSeek-V4%20Flash-4D6BFE" alt="DeepSeek V4 Flash"></a>
 </p>
 
 ## Screenshots
