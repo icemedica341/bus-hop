@@ -6,10 +6,10 @@
   <p>
     <img src="https://img.shields.io/badge/Kotlin-2.4.0-7F52FF" alt="Kotlin">
     <img src="https://img.shields.io/badge/Jetpack%20Compose-BOM%202026.05.01-4285F4" alt="Jetpack Compose">
-    <img src="https://img.shields.io/badge/minSdk-26-3DDC84" alt="Min SDK 26">
-    <img src="https://img.shields.io/badge/targetSdk-37-3DDC84" alt="Target SDK 37">
-    <img src="https://img.shields.io/badge/license-MIT-97CA00" alt="MIT License">
-    <img src="https://img.shields.io/badge/tests-161-2EA043" alt="161 tests">
+    <img src="https://img.shields.io/badge/minSdk-26-34a853" alt="Min SDK 26">
+    <img src="https://img.shields.io/badge/targetSdk-37-34a853" alt="Target SDK 37">
+    <img src="https://img.shields.io/badge/license-MIT-d8b800" alt="MIT License">
+    <img src="https://img.shields.io/badge/tests-161-34a853" alt="161 tests">
   </p>
 </div>
 
@@ -18,8 +18,8 @@
 <p align="center">
   <sub>Built with AI assistance — see <a href="./CREDITS.md">CREDITS.md</a></sub>
   <br>
-  <a href="./CREDITS.md"><img src="https://img.shields.io/badge/GPT-5.4-000000" alt="GPT 5.4"></a>
-  <a href="./CREDITS.md"><img src="https://img.shields.io/badge/DeepSeek-V4%20Flash-4D6BFE" alt="DeepSeek V4 Flash"></a>
+  <a href="./CREDITS.md"><img src="https://img.shields.io/badge/GPT-5.4-10a37f" alt="GPT 5.4"></a>
+  <a href="./CREDITS.md"><img src="https://img.shields.io/badge/DeepSeek-V4%20Flash-4f46e5" alt="DeepSeek V4 Flash"></a>
 </p>
 
 ## Screenshots
