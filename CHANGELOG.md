@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.6] — 2026-08-21
+
+### Added
+- Add CI workflow (build, test, lint, dependency check)
+- Add release workflow (auto-publish APK on tag push)
+- Add SECURITY.md with vulnerability disclosure policy
+
+### Removed
+- Remove Dependabot (dependency checks handled by CI instead)
+
 ### Infrastructure
 - Remove stale docs (STANDARDS.md, github-topics, gitignore-standard, svg-standards, architecture-plan.txt)
 - Remove Mermaid source files (architecture.mmd, pipeline.mmd) — SVG artifacts supersede them
@@ -443,7 +453,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Subtle header press feedback:** Touch ripple animation via Compose indication modifier — provides tactile confirmation when tapping the header area for pull-to-refresh or navigation actions.
 - **Combined collapsed pill design:** Unified compact pill showing both bus service number and next arrival time in a single horizontally-constrained element when a card is collapsed. Reduces vertical footprint while preserving the two most critical data points.
 
-[Unreleased]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.5...v1.0.6
 [1.0.4]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.1...v1.0.3
 [1.0.1]: https://github.com/icemedica341/Bus-Hop/compare/v1.0.0...v1.0.1
