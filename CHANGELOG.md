@@ -16,12 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [1.0.6] — 2026-08-21
-
 ### Added
-- Add CI workflow (build, test, lint, dependency check)
+- Add CI workflow (build, test, lint)
 - Add release workflow (auto-publish APK on tag push)
 - Add SECURITY.md with vulnerability disclosure policy
+- Add dependency tier T1 marker and Gradle lockfile
 
 ### Removed
 - Remove Dependabot (dependency checks handled by CI instead)
