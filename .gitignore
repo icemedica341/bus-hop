@@ -28,6 +28,7 @@
 !/*.lockfile
 !/*.md
 !/LICENSE
+!/.dependency-tier
 !/CREDITS.md
 !/settings.gradle.kts
 
