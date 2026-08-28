@@ -38,8 +38,7 @@ BusHop is a lightweight Android bus arrival viewer for Singapore and Taipei, bui
 │   └── check-local.sh            # Local quality gates (ktlint/detekt/test/gitleaks/LOC)
 ├── gradle/                       # Gradle wrapper files
 ├── baselineprofile/              # Baseline profile generator
-├── benchmark/                    # Benchmark module
-├── benchmarks/                   # Additional benchmarks
+├── benchmark/                    # Macrobenchmark + Baseline Profile (manual run, not in settings.gradle.kts)
 ├── build.gradle.kts              # Root build file
 ├── settings.gradle.kts           # Gradle settings
 ├── gradlew                       # Gradle wrapper (DO NOT TOUCH)
@@ -86,6 +85,7 @@ This project is **intentionally archived** per [ADR-004](docs/adr/ADR-004-archiv
 ./gradlew testDebugUnitTest         # Run all 161 unit tests
 ./gradlew updateBadges -PautoDetect # Refresh test count badges
 ./gradlew clean test checkAndRenameDebugApk  # Full debug build
+./gradlew :benchmark:connectedCheck        # Run macrobenchmarks (requires device/emulator)
 ```
 
 ## Do Not Touch
