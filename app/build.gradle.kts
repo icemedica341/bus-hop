@@ -98,9 +98,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file(System.getenv("RELEASE_KEYSTORE") ?: "${System.getProperty("user.home")}/.android/debug.keystore")
-            storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: "android"
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: error("RELEASE_STORE_PASSWORD not set — set env var for release signing")
             keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "androiddebugkey"
-            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: "android"
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: error("RELEASE_KEY_PASSWORD not set — set env var for release signing")
         }
     }
 
