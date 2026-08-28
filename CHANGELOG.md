@@ -33,6 +33,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add RETROSPECTIVE_SPEC.md with recursive spec-driven retrospective plan
 - Delete 40 old GitHub Releases — CHANGELOG retains full history
 
+### Archived (ADR-004)
+- Project enters archival maintenance mode (2026-08-27)
+- GitHub Actions CI workflows removed (intentional, not abandoned)
+- Dependabot configuration removed (dependencies frozen)
+- Local quality gates added: `scripts/check-local.sh`
+- ADR-004: Project archival decision documented
+- FEATURES.md: 10 features documented with F-### anchors (all status=archived)
+- SPECIFICATION.md: 20 FR + 7 NFR with traceability matrix
+- TECH_DEBT_AUDIT.md: 0 active items, 3 known wont-fix documented
+- README.md enriched with archival notice and maintenance status
+
 ## [1.0.4] — 2026-07-02
 
 ### Fixed
