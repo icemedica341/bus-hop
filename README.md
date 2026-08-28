@@ -10,10 +10,23 @@
     <img src="https://img.shields.io/badge/targetSdk-37-34a853" alt="Target SDK 37">
     <img src="https://img.shields.io/badge/license-MIT-d8b800" alt="MIT License">
     <img src="https://img.shields.io/badge/tests-161-34a853" alt="161 tests">
+    <img src="https://img.shields.io/badge/status-archived-red" alt="Archived">
   </p>
 </div>
 
 ---
+
+> **⚠️ ARCHIVED** — This project is intentionally archived per [ADR-004](docs/adr/ADR-004-archival.md). No active development; security-only maintenance. See [FEATURES.md](docs/FEATURES.md) for feature inventory and [SPECIFICATION.md](SPECIFICATION.md) for requirements traceability.
+
+### Maintenance Status
+
+| Aspect | Status |
+|--------|--------|
+| CI/CD | Intentionally removed (not abandoned) |
+| Local gates | `scripts/check-local.sh` — run before any change |
+| Dependency updates | Frozen; quarterly manual CVE audit |
+| Maintenance budget | ≤2h/week, security fixes only |
+| Re-activation | See ADR-004 criteria |
 
 <p align="center">
   <sub>Built with AI assistance — see <a href="./CREDITS.md">CREDITS.md</a></sub>
@@ -55,6 +68,8 @@
 | 📱  | **Material 3**           | Modern Compose UI with animations, pull-to-refresh, edge-to-edge                                              |
 | 🎨  | **Splash screen**        | Branded cold-start splash using core-splashscreen library                                                     |
 | 📦  | **In-app update**        | Checks GitHub Releases for new version, downloads and installs APK directly                                   |
+
+See [docs/FEATURES.md](docs/FEATURES.md) for detailed feature inventory with F-### anchors and behavior contracts.
 
 ## Download
 
@@ -171,6 +186,19 @@ BusHop uses the [Arrivelah](https://github.com/cheeaun/arrivelah) API (`arrivela
 | Saved stops   | 🔒 — stored locally in DataStore                               |
 | API calls     | 🔒 — direct to BusRouter, no intermediary                      |
 
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [FEATURES.md](docs/FEATURES.md) | Feature inventory with F-### anchors |
+| [SPECIFICATION.md](SPECIFICATION.md) | Functional + non-functional requirements |
+| [TECH_DEBT_AUDIT.md](TECH_DEBT_AUDIT.md) | Technical debt status (0 active, 3 wont-fix) |
+| [CHANGELOG.md](CHANGELOG.md) | Full version history through archival |
+| [docs/adr/](docs/adr/) | Architecture decision records (001-004) |
+
+## Technical Debt
+
+0 active items. 3 known wont-fix (testing-related, documented in [TECH_DEBT_AUDIT.md](TECH_DEBT_AUDIT.md)). Project is archived — no new debt accumulation expected.
 ## License
 
 MIT License — see [LICENSE](LICENSE).
