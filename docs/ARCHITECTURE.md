@@ -73,6 +73,7 @@ BusHop is a lightweight Android bus arrival viewer for Singapore and Taipei. It 
 | **app/** | Android Application | `com.bushop.ui.*` | Jetpack Compose UI, ViewModels, feature flags, theme, components |
 | **domain/** | Kotlin JVM Library | `com.bushop.domain.*` | Pure Kotlin models, use cases, repository interfaces |
 | **data/** | Android Library | `com.bushop.data.*` | Retrofit API calls, DataStore persistence, BusStopIndex + TokenTrie |
+| **benchmark/** | Android Test (Macrobenchmark) | `com.bushop.benchmark` | Startup + scroll performance benchmarks, Baseline Profile generation |
 
 ### Dependency Direction
 
@@ -122,6 +123,7 @@ These are enforced by `scripts/check-local.sh` and architecture tests:
 | Requirements coverage | `check-local.sh` (§6) | ≥ 15 FRs in SPECIFICATION.md |
 | Layer separation | `ArchitectureTest.kt` | domain/ has no Android imports |
 | Module dependencies | `ArchitectureTest.kt` | No circular deps, domain is pure |
+| Macrobenchmark | `./gradlew :benchmark:connectedCheck` (manual) | Cold startup ≤ 500ms |
 
 ## Local vs GitHub Quality Gates
 

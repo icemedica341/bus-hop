@@ -31,6 +31,8 @@
 !/.dependency-tier
 !/CREDITS.md
 !/settings.gradle.kts
+!/benchmark/
+!/benchmark/**
 
 # Sub-blacklists — within whitelisted dirs, re-block what we don't want
 build/
@@ -48,3 +50,4 @@ Thumbs.db
 *.keystore
 app/keystore.jks
 docs/index.html
+benchmark/**/*.jar
